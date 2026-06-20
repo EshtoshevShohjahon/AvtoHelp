@@ -1,0 +1,43 @@
+# Backend
+backend/node_modules/
+backend/.env
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# Mobile
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/.pub-cache/
+mobile/.pub/
+mobile/build/
+mobile/.idea/
+mobile/*.iml
+mobile/*.ipr
+mobile/*.iws
+mobile/.vscode/
+mobile/android/local.properties
+mobile/android/.gradle/
+mobile/android/captures/
+mobile/android/gradlew
+mobile/android/gradlew.bat
+mobile/android/gradle-wrapper.jar
+mobile/ios/Flutter/Flutter.framework
+mobile/ios/Flutter/Flutter.podspec
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/ios/Flutter/App.framework
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/.generated/
+mobile/ios/Runner/GeneratedPluginRegistrant.*
+
+# Misc
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.log
