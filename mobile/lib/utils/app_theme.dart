@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Colors
@@ -36,43 +35,43 @@ class AppTheme {
         surface: lightCard,
       ),
       
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: lightCard,
         elevation: 0,
-        iconTheme: const IconThemeData(color: lightText),
-        titleTextStyle: GoogleFonts.roboto(
+        iconTheme: IconThemeData(color: lightText),
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: lightText,
         ),
       ),
       
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.roboto(
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: lightText,
         ),
-        displayMedium: GoogleFonts.roboto(
+        displayMedium: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: lightText,
         ),
-        displaySmall: GoogleFonts.roboto(
+        displaySmall: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: lightText,
         ),
-        headlineMedium: GoogleFonts.roboto(
+        headlineMedium: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: lightText,
         ),
-        bodyLarge: GoogleFonts.roboto(
+        bodyLarge: TextStyle(
           fontSize: 16,
           color: lightText,
         ),
-        bodyMedium: GoogleFonts.roboto(
+        bodyMedium: TextStyle(
           fontSize: 14,
           color: lightTextSecondary,
         ),
@@ -95,7 +94,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: GoogleFonts.roboto(
+          textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -137,43 +136,43 @@ class AppTheme {
         surface: darkCard,
       ),
       
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: darkCard,
         elevation: 0,
-        iconTheme: const IconThemeData(color: darkText),
-        titleTextStyle: GoogleFonts.roboto(
+        iconTheme: IconThemeData(color: darkText),
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: darkText,
         ),
       ),
       
-      textTheme: TextTheme(
-        displayLarge: GoogleFonts.roboto(
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
           fontSize: 32,
           fontWeight: FontWeight.bold,
           color: darkText,
         ),
-        displayMedium: GoogleFonts.roboto(
+        displayMedium: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
           color: darkText,
         ),
-        displaySmall: GoogleFonts.roboto(
+        displaySmall: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: darkText,
         ),
-        headlineMedium: GoogleFonts.roboto(
+        headlineMedium: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: darkText,
         ),
-        bodyLarge: GoogleFonts.roboto(
+        bodyLarge: TextStyle(
           fontSize: 16,
           color: darkText,
         ),
-        bodyMedium: GoogleFonts.roboto(
+        bodyMedium: TextStyle(
           fontSize: 14,
           color: darkTextSecondary,
         ),
@@ -196,7 +195,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: GoogleFonts.roboto(
+          textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
