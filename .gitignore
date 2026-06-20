@@ -18,7 +18,7 @@ mobile/*.iml
 mobile/*.ipr
 mobile/*.iws
 mobile/.vscode/
-mobile/android/local.properties
+# mobile/android/local.properties - needed for CI/CD
 mobile/android/.gradle/
 mobile/android/captures/
 mobile/android/gradlew
