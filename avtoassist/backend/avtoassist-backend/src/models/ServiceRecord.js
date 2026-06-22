@@ -15,7 +15,8 @@ const ServiceRecord = sequelize.define('ServiceRecord', {
   mechanic_name: { type: DataTypes.STRING, allowNull: true },
   cost:          { type: DataTypes.DECIMAL(12, 2), allowNull: true },
   notes:         { type: DataTypes.TEXT, allowNull: true },
-  next_service_km: { type: DataTypes.INTEGER, allowNull: true }, // faqat oil_change uchun
+  next_service_km: { type: DataTypes.INTEGER, allowNull: true },
+  added_by_provider_id: { type: DataTypes.UUID, allowNull: true },
 }, {
   tableName: 'service_records',
   timestamps: true,

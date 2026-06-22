@@ -11,6 +11,7 @@ import 'features/auth/auth_provider.dart';
 import 'features/auth/phone_screen.dart';
 import 'features/auth/otp_screen.dart';
 import 'features/auth/onboarding_screen.dart';
+import 'features/provider/provider_home_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/vehicles/vehicles_screen.dart';
 import 'features/orders/new_order_screen.dart';
@@ -106,7 +107,7 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/provider/home',
-      builder: (_, __) => const _ProviderHomeScreen(),
+      builder: (_, __) => const ProviderHomeScreen(),
     ),
   ],
 );
@@ -421,34 +422,3 @@ class _ProfileAvatar extends StatelessWidget {
   }
 }
 
-// ─── Provider home (stub) ───────────────────────────────────────────
-class _ProviderHomeScreen extends ConsumerWidget {
-  const _ProviderHomeScreen();
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider).user;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Provider Panel')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.handyman_outlined,
-                color: AppColors.amber, size: 56),
-            const SizedBox(height: 16),
-            Text(
-              'Xush kelibsiz, ${user?.fullName?.split(' ').first ?? 'Usta'}!',
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.bone),
-            ),
-            const SizedBox(height: 8),
-            const Text('Yangi buyurtmalarni kuting...',
-                style: TextStyle(color: AppColors.steelLight)),
-          ],
-        ),
-      ),
-    );
-  }
-}
