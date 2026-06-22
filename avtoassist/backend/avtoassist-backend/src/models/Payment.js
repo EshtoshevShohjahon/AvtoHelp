@@ -6,7 +6,7 @@ const Payment = sequelize.define('Payment', {
   order_id: { type: DataTypes.UUID, allowNull: false },
   amount: { type: DataTypes.FLOAT, allowNull: false },
   method: { type: DataTypes.ENUM('cash', 'card', 'wallet'), allowNull: false },
-  status: { type: DataTypes.ENUM('pending', 'success', 'failed'), allowNull: false, defaultValue: 'pending' },
+  status: { type: DataTypes.ENUM('pending', 'success', 'failed', 'refunded'), allowNull: false, defaultValue: 'pending' },
   provider_ref: { type: DataTypes.STRING, allowNull: true },
 }, {
   tableName: 'payments',

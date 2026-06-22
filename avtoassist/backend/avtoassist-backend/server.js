@@ -57,6 +57,7 @@ async function start() {
     console.log(`✅ Ma'lumotlar bazasiga ulanish muvaffaqiyatli (${process.env.DB_DIALECT || 'sqlite'})`);
     await sequelize.sync({ alter: true });
     console.log('✅ Jadvallar tayyor');
+    require('./src/services/orderTimeoutService').start(io);
     server.listen(PORT, () => {
       console.log(`\u{1F680} AvtoAssist API http://localhost:${PORT} portida ishga tushdi`);
       console.log(`   Sog'liqni tekshirish: http://localhost:${PORT}/health`);

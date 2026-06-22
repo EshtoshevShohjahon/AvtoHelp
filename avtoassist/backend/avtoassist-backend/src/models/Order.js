@@ -24,6 +24,7 @@ const Order = sequelize.define('Order', {
   price: { type: DataTypes.FLOAT, allowNull: true },
   cancel_reason: { type: DataTypes.STRING, allowNull: true },
   completed_at: { type: DataTypes.DATE, allowNull: true },
+  accepted_at: { type: DataTypes.DATE, allowNull: true },
 }, {
   tableName: 'orders',
   timestamps: true,
