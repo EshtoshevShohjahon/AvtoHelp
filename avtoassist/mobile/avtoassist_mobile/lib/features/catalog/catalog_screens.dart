@@ -39,8 +39,10 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
       final list = (res.data['stores'] as List)
           .map((e) => PartsStoreModel.fromJson(e))
           .toList();
+      if (!mounted) return;
       setState(() { _stores = list; _loading = false; });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _error = e.toString(); _loading = false; });
     }
   }
@@ -151,8 +153,10 @@ class _WorkshopsScreenState extends ConsumerState<WorkshopsScreen> {
       final list = (res.data['workshops'] as List)
           .map((e) => WorkshopModel.fromJson(e))
           .toList();
+      if (!mounted) return;
       setState(() { _workshops = list; _loading = false; });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _error = e.toString(); _loading = false; });
     }
   }

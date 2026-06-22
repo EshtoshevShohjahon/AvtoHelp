@@ -33,8 +33,10 @@ class _VehiclesScreenState extends ConsumerState<VehiclesScreen> {
       final list = (res.data['vehicles'] as List)
           .map((e) => VehicleModel.fromJson(e))
           .toList();
+      if (!mounted) return;
       setState(() { _vehicles = list; _loading = false; });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _error = e.toString(); _loading = false; });
     }
   }
@@ -180,11 +182,13 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
       final api = ref.read(apiClientProvider);
       final res = await api.get('/users/me/vehicles/lookup',
           query: {'tech_passport': tp});
+      if (!mounted) return;
       setState(() {
         _found = VehicleModel.fromJson(res.data['vehicle']);
         _looking = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _looking = false;
         _error = AppLocalizations(context).vehicleNotFound;
@@ -202,6 +206,7 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (e) {
+      if (!mounted) return;
       setState(() { _saving = false; _error = e.toString(); });
     }
   }

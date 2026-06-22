@@ -98,6 +98,7 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
       final res =
           await api.get('/users/me/vehicles/${widget.vehicleId}/service-records');
       final data = res.data;
+      if (!mounted) return;
       setState(() {
         _records = (data['records'] as List)
             .map((e) => ServiceRecordModel.fromJson(e))
@@ -109,6 +110,7 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
         _loading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _loading = false; _error = e.toString(); });
     }
   }
@@ -540,18 +542,6 @@ class _ServiceRecordCard extends StatelessWidget {
     }[t] ?? Icons.build_outlined;
   }
 
-  String _typeLabel(String t) {
-    return const {
-      'oil_change': 'Moy almashtirish',
-      'inspection': 'Tex ko\'rik',
-      'tire': 'Shina',
-      'brake': 'Tormoz',
-      'engine': 'Dvigatel',
-      'battery': 'Akkumulyator',
-      'transmission': 'Karobka',
-      'other': 'Boshqa',
-    }[t] ?? 'Boshqa';
-  }
 }
 
 // ─── Yangi yozuv qo'shish ────────────────────────────────────────────────────
@@ -635,12 +625,11 @@ class _AddServiceRecordScreenState
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+      );
     }
   }
 
@@ -820,7 +809,7 @@ class _AddServiceRecordScreenState
                         height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: AppColors.asphalt))
-                    : const Text('Saqlash'),
+                    : Text(AppLocalizations(context).save),
               ),
             ),
             const SizedBox(height: 20),

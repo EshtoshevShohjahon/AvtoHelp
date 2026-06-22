@@ -35,6 +35,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       final api = ref.read(apiClientProvider);
       final res = await api.get('/providers/vehicle-lookup',
           query: {'tech_passport': tp});
+      if (!mounted) return;
       setState(() {
         _foundVehicle = res.data['vehicle'];
         _records = res.data['records'] ?? [];
@@ -42,6 +43,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
         _searching = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _searching = false;
         _error = e.toString().contains('404')
@@ -503,12 +505,11 @@ class _ProviderAddRecordScreenState
       );
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: AppColors.danger));
-      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.danger));
     }
   }
 
