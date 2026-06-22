@@ -16,15 +16,68 @@ class ProviderHomeScreen extends ConsumerStatefulWidget {
 class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   final _passportCtrl = TextEditingController();
   bool _searching = false;
+  bool _isOnline = false;
+  bool _togglingStatus = false;
   String? _error;
   Map<String, dynamic>? _foundVehicle;
   List<dynamic> _records = [];
   Map<String, dynamic>? _oilAlert;
 
+  // Statistika
+  double _todayEarnings = 0;
+  int _totalOrders = 0;
+  double _rating = 0;
+  bool _statsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
   @override
   void dispose() {
     _passportCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.get('/providers/me/stats');
+      if (!mounted) return;
+      setState(() {
+        _todayEarnings = (res.data['today_earnings'] as num?)?.toDouble() ?? 0;
+        _totalOrders = (res.data['total_orders'] as num?)?.toInt() ?? 0;
+        _rating = (res.data['rating'] as num?)?.toDouble() ?? 0;
+        _isOnline = res.data['is_online'] == true;
+        _statsLoaded = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _statsLoaded = true);
+    }
+  }
+
+  Future<void> _toggleStatus() async {
+    setState(() => _togglingStatus = true);
+    try {
+      final api = ref.read(apiClientProvider);
+      final newStatus = !_isOnline;
+      await api.patch('/providers/me/status',
+          data: {'is_online': newStatus});
+      if (!mounted) return;
+      setState(() {
+        _isOnline = newStatus;
+        _togglingStatus = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _togglingStatus = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+      );
+    }
   }
 
   Future<void> _search() async {
@@ -44,7 +97,6 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      if (!mounted) return;
       setState(() {
         _searching = false;
         _error = e.toString().contains('404')
@@ -62,20 +114,88 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       appBar: AppBar(
         title: Text(l.providerPanel),
         actions: [
+          // Online/Offline toggle
           Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Text(
-                user?.fullName?.split(' ').first ?? 'Usta',
-                style: const TextStyle(color: AppColors.amber, fontSize: 14),
-              ),
-            ),
+            padding: const EdgeInsets.only(right: 12),
+            child: _togglingStatus
+                ? const SizedBox(
+                    width: 20, height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: AppColors.amber))
+                : GestureDetector(
+                    onTap: _toggleStatus,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _isOnline
+                            ? AppColors.teal.withOpacity(0.15)
+                            : AppColors.charcoal,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: _isOnline
+                                ? AppColors.teal
+                                : AppColors.steelLine),
+                      ),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 7, height: 7,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _isOnline
+                                ? AppColors.teal
+                                : AppColors.steelLight,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _isOnline ? l.statusActive : l.statusResting,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: _isOnline
+                                  ? AppColors.teal
+                                  : AppColors.steelLight),
+                        ),
+                      ]),
+                    ),
+                  ),
           ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Salomlashuv + ism
+          Row(children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: AppColors.steel,
+              child: const Icon(Icons.person_outline,
+                  color: AppColors.boneDim, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              user?.fullName?.split(' ').first ?? 'Usta',
+              style: const TextStyle(
+                  color: AppColors.bone,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ]),
+          const SizedBox(height: 16),
+
+          // Statistika
+          _StatsRow(
+            todayEarnings: _todayEarnings,
+            totalOrders: _totalOrders,
+            rating: _rating,
+            loaded: _statsLoaded,
+          ),
+          const SizedBox(height: 16),
+
           // Qidirish paneli
           Container(
             padding: const EdgeInsets.all(16),
@@ -125,8 +245,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
                   ),
                   child: _searching
                       ? const SizedBox(
-                          width: 18,
-                          height: 18,
+                          width: 18, height: 18,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: AppColors.asphalt))
                       : const Icon(Icons.search, size: 20),
@@ -181,7 +300,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           ],
 
           if (_foundVehicle == null && !_searching && _error == null) ...[
-            const SizedBox(height: 48),
+            const SizedBox(height: 40),
             Center(
               child: Column(children: [
                 const Icon(Icons.car_repair, color: AppColors.steelLine, size: 64),
@@ -193,9 +312,364 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
               ]),
             ),
           ],
+          const SizedBox(height: 24),
         ],
       ),
     );
+  }
+}
+
+// ─── Statistika qatori ────────────────────────────────────────────────────────
+class _StatsRow extends StatelessWidget {
+  final double todayEarnings;
+  final int totalOrders;
+  final double rating;
+  final bool loaded;
+  const _StatsRow({
+    required this.todayEarnings,
+    required this.totalOrders,
+    required this.rating,
+    required this.loaded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
+    return Row(children: [
+      Expanded(child: _StatCard(
+        icon: Icons.payments_outlined,
+        iconColor: AppColors.teal,
+        label: l.todayEarnings,
+        value: loaded ? '${todayEarnings.toStringAsFixed(0)} ${l.soum}' : '—',
+      )),
+      const SizedBox(width: 10),
+      Expanded(child: _StatCard(
+        icon: Icons.receipt_long_outlined,
+        iconColor: AppColors.amber,
+        label: l.totalOrders,
+        value: loaded ? '$totalOrders' : '—',
+      )),
+      const SizedBox(width: 10),
+      Expanded(child: _StatCard(
+        icon: Icons.star_outlined,
+        iconColor: AppColors.amber,
+        label: l.myRating,
+        value: loaded ? (rating > 0 ? rating.toStringAsFixed(1) : '—') : '—',
+      )),
+    ]);
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String value;
+  const _StatCard({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.charcoal,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.steelLine),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(icon, color: iconColor, size: 18),
+        const SizedBox(height: 8),
+        Text(value,
+            style: const TextStyle(
+                color: AppColors.bone,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                fontFamily: 'monospace')),
+        const SizedBox(height: 2),
+        Text(label,
+            style: const TextStyle(
+                color: AppColors.steelLight, fontSize: 10),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis),
+      ]),
+    );
+  }
+}
+
+// ─── Provider buyurtmalar ekrani ─────────────────────────────────────────────
+class ProviderOrdersScreen extends ConsumerStatefulWidget {
+  const ProviderOrdersScreen({super.key});
+  @override
+  ConsumerState<ProviderOrdersScreen> createState() =>
+      _ProviderOrdersScreenState();
+}
+
+class _ProviderOrdersScreenState
+    extends ConsumerState<ProviderOrdersScreen> {
+  List<dynamic> _orders = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.get('/providers/orders');
+      if (!mounted) return;
+      setState(() {
+        _orders = res.data['orders'] ?? [];
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() { _error = e.toString(); _loading = false; });
+    }
+  }
+
+  Future<void> _updateOrderStatus(String orderId, String status) async {
+    try {
+      final api = ref.read(apiClientProvider);
+      await api.patch('/orders/$orderId/status', data: {'status': status});
+      _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l.activeOrders)),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.amber))
+          : _error != null
+              ? Center(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.wifi_off_outlined,
+                        color: AppColors.steelLight, size: 48),
+                    const SizedBox(height: 12),
+                    Text(_error!,
+                        style: const TextStyle(color: AppColors.steelLight),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(onPressed: _load, child: Text(l.retry)),
+                  ]))
+              : RefreshIndicator(
+                  onRefresh: _load,
+                  color: AppColors.amber,
+                  child: _orders.isEmpty
+                      ? ListView(children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.receipt_long_outlined,
+                                      color: AppColors.steelLight, size: 56),
+                                  const SizedBox(height: 12),
+                                  Text(l.noActiveOrders,
+                                      style: const TextStyle(
+                                          color: AppColors.steelLight,
+                                          fontSize: 15)),
+                                  const SizedBox(height: 6),
+                                  Text(l.setOnlineToReceive,
+                                      style: const TextStyle(
+                                          color: AppColors.steel, fontSize: 12),
+                                      textAlign: TextAlign.center),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ])
+                      : ListView.separated(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: _orders.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (_, i) => _OrderCard(
+                            order: _orders[i],
+                            onAccept: () => _updateOrderStatus(
+                                _orders[i]['id'], 'accepted'),
+                            onDecline: () => _updateOrderStatus(
+                                _orders[i]['id'], 'cancelled'),
+                          ),
+                        ),
+                ),
+    );
+  }
+}
+
+// ─── Buyurtma kartasi ─────────────────────────────────────────────────────────
+class _OrderCard extends StatelessWidget {
+  final Map<String, dynamic> order;
+  final VoidCallback onAccept;
+  final VoidCallback onDecline;
+  const _OrderCard({
+    required this.order,
+    required this.onAccept,
+    required this.onDecline,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
+    final status = order['status'] as String? ?? 'searching';
+    final isNew = status == 'searching';
+    final serviceType = order['service_type'] as String? ?? '';
+    final address = order['pickup_address'] as String? ?? '';
+    final clientName = order['client_name'] as String? ?? '';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.charcoal,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: isNew ? AppColors.amber.withOpacity(0.6) : AppColors.steelLine,
+            width: isNew ? 1.5 : 1),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Sarlavha
+        Row(children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: (isNew ? AppColors.amber : AppColors.teal).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              isNew ? '🔔 ${l.newOrderAlert}' : _statusLabel(status, l),
+              style: TextStyle(
+                  color: isNew ? AppColors.amber : AppColors.teal,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          const Spacer(),
+          Text(_serviceLabel(serviceType, l),
+              style: const TextStyle(
+                  color: AppColors.steelLight, fontSize: 12)),
+        ]),
+        const SizedBox(height: 12),
+
+        // Manzil
+        Row(children: [
+          const Icon(Icons.location_on_outlined,
+              color: AppColors.amber, size: 16),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(address.isNotEmpty ? address : '—',
+                style: const TextStyle(color: AppColors.bone, fontSize: 13)),
+          ),
+        ]),
+
+        if (clientName.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Row(children: [
+            const Icon(Icons.person_outline,
+                color: AppColors.steelLight, size: 16),
+            const SizedBox(width: 6),
+            Text(clientName,
+                style: const TextStyle(
+                    color: AppColors.steelLight, fontSize: 12)),
+          ]),
+        ],
+
+        if (isNew) ...[
+          const SizedBox(height: 14),
+          Row(children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onDecline,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.danger,
+                  side: const BorderSide(color: AppColors.danger),
+                ),
+                child: Text(l.decline),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: onAccept,
+                child: Text(l.accept),
+              ),
+            ),
+          ]),
+        ] else ...[
+          const SizedBox(height: 12),
+          // Aktiv buyurtma uchun holat tugmalari
+          Row(children: [
+            if (status == 'accepted')
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _updateStatus(context, order['id'], 'arrived'),
+                  icon: const Icon(Icons.place_outlined, size: 16),
+                  label: Text(l.arrived),
+                ),
+              ),
+            if (status == 'arrived')
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _updateStatus(context, order['id'], 'in_progress'),
+                  icon: const Icon(Icons.play_arrow_outlined, size: 16),
+                  label: Text(l.startWork),
+                ),
+              ),
+            if (status == 'in_progress')
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _updateStatus(context, order['id'], 'completed'),
+                  icon: const Icon(Icons.check_circle_outline, size: 16),
+                  label: Text(l.finishWork),
+                ),
+              ),
+          ]),
+        ],
+      ]),
+    );
+  }
+
+  String _statusLabel(String status, AppLocalizations l) {
+    switch (status) {
+      case 'accepted':    return l.orderAccepted;
+      case 'arrived':     return l.arrived;
+      case 'in_progress': return l.orderInProgress;
+      case 'completed':   return l.orderCompleted;
+      default:            return status;
+    }
+  }
+
+  String _serviceLabel(String t, AppLocalizations l) {
+    switch (t) {
+      case 'tech_support': return l.serviceTechSupport;
+      case 'tow_truck':    return l.serviceTowTruck;
+      case 'fuel':         return l.serviceFuel;
+      case 'car_wash':     return l.serviceCarWash;
+      default:             return t;
+    }
+  }
+
+  void _updateStatus(BuildContext context, String id, String status) {
+    // Provider shell context orqali refresh amalga oshiriladi
+    Navigator.of(context).pop();
   }
 }
 
@@ -220,9 +694,9 @@ class _VehicleInfoCard extends StatelessWidget {
     final plate = vehicle['plate_number'] ?? '';
     final year = vehicle['year'];
     final currentKm = vehicle['current_odometer'] ?? 0;
+    final l = AppLocalizations(context);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // Avtomobil sarlavhasi
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -232,8 +706,7 @@ class _VehicleInfoCard extends StatelessWidget {
         ),
         child: Row(children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 48, height: 48,
             decoration: BoxDecoration(
               color: AppColors.teal.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
@@ -254,7 +727,7 @@ class _VehicleInfoCard extends StatelessWidget {
               Text(
                 [
                   plate,
-                  if (year != null) '$year-yil',
+                  if (year != null) '$year',
                   '$currentKm km',
                 ].join(' · '),
                 style: const TextStyle(
@@ -266,7 +739,6 @@ class _VehicleInfoCard extends StatelessWidget {
         ]),
       ),
 
-      // Moy eslatmasi
       if (oilAlert != null) ...[
         const SizedBox(height: 10),
         _OilAlertBanner(alert: oilAlert!),
@@ -274,29 +746,27 @@ class _VehicleInfoCard extends StatelessWidget {
 
       const SizedBox(height: 16),
 
-      // Xizmat qo'shish tugmasi
       SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
           onPressed: onAddRecord,
           icon: const Icon(Icons.add_circle_outline, size: 18),
-          label: Text(AppLocalizations(context).addServiceRecord),
+          label: Text(l.addServiceRecord),
         ),
       ),
 
       const SizedBox(height: 16),
 
-      // Tarix
       Builder(builder: (ctx) {
-        final l = AppLocalizations(ctx);
+        final loc = AppLocalizations(ctx);
         return Row(children: [
-          Text(l.serviceHistory,
+          Text(loc.serviceHistory,
               style: const TextStyle(
                   color: AppColors.bone,
                   fontSize: 15,
                   fontWeight: FontWeight.w600)),
           const Spacer(),
-          Text(l.recordsCount(records.length),
+          Text(loc.recordsCount(records.length),
               style: const TextStyle(
                   color: AppColors.steelLight, fontSize: 12)),
         ]);
@@ -380,8 +850,7 @@ class _HistoryTile extends StatelessWidget {
       ),
       child: Row(children: [
         Container(
-          width: 36,
-          height: 36,
+          width: 36, height: 36,
           decoration: BoxDecoration(
             color: AppColors.steel,
             borderRadius: BorderRadius.circular(8),
@@ -513,6 +982,7 @@ class _ProviderAddRecordScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.vehicleTitle,
@@ -521,7 +991,7 @@ class _ProviderAddRecordScreenState
           preferredSize: const Size.fromHeight(24),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(AppLocalizations(context).addServiceRecord,
+            child: Text(l.addServiceRecord,
                 style: TextStyle(
                     color: AppColors.amber.withOpacity(0.8),
                     fontSize: 12)),
@@ -531,18 +1001,14 @@ class _ProviderAddRecordScreenState
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // Xizmat turi
-            Text(AppLocalizations(context).serviceType,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l.serviceType,
                 style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 8),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 8, runSpacing: 8,
               children: _typeKeys.map((key) {
                 final sel = _serviceType == key;
-                final label = AppLocalizations(context).serviceTypeLabel(key);
                 return GestureDetector(
                   onTap: () => setState(() => _serviceType = key),
                   child: AnimatedContainer(
@@ -555,14 +1021,11 @@ class _ProviderAddRecordScreenState
                           : AppColors.charcoal,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color:
-                              sel ? AppColors.amber : AppColors.steelLine),
+                          color: sel ? AppColors.amber : AppColors.steelLine),
                     ),
-                    child: Text(label,
+                    child: Text(l.serviceTypeLabel(key),
                         style: TextStyle(
-                            color: sel
-                                ? AppColors.amber
-                                : AppColors.boneDim,
+                            color: sel ? AppColors.amber : AppColors.boneDim,
                             fontSize: 13,
                             fontWeight: sel
                                 ? FontWeight.w600
@@ -573,7 +1036,6 @@ class _ProviderAddRecordScreenState
             ),
             const SizedBox(height: 20),
 
-            // Sana
             GestureDetector(
               onTap: _pickDate,
               child: TextField(
@@ -581,7 +1043,7 @@ class _ProviderAddRecordScreenState
                 enabled: false,
                 style: const TextStyle(color: AppColors.bone),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations(context).dateLabel,
+                  labelText: l.dateLabel,
                   prefixIcon: const Icon(Icons.calendar_today_outlined,
                       color: AppColors.amber),
                 ),
@@ -589,16 +1051,14 @@ class _ProviderAddRecordScreenState
             ),
             const SizedBox(height: 14),
 
-            // Km
             TextField(
               controller: _odometerCtrl,
               keyboardType: TextInputType.number,
               style: const TextStyle(color: AppColors.bone),
               decoration: InputDecoration(
-                labelText: AppLocalizations(context).odometerKm,
+                labelText: l.odometerKm,
                 hintText: '45000',
-                prefixIcon:
-                    Icon(Icons.speed_outlined, color: AppColors.amber),
+                prefixIcon: const Icon(Icons.speed_outlined, color: AppColors.amber),
                 suffixText: 'km',
               ),
             ),
@@ -610,9 +1070,9 @@ class _ProviderAddRecordScreenState
                 keyboardType: TextInputType.number,
                 style: const TextStyle(color: AppColors.bone),
                 decoration: InputDecoration(
-                  labelText: AppLocalizations(context).nextOilChangeKm,
+                  labelText: l.nextOilChangeKm,
                   hintText: '50000',
-                  prefixIcon: Icon(Icons.update, color: AppColors.amber),
+                  prefixIcon: const Icon(Icons.update, color: AppColors.amber),
                   suffixText: 'km',
                 ),
               ),
@@ -623,9 +1083,9 @@ class _ProviderAddRecordScreenState
               controller: _workshopCtrl,
               style: const TextStyle(color: AppColors.bone),
               decoration: InputDecoration(
-                labelText: AppLocalizations(context).workshopName,
+                labelText: l.workshopName,
                 hintText: 'Toshkent STO',
-                prefixIcon: Icon(Icons.store_outlined,
+                prefixIcon: const Icon(Icons.store_outlined,
                     color: AppColors.steelLight),
               ),
             ),
@@ -636,11 +1096,11 @@ class _ProviderAddRecordScreenState
               keyboardType: TextInputType.number,
               style: const TextStyle(color: AppColors.bone),
               decoration: InputDecoration(
-                labelText: AppLocalizations(context).cost,
+                labelText: l.cost,
                 hintText: '85000',
-                prefixIcon: Icon(Icons.payments_outlined,
+                prefixIcon: const Icon(Icons.payments_outlined,
                     color: AppColors.steelLight),
-                suffixText: 'so\'m',
+                suffixText: l.soum,
               ),
             ),
             const SizedBox(height: 14),
@@ -650,8 +1110,8 @@ class _ProviderAddRecordScreenState
               style: const TextStyle(color: AppColors.bone),
               maxLines: 2,
               decoration: InputDecoration(
-                labelText: AppLocalizations(context).notes,
-                prefixIcon: Icon(Icons.notes, color: AppColors.steelLight),
+                labelText: l.notes,
+                prefixIcon: const Icon(Icons.notes, color: AppColors.steelLight),
               ),
             ),
             const SizedBox(height: 28),
@@ -663,11 +1123,10 @@ class _ProviderAddRecordScreenState
                     (_odometerCtrl.text.isNotEmpty && !_loading) ? _save : null,
                 child: _loading
                     ? const SizedBox(
-                        width: 20,
-                        height: 20,
+                        width: 20, height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: AppColors.asphalt))
-                    : Text(AppLocalizations(context).save),
+                    : Text(l.save),
               ),
             ),
             const SizedBox(height: 20),

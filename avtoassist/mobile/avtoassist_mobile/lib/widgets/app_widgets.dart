@@ -372,6 +372,17 @@ class AppLocalizations {
     'Vehicle not found. Please verify the tech passport number.',
   );
 
+  // ─── Provider buyurtmalar ──────────────────────────────────
+  String get activeOrders => _s("Faol buyurtmalar", 'Активные заказы', 'Фаол буюртмалар', 'Active orders');
+  String get noActiveOrders => _s("Hozircha buyurtma yo'q", 'Заказов пока нет', 'Ҳозирча буюртма йўқ', 'No orders yet');
+  String get setOnlineToReceive => _s("Buyurtma olish uchun «Faol» holatiga o'ting", 'Перейдите в режим «Онлайн» для получения заказов', 'Буюртма олиш учун «Фаол» ҳолатига ўтинг', 'Go online to receive orders');
+  String get orderFrom => _s("Buyurtma:", 'Заказ:', 'Буюртма:', 'Order:');
+  String get todayStats => _s("Bugungi ko'rsatkichlar", 'Показатели сегодня', 'Бугунги кўрсаткичлар', "Today's stats");
+  String get statusActive => _s('Faol', 'Онлайн', 'Фаол', 'Online');
+  String get statusResting => _s('Dam olmoqda', 'Офлайн', 'Дам олмоқда', 'Offline');
+  String get toggleOnline => _s("Faolga o'tish", 'Перейти онлайн', 'Фаолга ўтиш', 'Go online');
+  String get toggleOffline => _s("Dam olishga o'tish", 'Перейти офлайн', 'Дам олишга ўтиш', 'Go offline');
+
   // ─── Xizmat turlari ────────────────────────────────────────
   String serviceTypeLabel(String t) {
     switch (t) {

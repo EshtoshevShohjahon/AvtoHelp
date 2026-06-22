@@ -12,7 +12,8 @@ import 'features/auth/auth_provider.dart';
 import 'features/auth/phone_screen.dart';
 import 'features/auth/otp_screen.dart';
 import 'features/auth/onboarding_screen.dart';
-import 'features/provider/provider_home_screen.dart';
+import 'features/provider/provider_home_screen.dart'
+    show ProviderHomeScreen, ProviderOrdersScreen;
 import 'features/home/home_screen.dart';
 import 'features/vehicles/vehicles_screen.dart';
 import 'features/orders/new_order_screen.dart';
@@ -111,9 +112,22 @@ final _router = GoRouter(
       path: '/catalog/workshops',
       builder: (_, __) => const WorkshopsScreen(),
     ),
-    GoRoute(
-      path: '/provider/home',
-      builder: (_, __) => const ProviderHomeScreen(),
+    ShellRoute(
+      builder: (context, state, child) => _ProviderShell(child: child),
+      routes: [
+        GoRoute(
+          path: '/provider/home',
+          builder: (_, __) => const ProviderHomeScreen(),
+        ),
+        GoRoute(
+          path: '/provider/orders',
+          builder: (_, __) => const ProviderOrdersScreen(),
+        ),
+        GoRoute(
+          path: '/provider/profile',
+          builder: (_, __) => const _ProfileScreen(),
+        ),
+      ],
     ),
   ],
 );
@@ -195,6 +209,54 @@ class _MainShell extends ConsumerWidget {
             case 0: context.go('/home');
             case 1: context.go('/my-orders');
             case 2: context.go('/profile');
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home_rounded),
+            label: l.home,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.receipt_long_outlined),
+            activeIcon: const Icon(Icons.receipt_long),
+            label: l.orders,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person_outline_rounded),
+            activeIcon: const Icon(Icons.person_rounded),
+            label: l.profile,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Provider shell ──────────────────────────────────────────────────────────
+class _ProviderShell extends ConsumerWidget {
+  final Widget child;
+  const _ProviderShell({required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final location = GoRouterState.of(context).matchedLocation;
+    final index = switch (location) {
+      '/provider/home'    => 0,
+      '/provider/orders'  => 1,
+      '/provider/profile' => 2,
+      _                   => 0,
+    };
+    final l = AppLocalizations(context);
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index,
+        onTap: (i) {
+          switch (i) {
+            case 0: context.go('/provider/home');
+            case 1: context.go('/provider/orders');
+            case 2: context.go('/provider/profile');
           }
         },
         items: [
