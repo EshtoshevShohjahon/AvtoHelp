@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/app_widgets.dart';
 import 'auth_provider.dart';
+import 'otp_screen.dart';
 
 class PhoneScreen extends ConsumerStatefulWidget {
   const PhoneScreen({super.key});
@@ -35,7 +36,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     }
     final err = ref.read(authProvider).error;
     if (err == null) {
-      context.push('/auth/otp', extra: {'phone': phone, 'register': register});
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => OtpScreen(phone: phone, register: register),
+      ));
     }
   }
 
