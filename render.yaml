@@ -4,14 +4,12 @@
 # Foydalanish:
 #   1. render.com -> New -> Blueprint
 #   2. GitHub repo: EshtoshevShohjahon/avtohelp ni ulang
-#   3. Render shu faylni avtomatik o'qiydi va hammasini yaratadi
+#   3. Render shu faylni avtomatik o'qiydi va web servisni yaratadi
 #
-# Web servis + bepul PostgreSQL bazasi avtomatik bog'lanadi.
-
-databases:
-  - name: avtoassist-db
-    databaseName: avtoassist
-    plan: free
+# Eslatma: Render bepul rejada faqat 1 ta bepul Postgres'ga ruxsat beradi.
+# Shu sabab bu yerda yangi baza YARATILMAYDI. DATABASE_URL ni qo'lda kiritasiz:
+#   - mavjud Render bazangizning "Internal Database URL" satrini, YOKI
+#   - bepul Neon (neon.tech) Postgres ulanish satrini (tavsiya etiladi)
 
 services:
   - type: web
@@ -30,11 +28,9 @@ services:
         value: postgres
       - key: DB_SSL
         value: "true"
-      # Postgres ulanish satri avtomatik bog'lanadi
+      # Deploy paytida Render bu qiymatni so'raydi — Postgres ulanish satrini kiriting
       - key: DATABASE_URL
-        fromDatabase:
-          name: avtoassist-db
-          property: connectionString
+        sync: false
       # JWT kaliti avtomatik xavfsiz yaratiladi
       - key: JWT_SECRET
         generateValue: true
