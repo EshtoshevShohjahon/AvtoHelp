@@ -55,7 +55,7 @@ async function start() {
   try {
     await sequelize.authenticate();
     console.log(`✅ Ma'lumotlar bazasiga ulanish muvaffaqiyatli (${process.env.DB_DIALECT || 'sqlite'})`);
-    await sequelize.sync({ alter: process.env.NODE_ENV !== 'production' });
+    await sequelize.sync({ alter: true });
     console.log('✅ Jadvallar tayyor');
     server.listen(PORT, () => {
       console.log(`\u{1F680} AvtoAssist API http://localhost:${PORT} portida ishga tushdi`);

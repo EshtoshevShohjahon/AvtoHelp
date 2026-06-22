@@ -36,7 +36,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     }
     final err = ref.read(authProvider).error;
     if (err == null) {
-      context.go('/auth/otp', extra: phone);
+      context.push('/auth/otp', extra: phone);
     }
   }
 
