@@ -19,7 +19,7 @@ class AppLocalizations {
     return uz;
   }
 
-  String get appName => 'AvtoAssist';
+  String get appName => 'AvtoHelp';
   String get welcome =>
       _s('Xush kelibsiz!', 'Добро пожаловать!', 'Хуш келибсиз!', 'Welcome!');
   String get continueBtn =>
@@ -448,7 +448,7 @@ class AppLogo extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         const Text(
-          'AvtoAssist',
+          'AvtoHelp',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

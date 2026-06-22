@@ -218,7 +218,7 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                             TileLayer(
                               urlTemplate:
                                   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'uz.avtoassist.app',
+                              userAgentPackageName: 'uz.avtohelp.app',
                             ),
                             MarkerLayer(markers: [
                               Marker(

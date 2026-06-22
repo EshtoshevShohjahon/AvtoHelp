@@ -27,7 +27,7 @@ void main() async {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
   ));
-  runApp(const ProviderScope(child: AvtoAssistApp()));
+  runApp(const ProviderScope(child: AvtoHelpApp()));
 }
 
 // ─── Router ───────────────────────────────────────────────
@@ -133,8 +133,8 @@ final _router = GoRouter(
 );
 
 // ─── App ─────────────────────────────────────────────────
-class AvtoAssistApp extends ConsumerWidget {
-  const AvtoAssistApp({super.key});
+class AvtoHelpApp extends ConsumerWidget {
+  const AvtoHelpApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -150,7 +150,7 @@ class AvtoAssistApp extends ConsumerWidget {
     });
 
     return MaterialApp.router(
-      title: 'AvtoAssist',
+      title: 'AvtoHelp',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       locale: locale,

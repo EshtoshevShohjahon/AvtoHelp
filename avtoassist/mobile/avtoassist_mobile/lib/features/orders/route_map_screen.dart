@@ -164,7 +164,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                       TileLayer(
                         urlTemplate:
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'uz.avtoassist.app',
+                        userAgentPackageName: 'uz.avtohelp.app',
                       ),
                       if (_routePoints.isNotEmpty)
                         PolylineLayer(polylines: [

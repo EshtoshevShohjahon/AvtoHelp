@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace "com.avtoassist.avtoassist_mobile"
+    namespace "com.avtohelp.app"
     compileSdk 36
     ndkVersion "27.0.12077973"
 
@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.avtoassist.avtoassist_mobile"
+        applicationId "com.avtohelp.app"
         minSdk 21
         targetSdk 36
         versionCode flutter.versionCode
