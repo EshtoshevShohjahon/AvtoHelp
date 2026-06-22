@@ -355,7 +355,6 @@ class AppLocalizations {
   String get dateLabel => _s('Sana', 'Дата', 'Сана', 'Date');
   String get odometerKm => _s('Hozirgi km (odometr)', 'Пробег (одометр, км)', 'Ҳозирги км (одометр)', 'Current km (odometer)');
   String nextOilAt(int km) => _s('Keyingi moy: $km km da', 'След. замена масла: $km км', 'Кейинги мой: $km км да', 'Next oil change: $km km');
-  String get locating => _s('Aniqlanmoqda...', 'Определяем...', 'Аниқланмоқда...', 'Locating...');
   String get minutes => _s('DAQIQA', 'МИН', 'ДАҚИҚА', 'MIN');
   String get noInternet2 => _s("Hali buyurtmalar yo'q", 'Заказов пока нет', 'Ҳали буюртмалар йўқ', 'No orders yet');
 
