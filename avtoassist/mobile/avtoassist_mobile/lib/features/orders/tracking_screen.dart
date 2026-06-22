@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../core/models/models.dart';
@@ -100,22 +102,34 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
 
     return Scaffold(
       body: Stack(children: [
-        // Xarita foni
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.asphalt,
-            image: DecorationImage(
-              image: const AssetImage('assets/map_bg.png'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                  AppColors.asphalt.withOpacity(0.7), BlendMode.darken),
-              onError: (_, __) {},
-            ),
-          ),
+        // Haqiqiy xarita (OpenStreetMap)
+        Positioned.fill(
+          child: _order != null
+              ? FlutterMap(
+                  options: MapOptions(
+                    initialCenter:
+                        LatLng(_order!.pickupLat, _order!.pickupLng),
+                    initialZoom: 15,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'uz.avtoassist.app',
+                    ),
+                    MarkerLayer(markers: [
+                      Marker(
+                        point: LatLng(_order!.pickupLat, _order!.pickupLng),
+                        width: 44,
+                        height: 44,
+                        child: const Icon(Icons.location_on,
+                            color: AppColors.amber, size: 44),
+                      ),
+                    ]),
+                  ],
+                )
+              : Container(color: AppColors.asphalt),
         ),
-
-        // Grid chiziqlar (xarita o'rnida)
-        CustomPaint(painter: _GridPainter(), child: const SizedBox.expand()),
 
         // Orqaga tugmasi
         Positioned(
@@ -260,25 +274,6 @@ class _RadarWidget extends StatelessWidget {
       ]),
     );
   }
-}
-
-// Xarita grid chiziqlar
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.steelLine.withOpacity(0.4)
-      ..strokeWidth = 0.5;
-    const step = 26.0;
-    for (double x = 0; x < size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-  @override
-  bool shouldRepaint(_) => false;
 }
 
 // Pastki karta (provider ma'lumotlari + qo'ng'iroq/chat)

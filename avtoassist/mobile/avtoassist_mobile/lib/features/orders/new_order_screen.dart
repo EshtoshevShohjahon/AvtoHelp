@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../widgets/app_widgets.dart';
@@ -194,8 +196,43 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                       ),
                     ]),
                   ),
+                  if (_lat != null && _lng != null) ...[
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: SizedBox(
+                        height: 180,
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter: LatLng(_lat!, _lng!),
+                            initialZoom: 15,
+                            interactionOptions: const InteractionOptions(
+                              flags: InteractiveFlag.pinchZoom |
+                                  InteractiveFlag.drag,
+                            ),
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'uz.avtoassist.app',
+                            ),
+                            MarkerLayer(markers: [
+                              Marker(
+                                point: LatLng(_lat!, _lng!),
+                                width: 40,
+                                height: 40,
+                                child: const Icon(Icons.location_on,
+                                    color: AppColors.amber, size: 40),
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
-                  if (widget.serviceType == 'tow_truck') ...[  
+                  if (widget.serviceType == 'tow_truck') ...[
                     _SectionLabel(l.destinationLocation),
                     const SizedBox(height: 8),
                     TextField(
