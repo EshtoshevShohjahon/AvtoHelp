@@ -200,6 +200,12 @@ class AppLocalizations {
           'Тўлов муваффақиятсиз');
   String get myVehicles =>
       _s('Avtomobillarim', 'Мои авто', 'Автомобилларим');
+  String get myVehiclesDesc =>
+      _s('Texnik ko\'rik tarixi va moy eslatmasi',
+          'История ТО и напоминание о масле',
+          'Техник кўрик тарихи ва мой эслатмаси');
+  String get services =>
+      _s('XIZMATLAR', 'УСЛУГИ', 'ХИЗМАТЛАР');
   String get addVehicle =>
       _s("Avtomobil qo'shish", 'Добавить авто',
           'Автомобил қўшиш');

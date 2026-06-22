@@ -38,7 +38,7 @@ class HomeScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Salomlashuv qatori
+                    // Salomlashuv
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -62,25 +62,53 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // Qidiruv
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 13),
-                      decoration: BoxDecoration(
-                        color: AppColors.charcoal,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.steelLine),
+                    // Avtomobillarim kartochkasi
+                    GestureDetector(
+                      onTap: () => context.push('/vehicles'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: AppColors.charcoal,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.steelLine),
+                        ),
+                        child: Row(children: [
+                          Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.amber.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.directions_car_rounded,
+                                color: AppColors.amber, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(l.myVehicles,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.bone,
+                                      fontSize: 14)),
+                              Text(l.myVehiclesDesc,
+                                  style: const TextStyle(
+                                      color: AppColors.steelLight, fontSize: 11)),
+                            ]),
+                          ),
+                          const Icon(Icons.chevron_right,
+                              color: AppColors.steelLight, size: 18),
+                        ]),
                       ),
-                      child: Row(children: [
-                        const Icon(Icons.search,
-                            color: AppColors.steelLight, size: 18),
-                        const SizedBox(width: 10),
-                        Text(l.searchHint,
-                            style: const TextStyle(
-                                color: AppColors.steelLight, fontSize: 14)),
-                      ]),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
+
+                    // Xizmatlar sarlavhasi
+                    Text(l.services,
+                        style: const TextStyle(
+                            color: AppColors.steelLight,
+                            fontSize: 12,
+                            letterSpacing: 0.5)),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -98,24 +126,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l.recentOrder,
-                        style: const TextStyle(
-                            color: AppColors.steelLight,
-                            fontSize: 12,
-                            letterSpacing: 0.5)),
-                    const SizedBox(height: 10),
-                    const _RecentOrderCard(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
       ),
@@ -180,48 +191,6 @@ class _ServiceCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _RecentOrderCard extends StatelessWidget {
-  const _RecentOrderCard();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.steelLine),
-      ),
-      child: Row(children: [
-        Container(
-          width: 10, height: 10,
-          decoration: BoxDecoration(
-            color: AppColors.teal,
-            shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: AppColors.teal.withOpacity(0.3),
-                blurRadius: 6, spreadRadius: 2)],
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Akkumulyator almashtirish',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            SizedBox(height: 2),
-            Text('Yakunlandi · 3 kun oldin',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 11)),
-          ],
-        )),
-        const Text('85 000 so\'m',
-            style: TextStyle(
-                fontFamily: 'monospace',
-                color: AppColors.teal,
-                fontSize: 12.5)),
-      ]),
     );
   }
 }
