@@ -20,6 +20,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   String? _avatarBase64;
 
   @override
+  void initState() {
+    super.initState();
+    _nameCtrl.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _nameCtrl.dispose();
     super.dispose();
