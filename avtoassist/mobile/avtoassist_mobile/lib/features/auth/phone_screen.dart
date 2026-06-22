@@ -13,7 +13,6 @@ class PhoneScreen extends ConsumerStatefulWidget {
 
 class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   final _controller = TextEditingController();
-  bool _sent = false;
 
   @override
   void dispose() {
@@ -26,6 +25,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     final debugCode = await ref.read(authProvider.notifier).sendOtp(phone);
     if (!mounted) return;
     if (debugCode != null) {
+      // Debug rejimida: kodni snackbar'da ko'rsatamiz
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Debug OTP: $debugCode'),
@@ -35,7 +35,6 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     }
     final err = ref.read(authProvider).error;
     if (err == null) {
-      setState(() => _sent = true);
       context.go('/auth/otp', extra: phone);
     }
   }
@@ -89,7 +88,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                   ),
                 ),
               ]),
-              if (auth.error != null) ...[  
+              if (auth.error != null) ...[
                 const SizedBox(height: 12),
                 Text(auth.error!,
                     style: const TextStyle(color: AppColors.danger)),

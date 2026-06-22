@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/models/models.dart';
 import '../../widgets/app_widgets.dart';
 import '../auth/auth_provider.dart';
 
@@ -39,6 +38,7 @@ class HomeScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Salomlashuv qatori
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -53,14 +53,16 @@ class HomeScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.bone)),
                         ]),
-                        const CircleAvatar(
+                        CircleAvatar(
                           backgroundColor: AppColors.steel,
-                          child: Icon(Icons.person_outline,
+                          child: const Icon(Icons.person_outline,
                               color: AppColors.boneDim),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
+
+                    // Qidiruv
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 13),
@@ -83,6 +85,8 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+
+            // Xizmatlar grid
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               sliver: SliverGrid.count(
@@ -93,6 +97,7 @@ class HomeScreen extends ConsumerWidget {
                 children: services.map((s) => _ServiceCard(service: s)).toList(),
               ),
             ),
+
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
