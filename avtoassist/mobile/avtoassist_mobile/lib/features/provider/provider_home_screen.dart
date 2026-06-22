@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../features/auth/auth_provider.dart';
 import '../../features/vehicles/vehicle_detail_screen.dart';
+import '../../features/orders/route_map_screen.dart';
 import '../../widgets/app_widgets.dart';
 
 // ─── Provider bosh ekrani ────────────────────────────────────────────────────
@@ -450,6 +452,22 @@ class _ProviderOrdersScreenState
     }
   }
 
+  Future<void> _showRoute(Map<String, dynamic> order) async {
+    final pickupLat = (order['pickup_lat'] as num?)?.toDouble();
+    final pickupLng = (order['pickup_lng'] as num?)?.toDouble();
+    if (pickupLat == null || pickupLng == null) return;
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RouteMapScreen(
+          destination: LatLng(pickupLat, pickupLng),
+          destinationLabel: order['client_name'] as String? ?? '',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations(context);
@@ -508,6 +526,9 @@ class _ProviderOrdersScreenState
                                 _orders[i]['id'], 'accepted'),
                             onDecline: () => _updateOrderStatus(
                                 _orders[i]['id'], 'cancelled'),
+                            onUpdateStatus: (s) =>
+                                _updateOrderStatus(_orders[i]['id'], s),
+                            onShowRoute: () => _showRoute(_orders[i]),
                           ),
                         ),
                 ),
@@ -520,10 +541,14 @@ class _OrderCard extends StatelessWidget {
   final Map<String, dynamic> order;
   final VoidCallback onAccept;
   final VoidCallback onDecline;
+  final void Function(String status) onUpdateStatus;
+  final VoidCallback onShowRoute;
   const _OrderCard({
     required this.order,
     required this.onAccept,
     required this.onDecline,
+    required this.onUpdateStatus,
+    required this.onShowRoute,
   });
 
   @override
@@ -615,20 +640,36 @@ class _OrderCard extends StatelessWidget {
           ]),
         ] else ...[
           const SizedBox(height: 12),
+          // Yo'nalish tugmasi (qabul qilingan va yo'lda holatlarida)
+          if (status == 'accepted' || status == 'en_route') ...[
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onShowRoute,
+                icon: const Icon(Icons.route_outlined, size: 16),
+                label: Text(l.showRoute),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.teal,
+                  side: const BorderSide(color: AppColors.teal),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           // Aktiv buyurtma uchun holat tugmalari
           Row(children: [
             if (status == 'accepted')
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _updateStatus(context, order['id'], 'arrived'),
+                  onPressed: () => onUpdateStatus('en_route'),
                   icon: const Icon(Icons.place_outlined, size: 16),
                   label: Text(l.arrived),
                 ),
               ),
-            if (status == 'arrived')
+            if (status == 'en_route')
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _updateStatus(context, order['id'], 'in_progress'),
+                  onPressed: () => onUpdateStatus('in_progress'),
                   icon: const Icon(Icons.play_arrow_outlined, size: 16),
                   label: Text(l.startWork),
                 ),
@@ -636,7 +677,7 @@ class _OrderCard extends StatelessWidget {
             if (status == 'in_progress')
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _updateStatus(context, order['id'], 'completed'),
+                  onPressed: () => onUpdateStatus('completed'),
                   icon: const Icon(Icons.check_circle_outline, size: 16),
                   label: Text(l.finishWork),
                 ),
@@ -650,7 +691,7 @@ class _OrderCard extends StatelessWidget {
   String _statusLabel(String status, AppLocalizations l) {
     switch (status) {
       case 'accepted':    return l.orderAccepted;
-      case 'arrived':     return l.arrived;
+      case 'en_route':    return l.arrived;
       case 'in_progress': return l.orderInProgress;
       case 'completed':   return l.orderCompleted;
       default:            return status;
@@ -665,11 +706,6 @@ class _OrderCard extends StatelessWidget {
       case 'car_wash':     return l.serviceCarWash;
       default:             return t;
     }
-  }
-
-  void _updateStatus(BuildContext context, String id, String status) {
-    // Provider shell context orqali refresh amalga oshiriladi
-    Navigator.of(context).pop();
   }
 }
 

@@ -44,6 +44,12 @@ io.on('connection', (socket) => {
   socket.on('join_provider', (providerId) => {
     socket.join(`provider_${providerId}`);
   });
+  // Provider joylashuvini mijozga real-time uzatish
+  socket.on('update_location', ({ orderId, lat, lng } = {}) => {
+    if (orderId && lat != null && lng != null) {
+      io.to(`order_${orderId}`).emit('provider_location', { lat, lng });
+    }
+  });
   socket.on('disconnect', () => {});
 });
 

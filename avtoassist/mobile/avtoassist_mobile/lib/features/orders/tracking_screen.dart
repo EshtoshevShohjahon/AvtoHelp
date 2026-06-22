@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:dio/dio.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart' show apiClientProvider, kSocketUrl;
 import '../../core/models/models.dart';
@@ -19,10 +20,13 @@ class TrackingScreen extends ConsumerStatefulWidget {
 class _TrackingScreenState extends ConsumerState<TrackingScreen>
     with TickerProviderStateMixin {
   late final AnimationController _radarCtrl;
+  final _mapController = MapController();
   io.Socket? _socket;
   OrderModel? _order;
   bool _sheetVisible = false;
   bool _found = false;
+  LatLng? _providerLocation;
+  List<LatLng> _routePoints = [];
 
   @override
   void initState() {
@@ -64,13 +68,54 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
       if (!mounted) return;
       setState(() {
         if (data['status'] != 'searching') {
-          _found      = true;
+          _found        = true;
           _sheetVisible = true;
           _radarCtrl.stop();
         }
       });
       _loadOrder();
     });
+    _socket!.on('provider_location', (data) {
+      if (!mounted) return;
+      final lat = (data['lat'] as num?)?.toDouble();
+      final lng = (data['lng'] as num?)?.toDouble();
+      if (lat == null || lng == null) return;
+      final provLoc = LatLng(lat, lng);
+      setState(() => _providerLocation = provLoc);
+      if (_order != null) {
+        _fetchRoute(provLoc, LatLng(_order!.pickupLat, _order!.pickupLng));
+      }
+    });
+  }
+
+  Future<void> _fetchRoute(LatLng from, LatLng to) async {
+    try {
+      final url =
+          'https://router.project-osrm.org/route/v1/driving/'
+          '${from.longitude},${from.latitude};'
+          '${to.longitude},${to.latitude}'
+          '?overview=full&geometries=geojson';
+      final res = await Dio().get(url);
+      final coords =
+          res.data['routes'][0]['geometry']['coordinates'] as List;
+      final points = coords
+          .map((c) => LatLng(
+                (c[1] as num).toDouble(),
+                (c[0] as num).toDouble(),
+              ))
+          .toList();
+      if (!mounted) return;
+      setState(() => _routePoints = points);
+      if (points.isNotEmpty) {
+        final bounds = LatLngBounds.fromPoints(points);
+        _mapController.fitCamera(
+          CameraFit.bounds(
+            bounds: bounds,
+            padding: const EdgeInsets.all(56),
+          ),
+        );
+      }
+    } catch (_) {}
   }
 
   Future<void> _cancel() async {
@@ -93,6 +138,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
   @override
   void dispose() {
     _radarCtrl.dispose();
+    _mapController.dispose();
     _socket?.dispose();
     super.dispose();
   }
@@ -107,6 +153,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
         Positioned.fill(
           child: _order != null
               ? FlutterMap(
+                  mapController: _mapController,
                   options: MapOptions(
                     initialCenter:
                         LatLng(_order!.pickupLat, _order!.pickupLng),
@@ -118,7 +165,18 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
                           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'uz.avtoassist.app',
                     ),
+                    if (_routePoints.isNotEmpty)
+                      PolylineLayer(polylines: [
+                        Polyline(
+                          points: _routePoints,
+                          color: AppColors.teal,
+                          strokeWidth: 5,
+                          borderColor: AppColors.asphalt.withOpacity(0.5),
+                          borderStrokeWidth: 2,
+                        ),
+                      ]),
                     MarkerLayer(markers: [
+                      // Mijoz joylashuvi (to'sariq pin)
                       Marker(
                         point: LatLng(_order!.pickupLat, _order!.pickupLng),
                         width: 44,
@@ -126,6 +184,32 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
                         child: const Icon(Icons.location_on,
                             color: AppColors.amber, size: 44),
                       ),
+                      // Provayder joylashuvi (yashil mashina) — real-time socket orqali
+                      if (_providerLocation != null)
+                        Marker(
+                          point: _providerLocation!,
+                          width: 44,
+                          height: 44,
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: AppColors.teal,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.white, width: 2.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.teal.withOpacity(0.4),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.directions_car,
+                                color: Colors.white, size: 22),
+                          ),
+                        ),
                     ]),
                   ],
                 )

@@ -310,6 +310,25 @@ class AppLocalizations {
   String get done => _s('Tayyor', 'Готово', 'Тайёр', 'Done');
   String get back => _s('Orqaga', 'Назад', 'Орқага', 'Back');
   String get soum => _s("so'm", 'сум', 'сўм', 'sum');
+  String get routeToClient =>
+      _s("Mijozga yo'nalish", 'Маршрут к клиенту', 'Мижозга йўналиш', 'Route to client');
+  String get showRoute =>
+      _s("Yo'nalishni ko'rsatish", 'Показать маршрут', 'Йўналишни кўрсатиш', 'Show route');
+  String get locationPermissionDenied =>
+      _s("Joylashuv ruxsati berilmagan. Sozlamalarda ruxsat bering.",
+          'Доступ к местоположению запрещён. Разрешите в настройках.',
+          'Жойлашув рухсати берилмаган. Созламаларда рухсат беринг.',
+          'Location permission denied. Please enable it in settings.');
+  String get routeFetchFailed =>
+      _s("Yo'nalish yuklanmadi — faqat markerlar ko'rsatilmoqda",
+          'Маршрут не загружен — показаны только маркеры',
+          'Йўналиш юкланмади — фақат маркерлар кўрсатилмоқда',
+          'Route not loaded — showing markers only');
+  String distanceAndTime(double km, int min) =>
+      _s('${km.toStringAsFixed(1)} km · $min daqiqa',
+          '${km.toStringAsFixed(1)} km · $min мин',
+          '${km.toStringAsFixed(1)} km · $min дақиқа',
+          '${km.toStringAsFixed(1)} km · $min min');
 
   // ─── Onboarding ───────────────────────────────────────────
   String get enterYourName => _s('Ismingizni kiriting', 'Введите ваше имя', 'Исмингизни киритинг', 'Enter your name');
