@@ -32,14 +32,17 @@ void main() async {
 final _router = GoRouter(
   initialLocation: '/auth/phone',
   redirect: (context, state) async {
-    // Sessiya saqlangan bo'lsa (access yoki refresh token) qayta login so'ramaymiz.
     final token = await SecureStorage.read('access_token');
     final refresh = await SecureStorage.read('refresh_token');
     final hasSession = token != null || refresh != null;
-    final onAuth = state.matchedLocation.startsWith('/auth') ||
-        state.matchedLocation == '/auth/onboarding';
-    if (!hasSession && !onAuth) return '/auth/phone';
-    if (hasSession && onAuth) return '/home';
+    final loc = state.matchedLocation;
+    // /auth/onboarding is reachable by authenticated users
+    if (loc == '/auth/onboarding') {
+      return hasSession ? null : '/auth/phone';
+    }
+    final onLoginFlow = loc.startsWith('/auth');
+    if (!hasSession && !onLoginFlow) return '/auth/phone';
+    if (hasSession && onLoginFlow) return '/home';
     return null;
   },
   routes: [
