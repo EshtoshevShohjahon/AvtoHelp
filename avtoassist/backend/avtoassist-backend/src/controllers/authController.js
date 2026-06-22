@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 
 async function issueTokens(userId) {
-  const accessToken = signAccessToken({ sub: userId });
+  const accessToken = signAccessToken({ id: userId });
   const raw = uuidv4();
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   await RefreshToken.create({ id: uuidv4(), user_id: userId, token: raw, expires_at: expiresAt });
