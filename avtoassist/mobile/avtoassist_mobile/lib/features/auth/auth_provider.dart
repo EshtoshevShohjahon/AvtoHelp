@@ -3,8 +3,6 @@ import '../../core/network/api_client.dart';
 import '../../core/storage/secure_storage.dart';
 import '../../core/models/models.dart';
 
-final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
-
 // ─── Auth state ──────────────────────────────────────────
 enum AuthStatus { unknown, unauthenticated, authenticated }
 

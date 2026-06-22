@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/network/api_client.dart';
 import '../../core/models/models.dart';
 import '../../widgets/app_widgets.dart';
-import '../auth/auth_provider.dart';
 
 // ─── Avtomobillar ro'yxati ──────────────────────────────────
 class VehiclesScreen extends ConsumerStatefulWidget {

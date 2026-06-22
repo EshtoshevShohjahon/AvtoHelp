@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../storage/secure_storage.dart';
+
+/// ApiClient'ning global Riverpod provideri (butun ilova shu yagona nusxadan foydalanadi)
+final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
 const _kBaseUrl = String.fromEnvironment(
   'API_BASE_URL',
