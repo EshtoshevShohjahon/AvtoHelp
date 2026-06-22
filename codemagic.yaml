@@ -30,7 +30,7 @@ workflows:
           flutter build apk --release \
             --dart-define=API_BASE_URL=$API_BASE_URL
     artifacts:
-      - avtoassist/mobile/avtoassist_mobile/build/**/outputs/**/*.apk
+      - avtoassist/mobile/avtoassist_mobile/build/app/outputs/flutter-apk/app-release.apk
     publishing:
       email:
         recipients:
