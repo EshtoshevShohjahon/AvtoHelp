@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../core/models/models.dart';
 import '../../widgets/app_widgets.dart';
 
+// ─── Ehtiyot qismlar do'konlari ──────────────────────────────
 class PartsScreen extends ConsumerStatefulWidget {
   const PartsScreen({super.key});
   @override
@@ -28,7 +28,9 @@ class _PartsScreenState extends ConsumerState<PartsScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       Position? pos;
-      try { pos = await Geolocator.getCurrentPosition(); } catch (_) {}
+      try {
+        pos = await Geolocator.getCurrentPosition();
+      } catch (_) {}
       final lat = pos?.latitude  ?? 41.2995;
       final lng = pos?.longitude ?? 69.2401;
       final api = ref.read(apiClientProvider);
@@ -103,7 +105,7 @@ class _StoreCard extends StatelessWidget {
                       fontFamily: 'monospace',
                       fontSize: 12)),
             ]),
-            if (store.address != null) ...[  
+            if (store.address != null) ...[
               const SizedBox(height: 3),
               Text(store.address!,
                   style: const TextStyle(
@@ -118,6 +120,7 @@ class _StoreCard extends StatelessWidget {
   }
 }
 
+// ─── Ustaxonalar ───────────────────────────────────────
 class WorkshopsScreen extends ConsumerStatefulWidget {
   const WorkshopsScreen({super.key});
   @override
@@ -223,7 +226,7 @@ class _WorkshopCard extends StatelessWidget {
                   style: const TextStyle(
                       color: AppColors.boneDim, fontSize: 12)),
             ]),
-            if (w.specializations.isNotEmpty) ...[  
+            if (w.specializations.isNotEmpty) ...[
               const SizedBox(height: 8),
               _TagRow(tags: w.specializations.take(3).toList()),
             ],
@@ -234,6 +237,7 @@ class _WorkshopCard extends StatelessWidget {
   }
 }
 
+// ─── Yordamchi widgetlar ───────────────────────────────────
 class _TagRow extends StatelessWidget {
   final List<String> tags;
   const _TagRow({required this.tags});

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'dart:math' as math;
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../core/models/models.dart';
@@ -101,6 +100,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
 
     return Scaffold(
       body: Stack(children: [
+        // Xarita foni
         Container(
           decoration: BoxDecoration(
             color: AppColors.asphalt,
@@ -113,7 +113,11 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
             ),
           ),
         ),
+
+        // Grid chiziqlar (xarita o'rnida)
         CustomPaint(painter: _GridPainter(), child: const SizedBox.expand()),
+
+        // Orqaga tugmasi
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 16,
@@ -131,6 +135,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
             ),
           ),
         ),
+
+        // Radar animatsiyasi
         if (!_found)
           Center(
             child: Column(
@@ -150,6 +156,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
               ],
             ),
           ),
+
+        // Topildi badge
         if (_found && !_sheetVisible)
           Center(
             child: Column(
@@ -176,6 +184,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
               ],
             ),
           ),
+
+        // Bekor qilish tugmasi (qidirilmoqda holatida)
         if (!_found)
           Positioned(
             bottom: 120,
@@ -191,6 +201,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
               ),
             ),
           ),
+
+        // Pastki karta (provider topilganda)
         AnimatedPositioned(
           duration: const Duration(milliseconds: 450),
           curve: Curves.easeOutCubic,
@@ -203,6 +215,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
   }
 }
 
+// Radar to'lqin animatsiyasi
 class _RadarWidget extends StatelessWidget {
   final AnimationController controller;
   const _RadarWidget({required this.controller});
@@ -249,6 +262,7 @@ class _RadarWidget extends StatelessWidget {
   }
 }
 
+// Xarita grid chiziqlar
 class _GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -267,6 +281,7 @@ class _GridPainter extends CustomPainter {
   bool shouldRepaint(_) => false;
 }
 
+// Pastki karta (provider ma'lumotlari + qo'ng'iroq/chat)
 class _ProviderSheet extends StatelessWidget {
   final OrderModel? order;
   final AppLocalizations l;
@@ -292,10 +307,10 @@ class _ProviderSheet extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Row(children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 24,
             backgroundColor: AppColors.steel,
-            child: Icon(Icons.person_outline,
+            child: const Icon(Icons.person_outline,
                 color: AppColors.boneDim, size: 24),
           ),
           const SizedBox(width: 12),
@@ -305,10 +320,10 @@ class _ProviderSheet extends StatelessWidget {
                   style: TextStyle(
                       fontWeight: FontWeight.w700, fontSize: 15)),
               const SizedBox(height: 2),
-              const Row(children: [
-                Icon(Icons.star, color: AppColors.amber, size: 13),
-                SizedBox(width: 3),
-                Text('4.9 · Texnik usta',
+              Row(children: [
+                const Icon(Icons.star, color: AppColors.amber, size: 13),
+                const SizedBox(width: 3),
+                const Text('4.9 · Texnik usta',
                     style: TextStyle(
                         color: AppColors.boneDim, fontSize: 12)),
               ]),
