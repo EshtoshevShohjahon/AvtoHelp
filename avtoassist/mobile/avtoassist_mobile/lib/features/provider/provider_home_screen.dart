@@ -179,10 +179,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
 
           if (_foundVehicle == null && !_searching && _error == null) ...[
             const SizedBox(height: 48),
-            const Center(
+            Center(
               child: Column(children: [
-                Icon(Icons.car_repair, color: AppColors.steelLine, size: 64),
-                SizedBox(height: 16),
+                const Icon(Icons.car_repair, color: AppColors.steelLine, size: 64),
+                const SizedBox(height: 16),
                 Text(l.vehicleLookupHint,
                     style: const TextStyle(
                         color: AppColors.steelLight, fontSize: 14),
