@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/network/api_client.dart';
-import '../../core/storage/secure_storage.dart';
-import '../../core/models/models.dart';
+import '../core/network/api_client.dart';
+import '../core/storage/secure_storage.dart';
+import '../core/models/models.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
+// ─── Auth state ──────────────────────────────────────────
 enum AuthStatus { unknown, unauthenticated, authenticated }
 
 class AuthState {
@@ -13,25 +14,58 @@ class AuthState {
   final bool isLoading;
   final String? error;
 
-  const AuthState({this.status = AuthStatus.unknown, this.user, this.isLoading = false, this.error});
+  const AuthState({
+    this.status = AuthStatus.unknown,
+    this.user,
+    this.isLoading = false,
+    this.error,
+  });
 
-  AuthState copyWith({AuthStatus? status, UserModel? user, bool? isLoading, String? error}) =>
-    AuthState(status: status ?? this.status, user: user ?? this.user,
-      isLoading: isLoading ?? this.isLoading, error: error);
+  AuthState copyWith({
+    AuthStatus? status,
+    UserModel? user,
+    bool? isLoading,
+    String? error,
+  }) =>
+      AuthState(
+        status: status ?? this.status,
+        user: user ?? this.user,
+        isLoading: isLoading ?? this.isLoading,
+        error: error,
+      );
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final ApiClient _api;
-  AuthNotifier(this._api) : super(const AuthState()) { _init(); }
+  AuthNotifier(this._api) : super(const AuthState()) {
+    _init();
+  }
 
+  // Ilova ochilganda: agar saqlangan sessiya bo'lsa, qayta login so'ramaymiz.
+  // Access token muddati o'tgan bo'lsa, refresh token orqali yangilaymiz.
   Future<void> _init() async {
     final token = await SecureStorage.read('access_token');
-    if (token == null) { state = state.copyWith(status: AuthStatus.unauthenticated); return; }
+    final refresh = await SecureStorage.read('refresh_token');
+    if (token == null && refresh == null) {
+      state = state.copyWith(status: AuthStatus.unauthenticated);
+      return;
+    }
     try {
       final res = await _api.get('/users/me');
       final user = UserModel.fromJson(res.data['user']);
       state = state.copyWith(status: AuthStatus.authenticated, user: user);
     } catch (_) {
+      // Faqat refresh ham ishlamasagina chiqaramiz (ApiClient 401'da
+      // avtomatik refresh qiladi). Aks holda sessiya saqlanib qoladi.
+      final stillValid = await SecureStorage.read('access_token') != null;
+      if (stillValid) {
+        try {
+          final res = await _api.get('/users/me');
+          final user = UserModel.fromJson(res.data['user']);
+          state = state.copyWith(status: AuthStatus.authenticated, user: user);
+          return;
+        } catch (_) {}
+      }
       state = state.copyWith(status: AuthStatus.unauthenticated);
     }
   }
@@ -41,21 +75,32 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final res = await _api.post('/auth/send-otp', data: {'phone': phone});
       state = state.copyWith(isLoading: false);
-      return res.data['debug_code'];
+      return res.data['debug_code']; // null bo'ladi productionda
     } catch (e) {
       state = state.copyWith(isLoading: false, error: _parseError(e));
       return null;
     }
   }
 
-  Future<bool> verifyOtp({required String phone, required String code, required String role, required String lang}) async {
+  Future<bool> verifyOtp({
+    required String phone,
+    required String code,
+    String role = 'client',
+    String lang = 'uz',
+  }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final res = await _api.post('/auth/verify-otp', data: {'phone': phone, 'code': code, 'role': role, 'preferred_language': lang});
+      final res = await _api.post('/auth/verify-otp', data: {
+        'phone': phone,
+        'code': code,
+        'role': role,
+        'preferred_language': lang,
+      });
       await SecureStorage.write('access_token', res.data['accessToken']);
       await SecureStorage.write('refresh_token', res.data['refreshToken']);
       final user = UserModel.fromJson(res.data['user']);
-      state = state.copyWith(status: AuthStatus.authenticated, user: user, isLoading: false);
+      state = state.copyWith(
+          status: AuthStatus.authenticated, user: user, isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: _parseError(e));
@@ -65,7 +110,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> logout() async {
     final token = await SecureStorage.read('refresh_token');
-    try { await _api.post('/auth/logout', data: {'refreshToken': token}); } catch (_) {}
+    try {
+      await _api.post('/auth/logout', data: {'refreshToken': token});
+    } catch (_) {}
     await SecureStorage.deleteAll();
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
@@ -76,4 +123,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) => AuthNotifier(ref.read(apiClientProvider)));
+final authProvider =
+    StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  return AuthNotifier(ref.read(apiClientProvider));
+});
