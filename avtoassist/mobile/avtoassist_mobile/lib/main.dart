@@ -53,8 +53,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/auth/otp',
       builder: (_, state) {
-        final phone = state.extra as String? ?? '';
-        return OtpScreen(phone: phone);
+        final extra = state.extra;
+        final phone = extra is Map ? (extra['phone'] as String? ?? '') : (extra as String? ?? '');
+        final register = extra is Map ? (extra['register'] as bool? ?? false) : false;
+        return OtpScreen(phone: phone, register: register);
       },
     ),
     GoRoute(

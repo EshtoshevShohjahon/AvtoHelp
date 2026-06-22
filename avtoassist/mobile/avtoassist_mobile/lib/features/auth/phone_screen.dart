@@ -21,12 +21,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     super.dispose();
   }
 
-  Future<void> _send() async {
+  Future<void> _send({bool register = false}) async {
     final phone = '+998${_controller.text.replaceAll(RegExp(r'\D'), '')}';
     final debugCode = await ref.read(authProvider.notifier).sendOtp(phone);
     if (!mounted) return;
     if (debugCode != null) {
-      // Debug rejimida: kodni snackbar'da ko'rsatamiz
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Debug OTP: $debugCode'),
@@ -36,7 +35,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     }
     final err = ref.read(authProvider).error;
     if (err == null) {
-      context.push('/auth/otp', extra: phone);
+      context.push('/auth/otp', extra: {'phone': phone, 'register': register});
     }
   }
 
@@ -102,14 +101,23 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
               ],
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: (auth.isLoading || _digits.length < 9) ? null : _send,
+                onPressed: (auth.isLoading || _digits.length < 9)
+                    ? null
+                    : () => _send(register: false),
                 child: auth.isLoading
                     ? const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: AppColors.asphalt))
-                    : Text(l.sendCode),
+                    : Text(l.login),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: (auth.isLoading || _digits.length < 9)
+                    ? null
+                    : () => _send(register: true),
+                child: Text(l.register),
               ),
             ],
           ),

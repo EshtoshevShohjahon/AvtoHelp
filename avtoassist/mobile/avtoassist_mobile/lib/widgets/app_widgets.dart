@@ -24,6 +24,10 @@ class AppLocalizations {
       _s('Davom etish', 'Продолжить', 'Давом этиш');
   String get sendCode =>
       _s('Kod yuborish', 'Отправить код', 'Код юбориш');
+  String get login =>
+      _s('Kirish', 'Войти', 'Кириш');
+  String get register =>
+      _s("Ro'yxatdan o'tish", 'Регистрация', "Рўйхатдан ўтиш");
   String get enterCode =>
       _s('Kodni kiriting', 'Введите код', 'Кодни киритинг');
   String get phoneNumber =>

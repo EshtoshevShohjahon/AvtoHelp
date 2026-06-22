@@ -8,7 +8,8 @@ import 'auth_provider.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phone;
-  const OtpScreen({super.key, required this.phone});
+  final bool register;
+  const OtpScreen({super.key, required this.phone, this.register = false});
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
@@ -17,8 +18,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   String _code = '';
 
   Future<void> _verify() async {
-    // Ro'yxatdan o'tish soddalashtirildi: faqat telefon + OTP kod.
-    // KYC va rol tanlash olib tashlandi — tasdiqlangach to'g'ridan-to'g'ri asosiy ekran.
     final ok = await ref.read(authProvider.notifier).verifyOtp(
           phone: widget.phone,
           code: _code,
@@ -27,7 +26,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     if (ok) {
       final user = ref.read(authProvider).user;
       final isNew = user?.fullName == null || user!.fullName!.trim().isEmpty;
-      context.go(isNew ? '/auth/onboarding' : '/home');
+      context.go((widget.register || isNew) ? '/auth/onboarding' : '/home');
     }
   }
 
