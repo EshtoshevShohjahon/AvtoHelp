@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../core/models/models.dart';
 import '../../widgets/app_widgets.dart';
+import 'vehicle_detail_screen.dart';
 
 // ─── Avtomobillar ro'yxati ──────────────────────────────────
 class VehiclesScreen extends ConsumerStatefulWidget {
@@ -91,7 +92,17 @@ class _VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => VehicleDetailScreen(
+            vehicleId: vehicle.id!,
+            vehicleTitle: vehicle.title,
+          ),
+        ),
+      ),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -132,7 +143,9 @@ class _VehicleCard extends StatelessWidget {
           icon: const Icon(Icons.delete_outline, color: AppColors.danger),
           onPressed: onDelete,
         ),
+        const Icon(Icons.chevron_right, color: AppColors.steelLight, size: 18),
       ]),
+    ),
     );
   }
 }

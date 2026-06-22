@@ -11,6 +11,7 @@ const Vehicle = sequelize.define('Vehicle', {
   year: { type: DataTypes.INTEGER, allowNull: true },
   color: { type: DataTypes.STRING, allowNull: true },
   vin: { type: DataTypes.STRING, allowNull: true },
+  current_odometer: { type: DataTypes.INTEGER, allowNull: true, defaultValue: 0 },
 }, {
   tableName: 'vehicles',
   timestamps: true,
