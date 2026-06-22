@@ -18,7 +18,7 @@ workflows:
         # Backend manzili. Haqiqiy telefonda test qilish uchun backendni
         # internetga joylab (masalan Render/Railway), shu yerga URL'ini yozing.
         # Masalan: https://avtoassist-api.onrender.com/api
-        API_BASE_URL: "https://CHANGE-ME.example.com/api"
+        API_BASE_URL: "https://avtoassist-api-mkn2.onrender.com/api"
     scripts:
       - name: Flutter paketlarini o'rnatish
         script: |
