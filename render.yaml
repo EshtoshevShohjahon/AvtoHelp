@@ -21,6 +21,7 @@ services:
     startCommand: node server.js
     healthCheckPath: /health
     autoDeploy: true
+    branch: claude/sweet-ptolemy-xvvz5z
     envVars:
       - key: NODE_ENV
         value: production
