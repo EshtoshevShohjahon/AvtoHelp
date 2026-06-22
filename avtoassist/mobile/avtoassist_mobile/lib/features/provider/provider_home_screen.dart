@@ -411,14 +411,6 @@ class _HistoryTile extends StatelessWidget {
             ),
           ]),
         ),
-        if (record.cost != null)
-          Text(
-            '${record.cost!.toStringAsFixed(0)} so\'m',
-            style: const TextStyle(
-                color: AppColors.teal,
-                fontSize: 12,
-                fontWeight: FontWeight.w600),
-          ),
       ]),
     );
   }
@@ -443,7 +435,6 @@ class _ProviderAddRecordScreenState
       text: DateTime.now().toIso8601String().split('T').first);
   final _odometerCtrl = TextEditingController();
   final _workshopCtrl = TextEditingController();
-  final _costCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   final _nextKmCtrl = TextEditingController();
   bool _loading = false;
@@ -464,7 +455,6 @@ class _ProviderAddRecordScreenState
     _dateCtrl.dispose();
     _odometerCtrl.dispose();
     _workshopCtrl.dispose();
-    _costCtrl.dispose();
     _notesCtrl.dispose();
     _nextKmCtrl.dispose();
     super.dispose();
@@ -503,8 +493,6 @@ class _ProviderAddRecordScreenState
           if (_workshopCtrl.text.isNotEmpty)
             'workshop_name': _workshopCtrl.text.trim(),
           'mechanic_name': user?.fullName ?? '',
-          if (_costCtrl.text.isNotEmpty)
-            'cost': double.tryParse(_costCtrl.text.trim()),
           if (_notesCtrl.text.isNotEmpty) 'notes': _notesCtrl.text.trim(),
           if (_serviceType == 'oil_change' && _nextKmCtrl.text.isNotEmpty)
             'next_service_km': int.tryParse(_nextKmCtrl.text.trim()),
@@ -637,20 +625,6 @@ class _ProviderAddRecordScreenState
                 hintText: 'Toshkent STO',
                 prefixIcon: Icon(Icons.store_outlined,
                     color: AppColors.steelLight),
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            TextField(
-              controller: _costCtrl,
-              keyboardType: TextInputType.number,
-              style: const TextStyle(color: AppColors.bone),
-              decoration: const InputDecoration(
-                labelText: 'Xizmat narxi',
-                hintText: '85000',
-                prefixIcon: Icon(Icons.payments_outlined,
-                    color: AppColors.steelLight),
-                suffixText: 'so\'m',
               ),
             ),
             const SizedBox(height: 14),

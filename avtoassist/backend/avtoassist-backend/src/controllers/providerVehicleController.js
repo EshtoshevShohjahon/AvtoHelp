@@ -19,6 +19,7 @@ const vehicleLookup = asyncHandler(async (req, res) => {
 
   const records = await ServiceRecord.findAll({
     where: { vehicle_id: vehicle.id },
+    attributes: { exclude: ['cost'] }, // narx faqat mijozga ko'rinadi
     order: [['service_date', 'DESC'], ['created_at', 'DESC']],
   });
 
@@ -47,8 +48,8 @@ const addRecordByProvider = asyncHandler(async (req, res) => {
 
   const {
     service_type, service_date, odometer_km,
-    workshop_name, mechanic_name, cost, notes, next_service_km,
-  } = req.body;
+    workshop_name, mechanic_name, notes, next_service_km,
+  } = req.body; // cost qabul qilinmaydi — narx faqat mijozga ko'rinadi
 
   if (!service_type || !service_date || odometer_km == null) {
     return res.status(400).json({ error: 'service_type, service_date, odometer_km required' });
@@ -65,7 +66,7 @@ const addRecordByProvider = asyncHandler(async (req, res) => {
     odometer_km: Number(odometer_km),
     workshop_name: workshop_name || null,
     mechanic_name: providerName || mechanic_name || null,
-    cost: cost ? Number(cost) : null,
+    cost: null, // narx saqlanmaydi — provider tomonidan qo'shilgan yozuvlarda
     notes,
     next_service_km: next_service_km ? Number(next_service_km) : null,
     added_by_provider_id: req.user.id,
