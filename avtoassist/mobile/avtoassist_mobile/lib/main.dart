@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/storage/secure_storage.dart';
@@ -197,7 +196,7 @@ class _MainShell extends ConsumerWidget {
   }
 }
 
-// ─── Placeholder screens ───────────────────────────────────────────
+// ─── Placeholder screens ─────────────────────────────────────────────
 class _OrdersListScreen extends StatelessWidget {
   const _OrdersListScreen();
   @override
@@ -235,12 +234,17 @@ class _ProfileScreen extends ConsumerWidget {
               radius: 38,
               backgroundColor: AppColors.steel,
               child: Text(
-                (user?.fullName?.isNotEmpty == true
-                        ? user!.fullName![0]
-                        : user?.phone?.substring(
-                                (user.phone.length - 2)) ??
-                            '?')
-                    .toUpperCase(),
+                () {
+                  final u = user;
+                  if (u?.fullName != null && u!.fullName!.isNotEmpty) {
+                    return u.fullName![0].toUpperCase();
+                  }
+                  final p = u?.phone;
+                  if (p != null && p.length >= 2) {
+                    return p.substring(p.length - 2);
+                  }
+                  return '?';
+                }(),
                 style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
