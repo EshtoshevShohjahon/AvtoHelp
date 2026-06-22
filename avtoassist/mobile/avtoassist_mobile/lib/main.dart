@@ -10,8 +10,8 @@ import 'core/storage/secure_storage.dart';
 import 'features/auth/auth_provider.dart';
 import 'features/auth/phone_screen.dart';
 import 'features/auth/otp_screen.dart';
-import 'features/auth/kyc_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/vehicles/vehicles_screen.dart';
 import 'features/orders/new_order_screen.dart';
 import 'features/orders/tracking_screen.dart';
 import 'features/catalog/catalog_screens.dart';
@@ -26,13 +26,17 @@ void main() async {
   runApp(const ProviderScope(child: AvtoAssistApp()));
 }
 
+// ─── Router ───────────────────────────────────────────────
 final _router = GoRouter(
   initialLocation: '/auth/phone',
   redirect: (context, state) async {
+    // Sessiya saqlangan bo'lsa (access yoki refresh token) qayta login so'ramaymiz.
     final token = await SecureStorage.read('access_token');
-    final onAuth = state.matchedLocation.startsWith('/auth') ||
-        state.matchedLocation.startsWith('/kyc');
-    if (token == null && !onAuth) return '/auth/phone';
+    final refresh = await SecureStorage.read('refresh_token');
+    final hasSession = token != null || refresh != null;
+    final onAuth = state.matchedLocation.startsWith('/auth');
+    if (!hasSession && !onAuth) return '/auth/phone';
+    if (hasSession && onAuth) return '/home';
     return null;
   },
   routes: [
@@ -48,11 +52,12 @@ final _router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/kyc',
-      builder: (_, state) {
-        final serviceType = state.extra as String? ?? 'tech_support';
-        return KycScreen(serviceType: serviceType);
-      },
+      path: '/vehicles',
+      builder: (_, __) => const VehiclesScreen(),
+    ),
+    GoRoute(
+      path: '/vehicles/add',
+      builder: (_, __) => const AddVehicleScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => _MainShell(child: child),
@@ -100,6 +105,7 @@ final _router = GoRouter(
   ],
 );
 
+// ─── App ─────────────────────────────────────────────────
 class AvtoAssistApp extends ConsumerWidget {
   const AvtoAssistApp({super.key});
 
@@ -130,14 +136,20 @@ class AvtoAssistApp extends ConsumerWidget {
 
   Locale _parseLocale(String lang) {
     switch (lang) {
-      case 'ru': return const Locale('ru');
-      case 'en': return const Locale('en');
-      case 'uz-cyrl': return const Locale.fromSubtags(languageCode: 'uz', scriptCode: 'Cyrl');
-      default: return const Locale('uz');
+      case 'ru':
+        return const Locale('ru');
+      case 'en':
+        return const Locale('en');
+      case 'uz-cyrl':
+      case 'uz_Cyrl':
+        return const Locale.fromSubtags(languageCode: 'uz', scriptCode: 'Cyrl');
+      default:
+        return const Locale('uz');
     }
   }
 }
 
+// ─── Bottom nav shell ─────────────────────────────────────────────
 class _MainShell extends ConsumerWidget {
   final Widget child;
   const _MainShell({required this.child});
@@ -185,6 +197,7 @@ class _MainShell extends ConsumerWidget {
   }
 }
 
+// ─── Placeholder screens ───────────────────────────────────────────
 class _OrdersListScreen extends StatelessWidget {
   const _OrdersListScreen();
   @override
@@ -195,7 +208,8 @@ class _OrdersListScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.receipt_long_outlined, color: AppColors.steelLight, size: 56),
+            Icon(Icons.receipt_long_outlined,
+                color: AppColors.steelLight, size: 56),
             SizedBox(height: 12),
             Text("Hali buyurtmalar yo'q",
                 style: TextStyle(color: AppColors.steelLight)),
@@ -222,20 +236,56 @@ class _ProfileScreen extends ConsumerWidget {
               backgroundColor: AppColors.steel,
               child: Text(
                 (user?.fullName?.isNotEmpty == true
-                    ? user!.fullName![0]
-                    : user?.phone?.substring((user.phone.length - 2)) ?? '?').toUpperCase(),
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.bone),
+                        ? user!.fullName![0]
+                        : user?.phone?.substring(
+                                (user.phone.length - 2)) ??
+                            '?')
+                    .toUpperCase(),
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.bone),
               ),
             ),
           ),
           const SizedBox(height: 12),
-          Center(child: Text(user?.fullName ?? user?.phone ?? '',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.bone))),
+          Center(
+            child: Text(
+              user?.fullName ?? user?.phone ?? '',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.bone),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              user?.phone ?? '',
+              style: const TextStyle(color: AppColors.steelLight),
+            ),
+          ),
           const SizedBox(height: 28),
-          _ProfileTile(icon: Icons.directions_car_outlined, title: 'Avtomobillarim', onTap: () {}),
-          _ProfileTile(icon: Icons.language_outlined, title: 'Til sozlamalari', onTap: () {}),
-          _ProfileTile(icon: Icons.logout, title: 'Chiqish', color: AppColors.danger,
-              onTap: () => ref.read(authProvider.notifier).logout()),
+          _ProfileTile(
+            icon: Icons.directions_car_outlined,
+            title: 'Avtomobillarim',
+            onTap: () => context.push('/vehicles'),
+          ),
+          _ProfileTile(
+            icon: Icons.language_outlined,
+            title: 'Til sozlamalari',
+            onTap: () {},
+          ),
+          _ProfileTile(
+            icon: Icons.logout,
+            title: 'Chiqish',
+            color: AppColors.danger,
+            // Log Out qilingandagina tokenlar o'chiriladi va keyin Login so'raladi
+            onTap: () async {
+              await ref.read(authProvider.notifier).logout();
+              if (context.mounted) context.go('/auth/phone');
+            },
+          ),
         ],
       ),
     );
@@ -247,7 +297,12 @@ class _ProfileTile extends StatelessWidget {
   final String title;
   final Color? color;
   final VoidCallback onTap;
-  const _ProfileTile({required this.icon, required this.title, this.color, required this.onTap});
+  const _ProfileTile(
+      {required this.icon,
+      required this.title,
+      this.color,
+      required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     final c = color ?? AppColors.bone;
@@ -266,13 +321,15 @@ class _ProfileTile extends StatelessWidget {
           const SizedBox(width: 12),
           Text(title, style: TextStyle(color: c, fontSize: 14)),
           const Spacer(),
-          Icon(Icons.chevron_right, color: AppColors.steelLight, size: 18),
+          Icon(Icons.chevron_right,
+              color: AppColors.steelLight, size: 18),
         ]),
       ),
     );
   }
 }
 
+// ─── Provider home (stub) ───────────────────────────────────────────
 class _ProviderHomeScreen extends ConsumerWidget {
   const _ProviderHomeScreen();
   @override
@@ -284,10 +341,16 @@ class _ProviderHomeScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.handyman_outlined, color: AppColors.amber, size: 56),
+            const Icon(Icons.handyman_outlined,
+                color: AppColors.amber, size: 56),
             const SizedBox(height: 16),
-            Text('Xush kelibsiz, \${user?.fullName?.split(\' \').first ?? \'Usta\'}!',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.bone)),
+            Text(
+              'Xush kelibsiz, ${user?.fullName?.split(' ').first ?? 'Usta'}!',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.bone),
+            ),
             const SizedBox(height: 8),
             const Text('Yangi buyurtmalarni kuting...',
                 style: TextStyle(color: AppColors.steelLight)),
