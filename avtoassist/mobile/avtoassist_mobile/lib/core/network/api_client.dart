@@ -10,6 +10,11 @@ const _kBaseUrl = String.fromEnvironment(
   defaultValue: 'http://10.0.2.2:4000/api', // Android emulator -> localhost
 );
 
+const kSocketUrl = String.fromEnvironment(
+  'SOCKET_URL',
+  defaultValue: 'http://10.0.2.2:4000',
+);
+
 class ApiClient {
   late final Dio _dio;
 

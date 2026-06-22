@@ -359,6 +359,20 @@ class AppLocalizations {
   String get minutes => _s('DAQIQA', 'МИН', 'ДАҚИҚА', 'MIN');
   String get noInternet2 => _s("Hali buyurtmalar yo'q", 'Заказов пока нет', 'Ҳали буюртмалар йўқ', 'No orders yet');
 
+  // ─── Moy eslatmasi ─────────────────────────────────────────
+  String get oilChangeRequired => _s('Moy almashtirish kerak!', 'Замена масла необходима!', 'Мой алмаштириш керак!', 'Oil change required!');
+  String get oilChangeReminder => _s('Moy almashtirish eslatmasi', 'Напоминание о замене масла', 'Мой алмаштириш эслатмаси', 'Oil change reminder');
+  String oilKmLeftUrgent(int km) => _s('Atigi $km km qoldi', 'Осталось всего $km км', 'Атиги $km км қолди', 'Only $km km left');
+  String oilKmLeftNormal(int km) => _s('$km km qoldi', 'Осталось $km км', '$km км қолди', '$km km left');
+  String oilAtKm(int km) => _s('($km km da almashtiring)', '(замените на $km км)', '($km км да алмаштиринг)', '(change at $km km)');
+  String get canceledByClient => _s("Mijoz bekor qildi", 'Клиент отменил', 'Мижоз бекор қилди', 'Cancelled by client');
+  String get vehicleNotFoundPassport => _s(
+    "Avtomobil topilmadi. Tex passport to'g'ri kiritilganini tekshiring.",
+    'Авто не найдено. Проверьте правильность техпаспорта.',
+    'Автомобил топилмади. Техпаспорт тўғри киритилганини текширинг.',
+    'Vehicle not found. Please verify the tech passport number.',
+  );
+
   // ─── Xizmat turlari ────────────────────────────────────────
   String serviceTypeLabel(String t) {
     switch (t) {

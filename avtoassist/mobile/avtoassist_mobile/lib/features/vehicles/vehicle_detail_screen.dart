@@ -173,7 +173,7 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.speed_outlined, color: AppColors.amber),
-            tooltip: 'Km yangilash',
+            tooltip: AppLocalizations(context).updateOdometer,
             onPressed: _updateOdometer,
           ),
         ],
@@ -284,6 +284,7 @@ class _OilAlertCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     final isUrgent = alert.alert;
     final color = isUrgent ? AppColors.danger : AppColors.amber;
     return Container(
@@ -300,17 +301,15 @@ class _OilAlertCard extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(
-              isUrgent
-                  ? '⚠️ Moy almashtirish kerak!'
-                  : 'Moy almashtirish eslatmasi',
+              isUrgent ? '⚠️ ${l.oilChangeRequired}' : l.oilChangeReminder,
               style: TextStyle(
                   color: color, fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 4),
             Text(
               isUrgent
-                  ? 'Atigi ${alert.kmLeft} km qoldi (${alert.nextChangeKm} km da)'
-                  : '${alert.kmLeft} km qoldi — ${alert.nextChangeKm} km da almashtiring',
+                  ? '${l.oilKmLeftUrgent(alert.kmLeft)} ${l.oilAtKm(alert.nextChangeKm)}'
+                  : '${l.oilKmLeftNormal(alert.kmLeft)} — ${l.oilAtKm(alert.nextChangeKm)}',
               style: const TextStyle(color: AppColors.boneDim, fontSize: 12),
             ),
             const SizedBox(height: 6),

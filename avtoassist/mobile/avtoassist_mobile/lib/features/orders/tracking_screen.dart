@@ -5,7 +5,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/network/api_client.dart';
+import '../../core/network/api_client.dart' show apiClientProvider, kSocketUrl;
 import '../../core/models/models.dart';
 import '../../widgets/app_widgets.dart';
 
@@ -54,7 +54,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
 
   void _connectSocket() {
     _socket = io.io(
-      'http://10.0.2.2:4000',
+      kSocketUrl,
       io.OptionBuilder().setTransports(['websocket']).build(),
     );
     _socket!.onConnect((_) {
@@ -76,8 +76,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
   Future<void> _cancel() async {
     try {
       final api = ref.read(apiClientProvider);
+      final l = AppLocalizations(context);
       await api.patch('/orders/${widget.orderId}/status',
-          data: {'status': 'cancelled', 'cancel_reason': 'Mijoz bekor qildi'});
+          data: {'status': 'cancelled', 'cancel_reason': l.canceledByClient});
       if (mounted) context.go('/home');
     } catch (e) {
       if (mounted) {

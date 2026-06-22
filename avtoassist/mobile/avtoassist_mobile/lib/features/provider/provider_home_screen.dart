@@ -44,10 +44,11 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       });
     } catch (e) {
       if (!mounted) return;
+      if (!mounted) return;
       setState(() {
         _searching = false;
         _error = e.toString().contains('404')
-            ? 'Avtomobil topilmadi. Tex passport to\'g\'ri kiritilganini tekshiring.'
+            ? AppLocalizations(context).vehicleNotFoundPassport
             : e.toString();
       });
     }
@@ -330,6 +331,7 @@ class _OilAlertBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     final isUrgent = alert['alert'] == true;
     final kmLeft = alert['km_left'] ?? 0;
     final color = isUrgent ? AppColors.danger : AppColors.amber;
@@ -347,8 +349,8 @@ class _OilAlertBanner extends StatelessWidget {
         Expanded(
           child: Text(
             isUrgent
-                ? '⚠️ MOY ALMASHTIRISH KERAK! $kmLeft km qoldi'
-                : '🛢️ Keyingi moy: $kmLeft km qoldi',
+                ? '⚠️ ${l.oilChangeRequired} ${l.oilKmLeftUrgent(kmLeft)}'
+                : '🛢️ ${l.oilChangeReminder}: ${l.oilKmLeftNormal(kmLeft)}',
             style: TextStyle(
                 color: color,
                 fontSize: 13,
@@ -365,19 +367,9 @@ class _HistoryTile extends StatelessWidget {
   final ServiceRecordModel record;
   const _HistoryTile({required this.record});
 
-  static const _labels = {
-    'oil_change': 'Moy almashtirish',
-    'inspection': 'Tex ko\'rik',
-    'tire': 'Shina',
-    'brake': 'Tormoz',
-    'engine': 'Dvigatel',
-    'battery': 'Akkumulyator',
-    'transmission': 'Karobka',
-    'other': 'Boshqa',
-  };
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -401,7 +393,7 @@ class _HistoryTile extends StatelessWidget {
         Expanded(
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(_labels[record.serviceType] ?? 'Boshqa',
+            Text(l.serviceTypeLabel(record.serviceType),
                 style: const TextStyle(
                     color: AppColors.bone,
                     fontSize: 13,

@@ -266,7 +266,7 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                                   color: AppColors.steelLight, fontSize: 11,
                                   letterSpacing: 0.5)),
                           const SizedBox(height: 4),
-                          Text('$price so\'m',
+                          Text('$price ${l.soum}',
                               style: const TextStyle(
                                   color: AppColors.teal,
                                   fontFamily: 'monospace', fontSize: 14)),
@@ -283,8 +283,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                                   fontFamily: 'monospace', fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.bone)),
-                          const Text('DAQIQA',
-                              style: TextStyle(
+                          Text(l.minutes,
+                              style: const TextStyle(
                                   color: AppColors.steelLight, fontSize: 10,
                                   letterSpacing: 0.5)),
                         ]),
