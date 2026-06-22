@@ -453,6 +453,12 @@ class _ProviderAddRecordScreenState
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _odometerCtrl.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _dateCtrl.dispose();
     _odometerCtrl.dispose();
