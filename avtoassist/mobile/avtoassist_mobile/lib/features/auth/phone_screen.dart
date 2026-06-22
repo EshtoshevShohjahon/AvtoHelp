@@ -13,6 +13,7 @@ class PhoneScreen extends ConsumerStatefulWidget {
 
 class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   final _controller = TextEditingController();
+  String _digits = '';
 
   @override
   void dispose() {
@@ -84,7 +85,13 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                         fontFamily: 'monospace',
                         fontSize: 15,
                         color: AppColors.bone),
-                    decoration: InputDecoration(hintText: l.phoneHint),
+                    maxLength: 9,
+                    onChanged: (v) => setState(() =>
+                        _digits = v.replaceAll(RegExp(r'\D'), '')),
+                    decoration: const InputDecoration(
+                      hintText: 'XX XXX XX XX',
+                      counterText: '',
+                    ),
                   ),
                 ),
               ]),
@@ -95,7 +102,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
               ],
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: auth.isLoading ? null : _send,
+                onPressed: (auth.isLoading || _digits.length < 9) ? null : _send,
                 child: auth.isLoading
                     ? const SizedBox(
                         height: 20,
