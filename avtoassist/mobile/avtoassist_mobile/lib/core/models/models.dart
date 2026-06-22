@@ -7,6 +7,7 @@ class UserModel extends Equatable {
   final String? fullName;
   final String role; // 'client' | 'provider' | 'admin'
   final String preferredLanguage;
+  final String? avatarUrl;
 
   const UserModel({
     required this.id,
@@ -14,6 +15,7 @@ class UserModel extends Equatable {
     this.fullName,
     required this.role,
     required this.preferredLanguage,
+    this.avatarUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> j) => UserModel(
@@ -22,10 +24,11 @@ class UserModel extends Equatable {
         fullName: j['full_name'],
         role: j['role'] ?? 'client',
         preferredLanguage: j['preferred_language'] ?? 'uz',
+        avatarUrl: j['avatar_url'],
       );
 
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [id, role, fullName, avatarUrl];
 }
 
 // ─── Vehicle ──────────────────────────────────────

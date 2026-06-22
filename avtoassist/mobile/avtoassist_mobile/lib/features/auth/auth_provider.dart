@@ -106,6 +106,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> updateProfile({
+    String? fullName,
+    String? role,
+    String? avatarUrl,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final body = <String, dynamic>{};
+      if (fullName != null) body['full_name'] = fullName;
+      if (role != null) body['role'] = role;
+      if (avatarUrl != null) body['avatar_url'] = avatarUrl;
+      final res = await _api.patch('/users/me', data: body);
+      final user = UserModel.fromJson(res.data['user']);
+      state = state.copyWith(user: user, isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: _parseError(e));
+      return false;
+    }
+  }
+
   Future<void> logout() async {
     final token = await SecureStorage.read('refresh_token');
     try {

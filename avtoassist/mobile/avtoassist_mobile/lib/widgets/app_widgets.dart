@@ -227,6 +227,8 @@ class AppLocalizations {
       _s("Hali avtomobil qo'shilmagan", 'Авто пока не добавлено',
           'Ҳали автомобиль қўшилмаган');
   String get save => _s('Saqlash', 'Сохранить', 'Сақлаш');
+  String get saveProfile =>
+      _s('Profilni saqlash', 'Сохранить профиль', 'Профилни сақлаш');
   String get delete => _s("O'chirish", 'Удалить', 'Ўчириш');
   String get language => _s('Til', 'Язык', 'Тил');
   String get logout => _s('Chiqish', 'Выйти', 'Чиқиш');

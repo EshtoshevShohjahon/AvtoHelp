@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,6 +10,7 @@ import 'core/storage/secure_storage.dart';
 import 'features/auth/auth_provider.dart';
 import 'features/auth/phone_screen.dart';
 import 'features/auth/otp_screen.dart';
+import 'features/auth/onboarding_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/vehicles/vehicles_screen.dart';
 import 'features/orders/new_order_screen.dart';
@@ -33,7 +35,8 @@ final _router = GoRouter(
     final token = await SecureStorage.read('access_token');
     final refresh = await SecureStorage.read('refresh_token');
     final hasSession = token != null || refresh != null;
-    final onAuth = state.matchedLocation.startsWith('/auth');
+    final onAuth = state.matchedLocation.startsWith('/auth') ||
+        state.matchedLocation == '/auth/onboarding';
     if (!hasSession && !onAuth) return '/auth/phone';
     if (hasSession && onAuth) return '/home';
     return null;
@@ -49,6 +52,10 @@ final _router = GoRouter(
         final phone = state.extra as String? ?? '';
         return OtpScreen(phone: phone);
       },
+    ),
+    GoRoute(
+      path: '/auth/onboarding',
+      builder: (_, __) => const OnboardingScreen(),
     ),
     GoRoute(
       path: '/vehicles',
@@ -229,29 +236,7 @@ class _ProfileScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Center(
-            child: CircleAvatar(
-              radius: 38,
-              backgroundColor: AppColors.steel,
-              child: Text(
-                () {
-                  final u = user;
-                  if (u?.fullName != null && u!.fullName!.isNotEmpty) {
-                    return u.fullName![0].toUpperCase();
-                  }
-                  final p = u?.phone;
-                  if (p != null && p.length >= 2) {
-                    return p.substring(p.length - 2);
-                  }
-                  return '?';
-                }(),
-                style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.bone),
-              ),
-            ),
-          ),
+          Center(child: _ProfileAvatar(user: user, onEdit: () => context.go('/auth/onboarding'))),
           const SizedBox(height: 12),
           Center(
             child: Text(
@@ -384,6 +369,55 @@ class _ProfileTile extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+// ─── Profil avatar ────────────────────────────────────────────────────────────
+class _ProfileAvatar extends StatelessWidget {
+  final dynamic user;
+  final VoidCallback onEdit;
+  const _ProfileAvatar({required this.user, required this.onEdit});
+
+  @override
+  Widget build(BuildContext context) {
+    ImageProvider? img;
+    final url = user?.avatarUrl as String?;
+    if (url != null && url.startsWith('data:')) {
+      try {
+        img = MemoryImage(base64Decode(url.split(',').last));
+      } catch (_) {}
+    }
+    final initials = () {
+      final n = user?.fullName as String?;
+      if (n != null && n.isNotEmpty) return n[0].toUpperCase();
+      final p = user?.phone as String?;
+      if (p != null && p.length >= 2) return p.substring(p.length - 2);
+      return '?';
+    }();
+    return Stack(alignment: Alignment.bottomRight, children: [
+      CircleAvatar(
+        radius: 38,
+        backgroundColor: AppColors.steel,
+        backgroundImage: img,
+        child: img == null
+            ? Text(initials,
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.bone))
+            : null,
+      ),
+      GestureDetector(
+        onTap: onEdit,
+        child: Container(
+          width: 26,
+          height: 26,
+          decoration: const BoxDecoration(
+              color: AppColors.amber, shape: BoxShape.circle),
+          child: const Icon(Icons.edit, color: Color(0xFF1A1100), size: 14),
+        ),
+      ),
+    ]);
   }
 }
 

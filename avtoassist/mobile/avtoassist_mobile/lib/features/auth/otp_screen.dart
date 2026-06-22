@@ -24,7 +24,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           code: _code,
         );
     if (!mounted) return;
-    if (ok) context.go('/home');
+    if (ok) {
+      final user = ref.read(authProvider).user;
+      final isNew = user?.fullName == null || user!.fullName!.trim().isEmpty;
+      context.go(isNew ? '/auth/onboarding' : '/home');
+    }
   }
 
   @override

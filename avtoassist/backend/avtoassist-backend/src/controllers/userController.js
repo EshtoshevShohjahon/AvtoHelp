@@ -7,9 +7,11 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const updateMe = asyncHandler(async (req, res) => {
-  const { full_name, preferred_language } = req.body;
+  const { full_name, preferred_language, role, avatar_url } = req.body;
   if (full_name !== undefined) req.user.full_name = full_name;
   if (preferred_language !== undefined) req.user.preferred_language = preferred_language;
+  if (role !== undefined && ['client', 'provider'].includes(role)) req.user.role = role;
+  if (avatar_url !== undefined) req.user.avatar_url = avatar_url;
   await req.user.save();
   res.json({ user: req.user });
 });
