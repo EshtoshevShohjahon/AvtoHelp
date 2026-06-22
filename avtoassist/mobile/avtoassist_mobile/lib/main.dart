@@ -36,8 +36,8 @@ final _router = GoRouter(
     final refresh = await SecureStorage.read('refresh_token');
     final hasSession = token != null || refresh != null;
     final loc = state.matchedLocation;
-    // /auth/onboarding is reachable by authenticated users
-    if (loc == '/auth/onboarding') {
+    // OTP va onboarding ekranlari authenticated foydalanuvchilar uchun ham ruxsat
+    if (loc == '/auth/onboarding' || loc == '/auth/otp') {
       return hasSession ? null : '/auth/phone';
     }
     final onLoginFlow = loc.startsWith('/auth');
