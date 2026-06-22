@@ -26,9 +26,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     if (ok) {
       final user = ref.read(authProvider).user;
       final isNew = user?.fullName == null || user!.fullName!.trim().isEmpty;
+      if (!widget.register && isNew) {
+        // Yangi foydalanuvchi "Kirish" tugmasini bosgan — ruxsat yo'q
+        await ref.read(authProvider.notifier).logout();
+        if (!mounted) return;
+        setState(() => _loginError = AppLocalizations(context).notRegisteredError);
+        return;
+      }
       context.go((widget.register || isNew) ? '/auth/onboarding' : '/home');
     }
   }
+
+  String? _loginError;
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +93,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
               ),
 
-              if (auth.error != null) ...[
+              if (auth.error != null || _loginError != null) ...[
                 const SizedBox(height: 16),
-                Text(auth.error!,
+                Text(
+                    _loginError ?? auth.error!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: AppColors.danger)),
               ],

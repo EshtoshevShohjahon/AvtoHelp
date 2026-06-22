@@ -28,6 +28,10 @@ class AppLocalizations {
       _s('Kirish', 'Войти', 'Кириш');
   String get register =>
       _s("Ro'yxatdan o'tish", 'Регистрация', "Рўйхатдан ўтиш");
+  String get notRegisteredError =>
+      _s("Siz ro'yxatdan o'tmagansiz. Iltimos, \"Ro'yxatdan o'tish\" tugmasini bosing.",
+         'Вы не зарегистрированы. Нажмите кнопку «Регистрация».',
+         "Сиз рўйхатдан ўтмагансиз. «Рўйхатдан ўтиш» тугмасини босинг.");
   String get enterCode =>
       _s('Kodni kiriting', 'Введите код', 'Кодни киритинг');
   String get phoneNumber =>
