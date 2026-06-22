@@ -9,6 +9,7 @@ const PartsStore = sequelize.define('PartsStore', {
   lat: { type: DataTypes.FLOAT, allowNull: false },
   lng: { type: DataTypes.FLOAT, allowNull: false },
   working_hours: { type: DataTypes.JSON, allowNull: true },
+  is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
 }, {
   tableName: 'parts_stores',
   timestamps: true,

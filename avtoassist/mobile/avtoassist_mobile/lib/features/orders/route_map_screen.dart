@@ -39,6 +39,12 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
     _init();
   }
 
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
+
   Future<void> _init() async {
     try {
       LatLng origin;

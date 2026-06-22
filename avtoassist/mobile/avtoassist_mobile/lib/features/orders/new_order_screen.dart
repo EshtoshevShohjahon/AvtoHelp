@@ -65,7 +65,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         return;
       }
       final pos = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+          locationSettings:
+              const LocationSettings(accuracy: LocationAccuracy.high));
       if (!mounted) return;
       setState(() {
         _lat = pos.latitude;

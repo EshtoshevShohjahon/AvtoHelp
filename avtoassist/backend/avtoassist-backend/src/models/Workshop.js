@@ -12,6 +12,7 @@ const Workshop = sequelize.define('Workshop', {
   rating_avg: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 },
   rating_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   working_hours: { type: DataTypes.JSON, allowNull: true },
+  is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
 }, {
   tableName: 'workshops',
   timestamps: true,
