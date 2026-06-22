@@ -4,6 +4,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../features/auth/auth_provider.dart';
 import '../../features/vehicles/vehicle_detail_screen.dart';
+import '../../widgets/app_widgets.dart';
 
 // ─── Provider bosh ekrani ────────────────────────────────────────────────────
 class ProviderHomeScreen extends ConsumerStatefulWidget {
@@ -53,9 +54,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
+    final l = AppLocalizations(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Usta paneli'),
+        title: Text(l.providerPanel),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -81,18 +83,18 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Row(children: [
-                Icon(Icons.search, color: AppColors.amber, size: 18),
-                SizedBox(width: 8),
-                Text('Mijoz avtomobilini qidirish',
-                    style: TextStyle(
+              Row(children: [
+                const Icon(Icons.search, color: AppColors.amber, size: 18),
+                const SizedBox(width: 8),
+                Text(l.searchClientVehicle,
+                    style: const TextStyle(
                         color: AppColors.bone,
                         fontWeight: FontWeight.w600,
                         fontSize: 14)),
               ]),
               const SizedBox(height: 4),
-              const Text('Tex passport raqamini kiriting',
-                  style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+              Text(l.enterTechPassport,
+                  style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
               const SizedBox(height: 12),
               Row(children: [
                 Expanded(
@@ -181,8 +183,8 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
               child: Column(children: [
                 Icon(Icons.car_repair, color: AppColors.steelLine, size: 64),
                 SizedBox(height: 16),
-                Text('Mijoz avtomobilining tex pasportini\nkiriting va tarixini ko\'ring',
-                    style: TextStyle(
+                Text(l.vehicleLookupHint,
+                    style: const TextStyle(
                         color: AppColors.steelLight, fontSize: 14),
                     textAlign: TextAlign.center),
               ]),
@@ -275,39 +277,42 @@ class _VehicleInfoCard extends StatelessWidget {
         child: ElevatedButton.icon(
           onPressed: onAddRecord,
           icon: const Icon(Icons.add_circle_outline, size: 18),
-          label: const Text('Tex xizmat qo\'shish'),
+          label: Text(AppLocalizations(context).addServiceRecord),
         ),
       ),
 
       const SizedBox(height: 16),
 
       // Tarix
-      Row(children: [
-        const Text('Xizmat tarixi',
-            style: TextStyle(
-                color: AppColors.bone,
-                fontSize: 15,
-                fontWeight: FontWeight.w600)),
-        const Spacer(),
-        Text('${records.length} ta yozuv',
-            style: const TextStyle(
-                color: AppColors.steelLight, fontSize: 12)),
-      ]),
+      Builder(builder: (ctx) {
+        final l = AppLocalizations(ctx);
+        return Row(children: [
+          Text(l.serviceHistory,
+              style: const TextStyle(
+                  color: AppColors.bone,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600)),
+          const Spacer(),
+          Text(l.recordsCount(records.length),
+              style: const TextStyle(
+                  color: AppColors.steelLight, fontSize: 12)),
+        ]);
+      }),
       const SizedBox(height: 10),
 
       if (records.isEmpty)
-        Container(
+        Builder(builder: (ctx) => Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: AppColors.charcoal,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.steelLine),
           ),
-          child: const Center(
-            child: Text('Hali xizmat tarixi yo\'q',
-                style: TextStyle(color: AppColors.steelLight)),
+          child: Center(
+            child: Text(AppLocalizations(ctx).noServiceHistory,
+                style: const TextStyle(color: AppColors.steelLight)),
           ),
-        )
+        ))
       else
         ...records.map((r) => ServiceRecordModel.fromJson(r)).map(
               (r) => _HistoryTile(record: r),
@@ -440,15 +445,9 @@ class _ProviderAddRecordScreenState
   final _nextKmCtrl = TextEditingController();
   bool _loading = false;
 
-  static const _types = [
-    ('oil_change', 'Moy almashtirish'),
-    ('inspection', 'Tex ko\'rik'),
-    ('tire', 'Shina'),
-    ('brake', 'Tormoz'),
-    ('engine', 'Dvigatel'),
-    ('battery', 'Akkumulyator'),
-    ('transmission', 'Karobka'),
-    ('other', 'Boshqa'),
+  static const _typeKeys = [
+    'oil_change', 'inspection', 'tire', 'brake',
+    'engine', 'battery', 'transmission', 'other',
   ];
 
   @override
@@ -523,7 +522,7 @@ class _ProviderAddRecordScreenState
           preferredSize: const Size.fromHeight(24),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text('Tex xizmat qo\'shish',
+            child: Text(AppLocalizations(context).addServiceRecord,
                 style: TextStyle(
                     color: AppColors.amber.withOpacity(0.8),
                     fontSize: 12)),
@@ -536,17 +535,17 @@ class _ProviderAddRecordScreenState
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Xizmat turi
-            const Text('Xizmat turi',
-                style:
-                    TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).serviceType,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _types.map((t) {
-                final sel = _serviceType == t.$1;
+              children: _typeKeys.map((key) {
+                final sel = _serviceType == key;
+                final label = AppLocalizations(context).serviceTypeLabel(key);
                 return GestureDetector(
-                  onTap: () => setState(() => _serviceType = t.$1),
+                  onTap: () => setState(() => _serviceType = key),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 120),
                     padding: const EdgeInsets.symmetric(
@@ -560,7 +559,7 @@ class _ProviderAddRecordScreenState
                           color:
                               sel ? AppColors.amber : AppColors.steelLine),
                     ),
-                    child: Text(t.$2,
+                    child: Text(label,
                         style: TextStyle(
                             color: sel
                                 ? AppColors.amber
@@ -582,9 +581,9 @@ class _ProviderAddRecordScreenState
                 controller: _dateCtrl,
                 enabled: false,
                 style: const TextStyle(color: AppColors.bone),
-                decoration: const InputDecoration(
-                  labelText: 'Sana',
-                  prefixIcon: Icon(Icons.calendar_today_outlined,
+                decoration: InputDecoration(
+                  labelText: AppLocalizations(context).dateLabel,
+                  prefixIcon: const Icon(Icons.calendar_today_outlined,
                       color: AppColors.amber),
                 ),
               ),
@@ -596,8 +595,8 @@ class _ProviderAddRecordScreenState
               controller: _odometerCtrl,
               keyboardType: TextInputType.number,
               style: const TextStyle(color: AppColors.bone),
-              decoration: const InputDecoration(
-                labelText: 'Odometr (km)',
+              decoration: InputDecoration(
+                labelText: AppLocalizations(context).odometerKm,
                 hintText: '45000',
                 prefixIcon:
                     Icon(Icons.speed_outlined, color: AppColors.amber),
@@ -611,8 +610,8 @@ class _ProviderAddRecordScreenState
                 controller: _nextKmCtrl,
                 keyboardType: TextInputType.number,
                 style: const TextStyle(color: AppColors.bone),
-                decoration: const InputDecoration(
-                  labelText: 'Keyingi moy almashtirishgacha (km)',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations(context).nextOilChangeKm,
                   hintText: '50000',
                   prefixIcon: Icon(Icons.update, color: AppColors.amber),
                   suffixText: 'km',
@@ -624,8 +623,8 @@ class _ProviderAddRecordScreenState
             TextField(
               controller: _workshopCtrl,
               style: const TextStyle(color: AppColors.bone),
-              decoration: const InputDecoration(
-                labelText: 'Ustaxona nomi',
+              decoration: InputDecoration(
+                labelText: AppLocalizations(context).workshopName,
                 hintText: 'Toshkent STO',
                 prefixIcon: Icon(Icons.store_outlined,
                     color: AppColors.steelLight),
@@ -637,8 +636,8 @@ class _ProviderAddRecordScreenState
               controller: _costCtrl,
               keyboardType: TextInputType.number,
               style: const TextStyle(color: AppColors.bone),
-              decoration: const InputDecoration(
-                labelText: 'Xizmat narxi',
+              decoration: InputDecoration(
+                labelText: AppLocalizations(context).cost,
                 hintText: '85000',
                 prefixIcon: Icon(Icons.payments_outlined,
                     color: AppColors.steelLight),
@@ -651,8 +650,8 @@ class _ProviderAddRecordScreenState
               controller: _notesCtrl,
               style: const TextStyle(color: AppColors.bone),
               maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Izoh (ixtiyoriy)',
+              decoration: InputDecoration(
+                labelText: AppLocalizations(context).notes,
                 prefixIcon: Icon(Icons.notes, color: AppColors.steelLight),
               ),
             ),
@@ -669,7 +668,7 @@ class _ProviderAddRecordScreenState
                         height: 20,
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: AppColors.asphalt))
-                    : const Text('Saqlash'),
+                    : Text(AppLocalizations(context).save),
               ),
             ),
             const SizedBox(height: 20),

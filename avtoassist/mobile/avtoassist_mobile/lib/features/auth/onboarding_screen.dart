@@ -147,24 +147,25 @@ class _NameStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Ismingizni kiriting',
-          style: TextStyle(
+      Text(l.enterYourName,
+          style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.bone)),
       const SizedBox(height: 6),
-      const Text('Bu ma\'lumot profilingizda ko\'rsatiladi',
-          style: TextStyle(color: AppColors.steelLight, fontSize: 14)),
+      Text(l.nameShownInProfile,
+          style: const TextStyle(color: AppColors.steelLight, fontSize: 14)),
       const SizedBox(height: 32),
       TextField(
         controller: ctrl,
         autofocus: true,
         textCapitalization: TextCapitalization.words,
         style: const TextStyle(color: AppColors.bone),
-        decoration: const InputDecoration(
-          hintText: 'Ism Familiya',
-          prefixIcon: Icon(Icons.person_outline, color: AppColors.amber),
+        decoration: InputDecoration(
+          hintText: l.namePlaceholder,
+          prefixIcon: const Icon(Icons.person_outline, color: AppColors.amber),
         ),
       ),
     ]);
@@ -179,29 +180,30 @@ class _RoleStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Siz kimligingizni tanlang',
-          style: TextStyle(
+      Text(l.selectYourRole,
+          style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: AppColors.bone)),
       const SizedBox(height: 6),
-      const Text('Keyinchalik profil sozlamalaridan o\'zgartirishingiz mumkin',
-          style: TextStyle(color: AppColors.steelLight, fontSize: 14)),
+      Text(l.roleChangeHint,
+          style: const TextStyle(color: AppColors.steelLight, fontSize: 14)),
       const SizedBox(height: 32),
       _RoleCard(
         selected: role == 'client',
         icon: Icons.directions_car_outlined,
-        title: 'Mijozman',
-        desc: 'Avtomobil xizmati yoki ehtiyot qism qidiraman',
+        title: l.iAmClient,
+        desc: l.clientRoleDesc,
         onTap: () => onChanged('client'),
       ),
       const SizedBox(height: 12),
       _RoleCard(
         selected: role == 'provider',
         icon: Icons.handyman_outlined,
-        title: 'Xizmat ko\'rsatuvchiman',
-        desc: 'Usta, evakuator, kuryer yoki STO',
+        title: l.iAmProvider,
+        desc: l.providerRoleDesc,
         onTap: () => onChanged('provider'),
       ),
     ]);
@@ -282,19 +284,20 @@ class _AvatarStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 8),
-          const Text('Profil rasmini qo\'ying',
-              style: TextStyle(
+          Text(l.addProfilePhoto,
+              style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppColors.bone),
               textAlign: TextAlign.center),
           const SizedBox(height: 6),
-          const Text('Ixtiyoriy — o\'tkazib yuborish mumkin',
-              style: TextStyle(color: AppColors.steelLight, fontSize: 14),
+          Text(l.photoOptional,
+              style: const TextStyle(color: AppColors.steelLight, fontSize: 14),
               textAlign: TextAlign.center),
           const SizedBox(height: 40),
           GestureDetector(
@@ -331,8 +334,8 @@ class _AvatarStep extends StatelessWidget {
           const SizedBox(height: 24),
           TextButton(
             onPressed: onPick,
-            child: const Text('Galereyadan tanlash',
-                style: TextStyle(color: AppColors.amber)),
+            child: Text(l.chooseFromGallery,
+                style: const TextStyle(color: AppColors.amber)),
           ),
         ]);
   }

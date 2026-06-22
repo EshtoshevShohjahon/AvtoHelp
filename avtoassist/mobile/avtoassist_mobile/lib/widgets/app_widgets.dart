@@ -237,6 +237,7 @@ class AppLocalizations {
       _s('Profilni saqlash', 'Сохранить профиль', 'Профилни сақлаш');
   String get delete => _s("O'chirish", 'Удалить', 'Ўчириш');
   String get language => _s('Til', 'Язык', 'Тил');
+  String get selectLanguage => _s('Tilni tanlang', 'Выберите язык', 'Тилни танланг');
   String get logout => _s('Chiqish', 'Выйти', 'Чиқиш');
   String get online => _s('Onlayn', 'Онлайн', 'Онлайн');
   String get offline => _s('Oflayn', 'Офлайн', 'Офлайн');
@@ -274,6 +275,68 @@ class AppLocalizations {
   String get done => _s('Tayyor', 'Готово', 'Тайёр');
   String get back => _s('Orqaga', 'Назад', 'Орқага');
   String get soum => _s("so'm", 'сум', 'сўм');
+
+  // ─── Onboarding ───────────────────────────────────────────
+  String get enterYourName => _s('Ismingizni kiriting', 'Введите ваше имя', 'Исмингизни киритинг');
+  String get nameShownInProfile => _s("Bu ma'lumot profilingizda ko'rsatiladi", 'Отображается в вашем профиле', 'Бу маълумот профилингизда кўрсатилади');
+  String get namePlaceholder => _s('Ism Familiya', 'Имя Фамилия', 'Исм Фамилия');
+  String get selectYourRole => _s('Siz kimligingizni tanlang', 'Кто вы?', 'Сиз кимлигингизни танланг');
+  String get roleChangeHint => _s("Keyinchalik profil sozlamalaridan o'zgartirishingiz mumkin", 'Можно изменить в настройках профиля', 'Кейинчалик профил созламаларидан ўзгартиришингиз мумкин');
+  String get addProfilePhoto => _s("Profil rasmini qo'ying", 'Добавьте фото профиля', 'Profil rasmini qo\'ying');
+  String get photoOptional => _s("Ixtiyoriy — o'tkazib yuborish mumkin", 'Необязательно — можно пропустить', 'Ихтиёрий — ўтказиб юбориш мумкин');
+  String get chooseFromGallery => _s('Galereyadan tanlash', 'Выбрать из галереи', 'Галереядан танлаш');
+  String get iAmClient => _s('Mijozman', 'Я клиент', 'Мижозман');
+  String get clientRoleDesc => _s('Avtomobil xizmati yoki ehtiyot qism qidiraman', 'Ищу автосервис или запчасти', 'Автомобил хизмати ёки эҳтиёт қисм қидираман');
+  String get iAmProvider => _s("Xizmat ko'rsatuvchiman", 'Я исполнитель', 'Хизмат кўрсатувчиман');
+  String get providerRoleDesc => _s("Usta, evakuator, kuryer yoki STO", 'Мастер, эвакуатор, курьер или СТО', 'Уста, эвакуатор, курьер ёки СТО');
+
+  // ─── Provider panel ────────────────────────────────────────
+  String get providerPanel => _s('Usta paneli', 'Панель мастера', 'Уста панели');
+  String get searchClientVehicle => _s('Mijoz avtomobilini qidirish', 'Поиск авто клиента', 'Мижоз автомобилини қидириш');
+  String get enterTechPassport => _s('Tex passport raqamini kiriting', 'Введите номер техпаспорта', 'Техпаспорт рақамини киритинг');
+  String get vehicleLookupHint => _s("Mijoz avtomobilining tex pasportini\nkiriting va tarixini ko'ring", 'Введите техпаспорт клиента\nи посмотрите историю ТО', 'Мижоз автомобилининг техпаспортини\nкиритинг ва тарихини кўринг');
+  String get serviceHistory => _s('Xizmat tarixi', 'История ТО', 'Хизмат тарихи');
+  String get addServiceRecord => _s("Tex xizmat qo'shish", 'Добавить запись ТО', 'Теххизмат қўшиш');
+  String get noServiceHistory => _s("Hali xizmat tarixi yo'q", 'История ТО пуста', 'Ҳали хизмат тарихи йўқ');
+  String recordsCount(int n) => _s('$n ta yozuv', '$n записей', '$n та ёзув');
+  String get serviceType => _s('Xizmat turi', 'Тип обслуживания', 'Хизмат тури');
+  String get workshopName => _s('Ustaxona nomi', 'Название СТО', 'Устахона номи');
+  String get mechanicName => _s('Usta ismi', 'Имя мастера', 'Уста исми');
+  String get cost => _s('Narxi', 'Стоимость', 'Нархи');
+  String get notes => _s('Izoh', 'Примечание', 'Изоҳ');
+  String get nextOilChangeKm => _s("Keyingi moy almashtirishgacha (km)", 'До следующей замены масла (км)', 'Кейинги мой алмаштиришгача (км)');
+
+  // ─── Vehicle detail ────────────────────────────────────────
+  String get updateOdometer => _s("Hozirgi km ni yangilash", 'Обновить одометр', 'Ҳозирги км ни янгилаш');
+  String get currentOdometer => _s('Hozirgi yurgan masofasi', 'Текущий пробег', 'Ҳозирги юрган масофаси');
+  String get addInspection => _s("Tex ko'rik qo'shish", 'Добавить ТО', "Техкўрик қўшиш");
+  String get inspectionHistory => _s("Tex ko'rik tarixi", 'История ТО', "Техкўрик тарихи");
+  String get noInspectionYet => _s("Hali tex ko'rik yozuvi yo'q", 'Записей ТО пока нет', "Ҳали техкўрик ёзуви йўқ");
+  String get addWithPlusBtn => _s("+ tugmasini bosib qo'shing", 'Нажмите + чтобы добавить', '+ тугмасини босиб қўшинг');
+  String get newInspection => _s("Yangi tex ko'rik", 'Новое ТО', 'Янги техкўрик');
+  String get deleteConfirm => _s("Bu yozuvni o'chirishni xohlaysizmi?", 'Удалить эту запись?', 'Бу ёзувни ўчиришни хоҳлайсизми?');
+  String get no => _s("Yo'q", 'Нет', 'Йўқ');
+  String get deleteBtn => _s("O'chirish", 'Удалить', 'Ўчириш');
+  String get dateLabel => _s('Sana', 'Дата', 'Сана');
+  String get odometerKm => _s('Hozirgi km (odometr)', 'Пробег (одометр, км)', 'Ҳозирги км (одометр)');
+  String nextOilAt(int km) => _s('Keyingi moy: $km km da', 'След. замена масла: $km км', 'Кейинги мой: $km км да');
+  String get locating => _s('Aniqlanmoqda...', 'Определяем...', 'Аниқланмоқда...');
+  String get minutes => _s('DAQIQA', 'МИН', 'ДАҚИҚА');
+  String get noInternet2 => _s("Hali buyurtmalar yo'q", 'Заказов пока нет', 'Ҳали буюртмалар йўқ');
+
+  // ─── Xizmat turlari ────────────────────────────────────────
+  String serviceTypeLabel(String t) {
+    switch (t) {
+      case 'oil_change': return _s('Moy almashtirish', 'Замена масла', 'Мой алмаштириш');
+      case 'inspection': return _s("Tex ko'rik", 'Техосмотр', 'Техкўрик');
+      case 'tire':       return _s('Shina', 'Шина', 'Шина');
+      case 'brake':      return _s('Tormoz', 'Тормоз', 'Тормоз');
+      case 'engine':     return _s('Dvigatel', 'Двигатель', 'Двигател');
+      case 'battery':    return _s('Akkumulyator', 'Аккумулятор', 'Аккумулятор');
+      case 'transmission': return _s('Karobka', 'КПП', 'Коробка');
+      default:           return _s('Boshqa', 'Другое', 'Бошқа');
+    }
+  }
 }
 
 // ─── AppLogo ─────────────────────────────────────────────────

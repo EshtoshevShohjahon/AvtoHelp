@@ -182,6 +182,7 @@ class _MainShell extends ConsumerWidget {
       _            => 0,
     };
 
+    final l = AppLocalizations(context);
     return Scaffold(
       body: child,
       bottomNavigationBar: BottomNavigationBar(
@@ -193,21 +194,21 @@ class _MainShell extends ConsumerWidget {
             case 2: context.go('/profile');
           }
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home_rounded),
-            label: 'Asosiy',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home_rounded),
+            label: l.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Buyurtmalar',
+            icon: const Icon(Icons.receipt_long_outlined),
+            activeIcon: const Icon(Icons.receipt_long),
+            label: l.orders,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_rounded),
-            activeIcon: Icon(Icons.person_rounded),
-            label: 'Profil',
+            icon: const Icon(Icons.person_outline_rounded),
+            activeIcon: const Icon(Icons.person_rounded),
+            label: l.profile,
           ),
         ],
       ),
@@ -220,17 +221,18 @@ class _OrdersListScreen extends StatelessWidget {
   const _OrdersListScreen();
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Buyurtmalar')),
-      body: const Center(
+      appBar: AppBar(title: Text(l.orders)),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.receipt_long_outlined,
+            const Icon(Icons.receipt_long_outlined,
                 color: AppColors.steelLight, size: 56),
-            SizedBox(height: 12),
-            Text("Hali buyurtmalar yo'q",
-                style: TextStyle(color: AppColors.steelLight)),
+            const SizedBox(height: 12),
+            Text(l.noOrdersYet,
+                style: const TextStyle(color: AppColors.steelLight)),
           ],
         ),
       ),
@@ -243,8 +245,9 @@ class _ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
+    final l = AppLocalizations(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
+      appBar: AppBar(title: Text(l.profile)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -269,17 +272,17 @@ class _ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 28),
           _ProfileTile(
             icon: Icons.directions_car_outlined,
-            title: 'Avtomobillarim',
+            title: l.myVehicles,
             onTap: () => context.push('/vehicles'),
           ),
           _ProfileTile(
             icon: Icons.language_outlined,
-            title: 'Til sozlamalari',
+            title: l.language,
             onTap: () => _showLanguagePicker(context, ref),
           ),
           _ProfileTile(
             icon: Icons.logout,
-            title: 'Chiqish',
+            title: l.logout,
             color: AppColors.danger,
             onTap: () => ref.read(authProvider.notifier).logout(),
           ),
@@ -303,7 +306,9 @@ void _showLanguagePicker(BuildContext context, WidgetRef ref) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    builder: (ctx) => SafeArea(
+    builder: (ctx) {
+      final l = AppLocalizations(ctx);
+      return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -317,10 +322,10 @@ void _showLanguagePicker(BuildContext context, WidgetRef ref) {
             ),
           ),
           const SizedBox(height: 12),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text('Tilni tanlang',
-                style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(l.selectLanguage,
+                style: const TextStyle(
                     color: AppColors.bone,
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
@@ -339,7 +344,8 @@ void _showLanguagePicker(BuildContext context, WidgetRef ref) {
           const SizedBox(height: 8),
         ],
       ),
-    ),
+    );
+    },
   );
 }
 

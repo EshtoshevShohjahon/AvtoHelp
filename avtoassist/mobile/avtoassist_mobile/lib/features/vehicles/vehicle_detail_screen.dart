@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
+import '../../widgets/app_widgets.dart';
 
 // ─── Model ───────────────────────────────────────────────────────────────────
 class ServiceRecordModel {
@@ -128,8 +129,8 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.charcoal,
-        title: const Text('Hozirgi km ni yangilash',
-            style: TextStyle(color: AppColors.bone, fontSize: 16)),
+        title: Text(AppLocalizations(context).updateOdometer,
+            style: const TextStyle(color: AppColors.bone, fontSize: 16)),
         content: TextField(
           controller: ctrl,
           keyboardType: TextInputType.number,
@@ -142,11 +143,11 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Bekor')),
+              child: Text(AppLocalizations(context).cancel)),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Saqlash',
-                  style: TextStyle(color: AppColors.amber))),
+              child: Text(AppLocalizations(context).save,
+                  style: const TextStyle(color: AppColors.amber))),
         ],
       ),
     );
@@ -189,7 +190,7 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
         backgroundColor: AppColors.amber,
         foregroundColor: const Color(0xFF1A1100),
         icon: const Icon(Icons.add),
-        label: const Text('Tex ko\'rik qo\'shish'),
+        label: Text(AppLocalizations(context).addInspection),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.amber))
@@ -202,7 +203,7 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
                         style: const TextStyle(color: AppColors.steelLight),
                         textAlign: TextAlign.center),
                     const SizedBox(height: 16),
-                    ElevatedButton(onPressed: _load, child: const Text('Qayta')),
+                    ElevatedButton(onPressed: _load, child: Text(AppLocalizations(context).retry)),
                   ]))
               : RefreshIndicator(
                   onRefresh: _load,
@@ -222,39 +223,45 @@ class _VehicleDetailScreenState extends ConsumerState<VehicleDetailScreen> {
                       const SizedBox(height: 16),
 
                       // Tex ko'rik tarixi
-                      Row(children: [
-                        const Text('Tex ko\'rik tarixi',
-                            style: TextStyle(
-                                color: AppColors.bone,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600)),
-                        const Spacer(),
-                        Text('${_records.length} ta yozuv',
-                            style: const TextStyle(
-                                color: AppColors.steelLight, fontSize: 12)),
-                      ]),
+                      Builder(builder: (ctx) {
+                        final l = AppLocalizations(ctx);
+                        return Row(children: [
+                          Text(l.inspectionHistory,
+                              style: const TextStyle(
+                                  color: AppColors.bone,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          Text(l.recordsCount(_records.length),
+                              style: const TextStyle(
+                                  color: AppColors.steelLight, fontSize: 12)),
+                        ]);
+                      }),
                       const SizedBox(height: 10),
 
                       if (_records.isEmpty)
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: AppColors.charcoal,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppColors.steelLine),
-                          ),
-                          child: const Column(children: [
-                            Icon(Icons.build_outlined,
-                                color: AppColors.steelLight, size: 40),
-                            SizedBox(height: 10),
-                            Text('Hali tex ko\'rik yozuvi yo\'q',
-                                style: TextStyle(color: AppColors.steelLight)),
-                            SizedBox(height: 4),
-                            Text('+ tugmasini bosib qo\'shing',
-                                style: TextStyle(
-                                    color: AppColors.steel, fontSize: 12)),
-                          ]),
-                        )
+                        Builder(builder: (ctx) {
+                          final l = AppLocalizations(ctx);
+                          return Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: AppColors.charcoal,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppColors.steelLine),
+                            ),
+                            child: Column(children: [
+                              const Icon(Icons.build_outlined,
+                                  color: AppColors.steelLight, size: 40),
+                              const SizedBox(height: 10),
+                              Text(l.noInspectionYet,
+                                  style: const TextStyle(color: AppColors.steelLight)),
+                              const SizedBox(height: 4),
+                              Text(l.addWithPlusBtn,
+                                  style: const TextStyle(
+                                      color: AppColors.steel, fontSize: 12)),
+                            ]),
+                          );
+                        })
                       else
                         ...(_records.map((r) => _ServiceRecordCard(
                               record: r,
@@ -355,8 +362,8 @@ class _OdometerCard extends StatelessWidget {
           const Icon(Icons.speed, color: AppColors.teal, size: 22),
           const SizedBox(width: 12),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Hozirgi yurgan masofasi',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 11)),
+            Text(AppLocalizations(context).currentOdometer,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 11)),
             Text(
               '${_fmt(currentKm)} km',
               style: const TextStyle(
@@ -413,7 +420,7 @@ class _ServiceRecordCard extends StatelessWidget {
               Icon(_typeIcon(record.serviceType),
                   color: _typeColor(record.serviceType), size: 14),
               const SizedBox(width: 5),
-              Text(_typeLabel(record.serviceType),
+              Text(AppLocalizations(context).serviceTypeLabel(record.serviceType),
                   style: TextStyle(
                       color: _typeColor(record.serviceType),
                       fontSize: 12,
@@ -431,16 +438,16 @@ class _ServiceRecordCard extends StatelessWidget {
                 context: context,
                 builder: (ctx) => AlertDialog(
                   backgroundColor: AppColors.charcoal,
-                  content: const Text('Bu yozuvni o\'chirishni xohlaysizmi?',
-                      style: TextStyle(color: AppColors.bone)),
+                  content: Text(AppLocalizations(context).deleteConfirm,
+                      style: const TextStyle(color: AppColors.bone)),
                   actions: [
                     TextButton(
                         onPressed: () => Navigator.pop(ctx, false),
-                        child: const Text('Yo\'q')),
+                        child: Text(AppLocalizations(context).no)),
                     TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('O\'chirish',
-                            style: TextStyle(color: AppColors.danger))),
+                        child: Text(AppLocalizations(context).deleteBtn,
+                            style: const TextStyle(color: AppColors.danger))),
                   ],
                 ),
               );
@@ -492,7 +499,7 @@ class _ServiceRecordCard extends StatelessWidget {
           Row(children: [
             const Icon(Icons.update, color: AppColors.amber, size: 13),
             const SizedBox(width: 4),
-            Text('Keyingi moy: ${record.nextServiceKm} km da',
+            Text(AppLocalizations(context).nextOilAt(record.nextServiceKm!),
                 style: const TextStyle(
                     color: AppColors.amber, fontSize: 12)),
           ]),
@@ -570,15 +577,9 @@ class _AddServiceRecordScreenState
   final _nextKmCtrl = TextEditingController();
   bool _loading = false;
 
-  static const _types = [
-    ('oil_change', 'Moy almashtirish'),
-    ('inspection', 'Tex ko\'rik'),
-    ('tire', 'Shina'),
-    ('brake', 'Tormoz'),
-    ('engine', 'Dvigatel'),
-    ('battery', 'Akkumulyator'),
-    ('transmission', 'Karobka'),
-    ('other', 'Boshqa'),
+  static const _typeKeys = [
+    'oil_change', 'inspection', 'tire', 'brake',
+    'engine', 'battery', 'transmission', 'other',
   ];
 
   @override
@@ -646,22 +647,23 @@ class _AddServiceRecordScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Yangi tex ko\'rik')),
+      appBar: AppBar(title: Text(AppLocalizations(context).newInspection)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Xizmat turi
-            const Text('Xizmat turi',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).serviceType,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _types.map((t) {
-                final selected = _serviceType == t.$1;
+              children: _typeKeys.map((key) {
+                final selected = _serviceType == key;
+                final label = AppLocalizations(context).serviceTypeLabel(key);
                 return GestureDetector(
-                  onTap: () => setState(() => _serviceType = t.$1),
+                  onTap: () => setState(() => _serviceType = key),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 120),
                     padding: const EdgeInsets.symmetric(
@@ -676,7 +678,7 @@ class _AddServiceRecordScreenState
                               ? AppColors.amber
                               : AppColors.steelLine),
                     ),
-                    child: Text(t.$2,
+                    child: Text(label,
                         style: TextStyle(
                             color: selected
                                 ? AppColors.amber
@@ -692,8 +694,8 @@ class _AddServiceRecordScreenState
             const SizedBox(height: 20),
 
             // Sana
-            const Text('Sana',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).dateLabel,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             GestureDetector(
               onTap: _pickDate,
@@ -712,8 +714,8 @@ class _AddServiceRecordScreenState
             const SizedBox(height: 16),
 
             // Km
-            const Text('Hozirgi km (odometr)',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).odometerKm,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             TextField(
               controller: _odometerCtrl,
@@ -729,8 +731,8 @@ class _AddServiceRecordScreenState
 
             // Moy uchun keyingi km
             if (_serviceType == 'oil_change') ...[
-              const Text('Keyingi moy almashtirishgacha (km)',
-                  style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+              Text(AppLocalizations(context).nextOilChangeKm,
+                  style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
               const SizedBox(height: 6),
               TextField(
                 controller: _nextKmCtrl,
@@ -747,8 +749,8 @@ class _AddServiceRecordScreenState
             ],
 
             // Ustaxona
-            const Text('Ustaxona nomi',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).workshopName,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             TextField(
               controller: _workshopCtrl,
@@ -761,8 +763,8 @@ class _AddServiceRecordScreenState
             const SizedBox(height: 16),
 
             // Usta
-            const Text('Usta ismi',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).mechanicName,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             TextField(
               controller: _mechanicCtrl,
@@ -776,8 +778,8 @@ class _AddServiceRecordScreenState
             const SizedBox(height: 16),
 
             // Narx
-            const Text('Xizmat narxi',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).cost,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             TextField(
               controller: _costCtrl,
@@ -793,8 +795,8 @@ class _AddServiceRecordScreenState
             const SizedBox(height: 16),
 
             // Izoh
-            const Text('Izoh (ixtiyoriy)',
-                style: TextStyle(color: AppColors.steelLight, fontSize: 12)),
+            Text(AppLocalizations(context).notes,
+                style: const TextStyle(color: AppColors.steelLight, fontSize: 12)),
             const SizedBox(height: 6),
             TextField(
               controller: _notesCtrl,
