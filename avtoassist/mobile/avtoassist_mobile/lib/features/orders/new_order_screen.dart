@@ -60,11 +60,13 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         perm = await Geolocator.requestPermission();
       }
       if (perm == LocationPermission.deniedForever) {
-        setState(() { _locating = false; _pickupAddress = 'Ruxsat berilmagan'; });
+        if (!mounted) return;
+        setState(() { _locating = false; _pickupAddress = AppLocalizations(context).locationDenied; });
         return;
       }
       final pos = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
+      if (!mounted) return;
       setState(() {
         _lat = pos.latitude;
         _lng = pos.longitude;
@@ -73,7 +75,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
         _locating = false;
       });
     } catch (_) {
-      setState(() { _locating = false; _pickupAddress = 'Aniqlab bo\'lmadi'; });
+      if (!mounted) return;
+      setState(() { _locating = false; _pickupAddress = AppLocalizations(context).locationFailed; });
     }
   }
 
@@ -184,8 +187,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                           color: AppColors.amber),
                       const SizedBox(width: 10),
                       Expanded(child: _locating
-                          ? const Text('Aniqlanmoqda...',
-                              style: TextStyle(color: AppColors.steelLight))
+                          ? Text(l.locating,
+                              style: const TextStyle(color: AppColors.steelLight))
                           : Text(_pickupAddress,
                               style: const TextStyle(
                                   color: AppColors.bone, fontSize: 13))),

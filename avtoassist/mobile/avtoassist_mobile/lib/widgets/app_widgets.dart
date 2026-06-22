@@ -273,6 +273,12 @@ class AppLocalizations {
   String get error => _s('Xatolik', 'Ошибка', 'Хатолик');
   String get retry =>
       _s('Qayta urinish', 'Повторить', 'Қайта уриниш');
+  String get locating =>
+      _s('Aniqlanmoqda...', 'Определяем...', 'Аниқланмоқда...');
+  String get locationDenied =>
+      _s('Ruxsat berilmagan', 'Доступ запрещён', 'Рухсат берилмаган');
+  String get locationFailed =>
+      _s("Aniqlab bo'lmadi", 'Не удалось определить', 'Аниқлаб бўлмади');
   String get noInternet =>
       _s("Internet aloqasi yo'q", 'Нет подключения к интернету',
           'Интернет алоқаси йўқ');

@@ -37,6 +37,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         source: ImageSource.gallery, imageQuality: 60, maxWidth: 400);
     if (file == null) return;
     final bytes = await file.readAsBytes();
+    if (!mounted) return;
     final ext = file.name.split('.').last.toLowerCase();
     final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
     setState(() {
