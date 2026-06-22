@@ -1,48 +1,75 @@
-'use strict';
-const { User, Vehicle } = require('../models');
-const { v4: uuidv4 } = require('uuid');
+const { Vehicle } = require('../models');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { lookupByTechPassport } = require('../services/vehicleRegistryService');
 
-async function getMe(req, res) {
-  const user = await User.findByPk(req.user.id, { attributes: { exclude: ['createdAt', 'updatedAt'] } });
-  res.json(user);
-}
+const getMe = asyncHandler(async (req, res) => {
+  res.json({ user: req.user });
+});
 
-async function updateMe(req, res) {
-  const { name, preferred_language } = req.body;
-  const user = await User.findByPk(req.user.id);
-  const updates = {};
-  if (name !== undefined) updates.name = name;
-  if (preferred_language !== undefined) updates.preferred_language = preferred_language;
-  await user.update(updates);
-  res.json(user);
-}
+const updateMe = asyncHandler(async (req, res) => {
+  const { full_name, preferred_language } = req.body;
+  if (full_name !== undefined) req.user.full_name = full_name;
+  if (preferred_language !== undefined) req.user.preferred_language = preferred_language;
+  await req.user.save();
+  res.json({ user: req.user });
+});
 
-async function listVehicles(req, res) {
+const listVehicles = asyncHandler(async (req, res) => {
   const vehicles = await Vehicle.findAll({ where: { user_id: req.user.id } });
-  res.json(vehicles);
-}
+  res.json({ vehicles });
+});
 
-async function createVehicle(req, res) {
-  const { make, model, year, color, plate } = req.body;
-  if (!make || !model) return res.status(400).json({ error: 'make and model required' });
+// GET /api/users/me/vehicles/lookup?tech_passport=AAF1234567
+// Tex passport raqami bo'yicha avtomobil ma'lumotlarini reestrdan yuklab oladi
+const lookupVehicle = asyncHandler(async (req, res) => {
+  const techPassport = req.query.tech_passport;
+  if (!techPassport) {
+    return res.status(400).json({ error: req.t('validation_error') });
+  }
+  const data = lookupByTechPassport(techPassport);
+  if (!data) {
+    return res.status(404).json({ error: req.t('user_not_found') });
+  }
+  res.json({ vehicle: data });
+});
+
+const createVehicle = asyncHandler(async (req, res) => {
+  let { tech_passport, brand, model, plate_number, year, color, vin } = req.body;
+  if (!tech_passport) {
+    return res.status(400).json({ error: req.t('validation_error') });
+  }
+
+  // Mijoz faqat tex passport yuborsa — qolgan maydonlarni reestrdan to'ldiramiz
+  if (!brand || !model || !plate_number) {
+    const data = lookupByTechPassport(tech_passport);
+    if (!data) {
+      return res.status(404).json({ error: req.t('user_not_found') });
+    }
+    brand = brand || data.brand;
+    model = model || data.model;
+    plate_number = plate_number || data.plate_number;
+    year = year || data.year;
+    color = color || data.color;
+  }
+
   const vehicle = await Vehicle.create({
-    id: uuidv4(),
     user_id: req.user.id,
-    make,
+    tech_passport: String(tech_passport).toUpperCase().replace(/\s+/g, ''),
+    brand,
     model,
-    year: year ? parseInt(year) : null,
-    color: color || null,
-    plate: plate || null,
+    plate_number,
+    year,
+    color,
+    vin,
   });
-  res.status(201).json(vehicle);
-}
+  res.status(201).json({ vehicle });
+});
 
-async function deleteVehicle(req, res) {
-  const vehicle = await Vehicle.findByPk(req.params.id);
-  if (!vehicle) return res.status(404).json({ error: 'not found' });
-  if (vehicle.user_id !== req.user.id) return res.status(403).json({ error: 'forbidden' });
+const deleteVehicle = asyncHandler(async (req, res) => {
+  const vehicle = await Vehicle.findOne({ where: { id: req.params.id, user_id: req.user.id } });
+  if (!vehicle) return res.status(404).json({ error: req.t('user_not_found') });
   await vehicle.destroy();
   res.json({ ok: true });
-}
+});
 
-module.exports = { getMe, updateMe, listVehicles, createVehicle, deleteVehicle };
+module.exports = { getMe, updateMe, listVehicles, lookupVehicle, createVehicle, deleteVehicle };

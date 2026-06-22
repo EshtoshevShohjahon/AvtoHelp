@@ -1,14 +1,15 @@
-'use strict';
 const router = require('express').Router();
-const { asyncHandler } = require('../middleware/errorHandler');
 const { requireAuth } = require('../middleware/auth.middleware');
-const { getMe, updateMe, listVehicles, createVehicle, deleteVehicle } = require('../controllers/userController');
+const { getMe, updateMe, listVehicles, lookupVehicle, createVehicle, deleteVehicle } = require('../controllers/userController');
 
 router.use(requireAuth);
-router.get('/me', asyncHandler(getMe));
-router.patch('/me', asyncHandler(updateMe));
-router.get('/me/vehicles', asyncHandler(listVehicles));
-router.post('/me/vehicles', asyncHandler(createVehicle));
-router.delete('/me/vehicles/:id', asyncHandler(deleteVehicle));
+
+router.get('/me', getMe);
+router.patch('/me', updateMe);
+
+router.get('/me/vehicles', listVehicles);
+router.get('/me/vehicles/lookup', lookupVehicle);
+router.post('/me/vehicles', createVehicle);
+router.delete('/me/vehicles/:id', deleteVehicle);
 
 module.exports = router;
