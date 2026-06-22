@@ -110,7 +110,7 @@ class AvtoAssistApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final savedLang = AppPrefs.appLang;
+    final savedLang = ref.watch(localeProvider);
     final locale = _parseLocale(savedLang);
 
     return MaterialApp.router(
@@ -278,7 +278,7 @@ class _ProfileScreen extends ConsumerWidget {
           _ProfileTile(
             icon: Icons.language_outlined,
             title: 'Til sozlamalari',
-            onTap: () {},
+            onTap: () => _showLanguagePicker(context, ref),
           ),
           _ProfileTile(
             icon: Icons.logout,
@@ -294,6 +294,60 @@ class _ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+  const langs = [
+    ('uz', "O'zbekcha (lotin)"),
+    ('uz-cyrl', 'Ўзбекча (кирилл)'),
+    ('ru', 'Русский'),
+    ('en', 'English'),
+  ];
+  final current = ref.read(localeProvider);
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: AppColors.charcoal,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.steelLine,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text('Tilni tanlang',
+                style: TextStyle(
+                    color: AppColors.bone,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+          ),
+          for (final (code, label) in langs)
+            ListTile(
+              title: Text(label, style: const TextStyle(color: AppColors.bone)),
+              trailing: code == current
+                  ? const Icon(Icons.check, color: AppColors.amber)
+                  : null,
+              onTap: () {
+                ref.read(localeProvider.notifier).setLang(code);
+                Navigator.pop(ctx);
+              },
+            ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    ),
+  );
 }
 
 class _ProfileTile extends StatelessWidget {

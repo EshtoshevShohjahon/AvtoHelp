@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,3 +25,16 @@ class AppPrefs {
   static bool get onboardingDone => _prefs.getBool('onboarding_done') ?? false;
   static Future<void> setOnboardingDone() => _prefs.setBool('onboarding_done', true);
 }
+
+/// Tanlangan tilni reaktiv saqlaydi — o'zgarganda MaterialApp darhol qayta quriladi.
+class LocaleNotifier extends StateNotifier<String> {
+  LocaleNotifier() : super(AppPrefs.appLang);
+
+  Future<void> setLang(String lang) async {
+    await AppPrefs.setAppLang(lang);
+    state = lang;
+  }
+}
+
+final localeProvider =
+    StateNotifierProvider<LocaleNotifier, String>((ref) => LocaleNotifier());
