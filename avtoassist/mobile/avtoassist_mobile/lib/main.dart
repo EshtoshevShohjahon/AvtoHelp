@@ -124,6 +124,14 @@ class AvtoAssistApp extends ConsumerWidget {
     final savedLang = ref.watch(localeProvider);
     final locale = _parseLocale(savedLang);
 
+    // Auth holati o'zgarganda router avtomatik yo'naltiradi
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.status == AuthStatus.unauthenticated &&
+          previous?.status == AuthStatus.authenticated) {
+        _router.go('/auth/phone');
+      }
+    });
+
     return MaterialApp.router(
       title: 'AvtoAssist',
       debugShowCheckedModeBanner: false,
@@ -273,11 +281,7 @@ class _ProfileScreen extends ConsumerWidget {
             icon: Icons.logout,
             title: 'Chiqish',
             color: AppColors.danger,
-            // Log Out qilingandagina tokenlar o'chiriladi va keyin Login so'raladi
-            onTap: () async {
-              await ref.read(authProvider.notifier).logout();
-              if (context.mounted) context.go('/auth/phone');
-            },
+            onTap: () => ref.read(authProvider.notifier).logout(),
           ),
         ],
       ),
