@@ -1,0 +1,37 @@
+# Codemagic CI/CD — AvtoAssist Flutter ilovasini bulutda build qilish
+# Hujjat: https://docs.codemagic.io/yaml/yaml-getting-started/
+#
+# Bu fayl repo ildizida (root) turishi shart — Codemagic uni avtomatik topadi.
+# Flutter loyihasi avtoassist/mobile/avtoassist_mobile papkasida joylashgan.
+
+workflows:
+  android-apk:
+    name: AvtoAssist Android APK
+    instance_type: linux_x2
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      vars:
+        # Backend manzili. Haqiqiy telefonda test qilish uchun backendni
+        # internetga joylab (masalan Render/Railway), shu yerga URL'ini yozing.
+        # Masalan: https://avtoassist-api.onrender.com/api
+        API_BASE_URL: "https://CHANGE-ME.example.com/api"
+    scripts:
+      - name: Flutter paketlarini o'rnatish
+        script: |
+          cd avtoassist/mobile/avtoassist_mobile
+          flutter pub get
+      - name: APK build qilish
+        script: |
+          cd avtoassist/mobile/avtoassist_mobile
+          flutter build apk --release \
+            --dart-define=API_BASE_URL=$API_BASE_URL
+    artifacts:
+      - avtoassist/mobile/avtoassist_mobile/build/**/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - shohjahoneshtoshev@gmail.com
+        notify:
+          success: true
+          failure: true
