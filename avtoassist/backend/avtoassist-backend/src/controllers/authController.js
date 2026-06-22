@@ -17,21 +17,21 @@ async function sendOtpHandler(req, res) {
   const { phone } = req.body;
   if (!phone) return res.status(400).json({ error: 'phone required' });
   const result = await otpService.sendOtp(phone);
-  res.json(result);
+  res.json({ sent: result.sent, debug_code: result.debugCode || null });
 }
 
 async function verifyOtpHandler(req, res) {
   const { phone, code } = req.body;
   if (!phone || !code) return res.status(400).json({ error: 'phone and code required' });
   const ok = await otpService.verifyOtp(phone, code);
-  if (!ok) return res.status(401).json({ error: 'invalid or expired otp' });
+  if (!ok.valid) return res.status(401).json({ error: 'invalid or expired otp' });
 
   let user = await User.findOne({ where: { phone } });
   if (!user) {
     user = await User.create({
       id: uuidv4(),
       phone,
-      role: 'customer',
+      role: 'client',
       preferred_language: 'uz',
     });
   }
