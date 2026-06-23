@@ -6,8 +6,8 @@ plugins {
 
 android {
     namespace "com.avtohelp.app"
-    compileSdk 36
-    ndkVersion "27.0.12077973"
+    compileSdk 35
+    ndkVersion "28.2.13676358"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId "com.avtohelp.app"
         minSdk 21
-        targetSdk 36
+        targetSdk 35
         versionCode flutter.versionCode
         versionName flutter.versionName
     }
