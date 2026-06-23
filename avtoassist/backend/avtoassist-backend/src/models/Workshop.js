@@ -13,6 +13,11 @@ const Workshop = sequelize.define('Workshop', {
   rating_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   working_hours: { type: DataTypes.JSON, allowNull: true },
   is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  vehicle_category: {
+    type: DataTypes.ENUM('light', 'truck', 'both'),
+    allowNull: false,
+    defaultValue: 'light',
+  },
   osm_id: { type: DataTypes.STRING, allowNull: true, unique: true },
   phone: { type: DataTypes.STRING, allowNull: true },
   website: { type: DataTypes.STRING, allowNull: true },

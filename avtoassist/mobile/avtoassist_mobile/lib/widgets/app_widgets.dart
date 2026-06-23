@@ -128,6 +128,60 @@ class AppLocalizations {
           'Мобильная или ближайшая мойка',
           'Мобил ёки энг яқин мойка',
           'Mobile or nearest car wash');
+  String get serviceTruckSection =>
+      _s('Yuk avtomobillari', 'Грузовые авто', 'Юк автомобиллари', 'Trucks');
+  String get serviceTruckSectionDesc =>
+      _s("Yuk mashinalar uchun alohida bo'lim",
+          'Отдельный раздел для грузовиков',
+          'Юк машиналари учун алоҳида бўлим',
+          'Separate section for trucks');
+  String get truckRepair =>
+      _s("Yuk mashinani ta'mirlash", 'Ремонт грузовика', 'Юк машинани таъмирлаш', 'Truck Repair');
+  String get truckRepairDesc =>
+      _s("Yuk mashinalari ustasi — dvigatel, karobka, moy",
+          'Мастер по грузовикам — двигатель, КПП, масло',
+          'Юк машиналари устаси — двигател, коробка, мой',
+          'Truck mechanic — engine, gearbox, oil');
+  String get truckTow =>
+      _s('Yuk evakuator', 'Эвакуатор грузовой', 'Юк эвакуатор', 'Truck Tow');
+  String get truckTowDesc =>
+      _s("Og'ir texnikani ko'chirish",
+          'Перемещение тяжёлой техники',
+          'Оғир техникани кўчириш',
+          'Heavy vehicle towing');
+  String get truckTire =>
+      _s("Yuk shinasi (22.5\" va boshqalar)",
+          'Грузовые шины (22.5\" и др.)',
+          'Юк шинаси (22.5\" ва бошқалар)',
+          'Truck tires (22.5\" etc.)');
+  String get truckTireDesc =>
+      _s("Katta razmerdagi shinalar, balansировka",
+          'Шины большого размера, балансировка',
+          'Катта размердаги шиналар, балансировка',
+          'Large-size tires, balancing');
+  String get truckFuel =>
+      _s("Dizel yetkazib berish", 'Доставка дизеля', 'Дизел етказиб бериш', 'Diesel delivery');
+  String get truckFuelDesc =>
+      _s("Dizel va AdBlue yetkazib berish",
+          'Доставка дизеля и AdBlue',
+          'Дизел ва AdBlue етказиб бериш',
+          'Diesel and AdBlue delivery');
+  String get truckWorkshops =>
+      _s('Yuk mashina ustaxonalari', 'Мастерские для грузовиков',
+          'Юк машина устахоналари', 'Truck Workshops');
+  String get truckSection =>
+      _s("Yuk avtomobillari bo'limi", 'Раздел грузовых авто',
+          'Юк автомобиллари бўлими', 'Truck Section');
+  String get truckOilTypes =>
+      _s("Moy turlari: 15W-40, 10W-40, 5W-30 (dizel)",
+          'Типы масла: 15W-40, 10W-40, 5W-30 (дизель)',
+          'Мой турлари: 15W-40, 10W-40, 5W-30 (дизел)',
+          'Oil types: 15W-40, 10W-40, 5W-30 (diesel)');
+  String get truckProblemTypes =>
+      _s("Muammo turi (yuk mashina)",
+          'Тип проблемы (грузовик)',
+          'Муаммо тури (юк машина)',
+          'Problem type (truck)');
   String get serviceParts =>
       _s('Ehtiyot qismlar', 'Запчасти', 'Эҳтиёт қисмлар', 'Auto Parts');
   String get servicePartsDesc =>
@@ -405,14 +459,22 @@ class AppLocalizations {
   // ─── Xizmat turlari ────────────────────────────────────────
   String serviceTypeLabel(String t) {
     switch (t) {
-      case 'oil_change': return _s('Moy almashtirish', 'Замена масла', 'Мой алмаштириш', 'Oil change');
-      case 'inspection': return _s("Tex ko'rik", 'Техосмотр', 'Техкўрик', 'Inspection');
-      case 'tire':       return _s('Shina', 'Шина', 'Шина', 'Tire');
-      case 'brake':      return _s('Tormoz', 'Тормоз', 'Тормоз', 'Brakes');
-      case 'engine':     return _s('Dvigatel', 'Двигатель', 'Двигател', 'Engine');
-      case 'battery':    return _s('Akkumulyator', 'Аккумулятор', 'Аккумулятор', 'Battery');
-      case 'transmission': return _s('Karobka', 'КПП', 'Коробка', 'Transmission');
-      default:           return _s('Boshqa', 'Другое', 'Бошқа', 'Other');
+      case 'oil_change':    return _s('Moy almashtirish', 'Замена масла', 'Мой алмаштириш', 'Oil change');
+      case 'inspection':    return _s("Tex ko'rik", 'Техосмотр', 'Техкўрик', 'Inspection');
+      case 'tire':          return _s('Shina', 'Шина', 'Шина', 'Tire');
+      case 'brake':         return _s('Tormoz', 'Тормоз', 'Тормоз', 'Brakes');
+      case 'engine':        return _s('Dvigatel', 'Двигатель', 'Двигател', 'Engine');
+      case 'battery':       return _s('Akkumulyator', 'Аккумулятор', 'Аккумулятор', 'Battery');
+      case 'transmission':  return _s('Karobka', 'КПП', 'Коробка', 'Transmission');
+      case 'tech_support':  return _s('Texnik yordam', 'Тех. помощь', 'Техник ёрдам', 'Tech Support');
+      case 'tow_truck':     return _s('Evakuator', 'Эвакуатор', 'Эвакуатор', 'Tow Truck');
+      case 'fuel':          return _s("Yoqilg'i", 'Топливо', 'Ёқилғи', 'Fuel');
+      case 'car_wash':      return _s('Avto yuvish', 'Автомойка', 'Авто ювиш', 'Car Wash');
+      case 'truck_repair':  return _s("Yuk ta'mirlash", 'Ремонт грузовика', 'Юк таъмирлаш', 'Truck Repair');
+      case 'truck_tow':     return _s('Yuk evakuator', 'Грузовой эвакуатор', 'Юк эвакуатор', 'Truck Tow');
+      case 'truck_tire':    return _s('Yuk shinasi', 'Грузовые шины', 'Юк шинаси', 'Truck Tires');
+      case 'truck_fuel':    return _s('Dizel yetkazish', 'Доставка дизеля', 'Дизел етказиш', 'Diesel Delivery');
+      default:              return _s('Boshqa', 'Другое', 'Бошқа', 'Other');
     }
   }
 }

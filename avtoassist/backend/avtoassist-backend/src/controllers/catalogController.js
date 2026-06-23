@@ -23,16 +23,38 @@ async function storeInventory(req, res) {
   res.json(items);
 }
 
+function _workshopQuery(category) {
+  return {
+    is_active: true,
+    vehicle_category: category === 'truck'
+      ? { [Op.in]: ['truck', 'both'] }
+      : { [Op.in]: ['light', 'both'] },
+  };
+}
+
 async function nearbyWorkshops(req, res) {
   const { lat, radius = 10 } = req.query;
   const lng = req.query.lng ?? req.query.lon;
   if (!lat || !lng) return res.status(400).json({ error: 'lat and lng required' });
-  const workshops = await Workshop.findAll({ where: { is_active: true } });
+  const workshops = await Workshop.findAll({ where: _workshopQuery('light') });
   const result = workshops
     .map(w => ({ ...w.toJSON(), distance_km: haversineKm(parseFloat(lat), parseFloat(lng), w.lat, w.lng) }))
     .filter(w => w.distance_km <= parseFloat(radius))
     .sort((a, b) => a.distance_km - b.distance_km)
     .slice(0, 20);
+  res.json({ workshops: result });
+}
+
+async function nearbyTruckWorkshops(req, res) {
+  const { lat, radius = 30 } = req.query;
+  const lng = req.query.lng ?? req.query.lon;
+  if (!lat || !lng) return res.status(400).json({ error: 'lat and lng required' });
+  const workshops = await Workshop.findAll({ where: _workshopQuery('truck') });
+  const result = workshops
+    .map(w => ({ ...w.toJSON(), distance_km: haversineKm(parseFloat(lat), parseFloat(lng), w.lat, w.lng) }))
+    .filter(w => w.distance_km <= parseFloat(radius))
+    .sort((a, b) => a.distance_km - b.distance_km)
+    .slice(0, 30);
   res.json({ workshops: result });
 }
 
@@ -45,10 +67,11 @@ async function workshopDetail(req, res) {
 }
 
 async function allWorkshops(req, res) {
+  const category = req.query.category || 'light';
   const workshops = await Workshop.findAll({
-    where: { is_active: true },
+    where: _workshopQuery(category),
     attributes: ['id', 'name', 'address', 'lat', 'lng', 'specializations',
-                 'rating_avg', 'rating_count', 'phone', 'website'],
+                 'rating_avg', 'rating_count', 'phone', 'website', 'vehicle_category'],
     order: [['rating_avg', 'DESC']],
     limit: 500,
   });
@@ -62,4 +85,8 @@ async function syncOsmWorkshops(req, res) {
   res.json({ ok: true, ...result });
 }
 
-module.exports = { nearbyPartsStores, storeInventory, nearbyWorkshops, allWorkshops, workshopDetail, syncOsmWorkshops };
+module.exports = {
+  nearbyPartsStores, storeInventory,
+  nearbyWorkshops, nearbyTruckWorkshops,
+  allWorkshops, workshopDetail, syncOsmWorkshops,
+};

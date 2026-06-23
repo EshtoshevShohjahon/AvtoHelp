@@ -20,6 +20,7 @@ import 'features/orders/new_order_screen.dart';
 import 'features/orders/tracking_screen.dart';
 import 'features/catalog/catalog_screens.dart';
 import 'features/catalog/workshops_map_screen.dart';
+import 'features/truck/truck_section_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,6 +113,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/catalog/workshops',
       builder: (_, __) => const WorkshopsMapScreen(),
+    ),
+    GoRoute(
+      path: '/truck',
+      builder: (_, __) => const TruckSectionScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => _ProviderShell(child: child),

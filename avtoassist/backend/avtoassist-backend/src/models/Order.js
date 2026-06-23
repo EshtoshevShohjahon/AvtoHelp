@@ -6,7 +6,10 @@ const Order = sequelize.define('Order', {
   client_id: { type: DataTypes.UUID, allowNull: false },
   provider_id: { type: DataTypes.UUID, allowNull: true },
   service_type: {
-    type: DataTypes.ENUM('tech_support', 'fuel', 'car_wash', 'tow_truck'),
+    type: DataTypes.ENUM(
+      'tech_support', 'fuel', 'car_wash', 'tow_truck',
+      'truck_repair', 'truck_tow', 'truck_tire', 'truck_fuel'
+    ),
     allowNull: false,
   },
   status: {

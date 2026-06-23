@@ -31,13 +31,22 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
     'tow_truck':    ['Avtohalokat', 'Dvigatel to\'xtadi', 'Boshqa'],
     'fuel':         ['Benzin', 'Dizel', 'Gaz'],
     'car_wash':     ['Tez yuvish', 'To\'liq tozalash', 'Salon tozalash'],
+    'truck_repair': ['Dvigatel (dizel)', 'Karobka/transmissiya', 'Moy almashtirish (15W-40)',
+                     'Tormoz tizimi', 'Podveska', 'Elektr tizimi', 'Sovutish tizimi', 'Boshqa'],
+    'truck_tow':    ['Yo\'ldan chiqqan', 'Dvigatel to\'xtadi', 'Baxtsiz hodisa', 'Boshqa'],
+    'truck_tire':   ['22.5" shina yorildi', '17.5" shina yorildi', 'Balansировka', 'Boshqa'],
+    'truck_fuel':   ['Dizel (ДТ)', 'AdBlue (karbamid)', 'Boshqa'],
   };
 
   static const _prices = {
-    'tech_support': '45 000 — 120 000',
-    'tow_truck':    '80 000 — 250 000',
-    'fuel':         '10 000 — 30 000',
-    'car_wash':     '25 000 — 60 000',
+    'tech_support':  '45 000 — 120 000',
+    'tow_truck':     '80 000 — 250 000',
+    'fuel':          '10 000 — 30 000',
+    'car_wash':      '25 000 — 60 000',
+    'truck_repair':  '150 000 — 800 000',
+    'truck_tow':     '200 000 — 600 000',
+    'truck_tire':    '80 000 — 250 000',
+    'truck_fuel':    '30 000 — 100 000',
   };
 
   @override
