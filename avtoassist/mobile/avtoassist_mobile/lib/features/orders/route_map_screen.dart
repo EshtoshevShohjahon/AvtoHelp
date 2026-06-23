@@ -66,8 +66,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
           return;
         }
         final pos = await Geolocator.getCurrentPosition(
-          locationSettings:
-              const LocationSettings(accuracy: LocationAccuracy.high),
+          desiredAccuracy: LocationAccuracy.high,
         );
         origin = LatLng(pos.latitude, pos.longitude);
       }

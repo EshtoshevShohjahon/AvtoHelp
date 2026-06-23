@@ -235,8 +235,7 @@ class _TruckWorkshopsPreviewState
           perm != LocationPermission.denied) {
         try {
           final pos = await Geolocator.getCurrentPosition(
-            locationSettings: const LocationSettings(
-                accuracy: LocationAccuracy.low),
+            desiredAccuracy: LocationAccuracy.low,
           ).timeout(const Duration(seconds: 6));
           if (mounted) setState(() => _myLoc = LatLng(pos.latitude, pos.longitude));
         } catch (_) {}

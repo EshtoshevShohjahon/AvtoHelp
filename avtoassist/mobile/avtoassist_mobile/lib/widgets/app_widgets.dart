@@ -545,6 +545,7 @@ class AppLocalizations {
   String get lightCar => _s('Yengil avto', 'Легковой', 'Енгил авто', 'Light car');
   String get all => _s('Barchasi', 'Все', 'Барчаси', 'All');
   String get fillRequired => _s("Sarlavha va narxni to'ldiring", 'Заполните заголовок и цену', 'Сарлавҳа ва нархни тўлдиринг', 'Fill in title and price');
+  String get client => _s('Mijoz', 'Клиент', 'Мижоз', 'Client');
 }
 
 // ─── AppLogo ─────────────────────────────────────────────────

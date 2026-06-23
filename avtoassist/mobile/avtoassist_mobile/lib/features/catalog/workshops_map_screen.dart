@@ -50,8 +50,7 @@ class _WorkshopsMapScreenState extends ConsumerState<WorkshopsMapScreen> {
           perm != LocationPermission.denied) {
         try {
           final pos = await Geolocator.getCurrentPosition(
-            locationSettings:
-                const LocationSettings(accuracy: LocationAccuracy.low),
+            desiredAccuracy: LocationAccuracy.low,
           ).timeout(const Duration(seconds: 8));
           if (mounted) setState(() => _myLocation = LatLng(pos.latitude, pos.longitude));
         } catch (_) {}
