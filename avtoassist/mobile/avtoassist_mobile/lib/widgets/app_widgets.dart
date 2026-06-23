@@ -534,13 +534,10 @@ class AppLocalizations {
           'Detailed information about the service or product...');
   String get photos => _s('Rasmlar', 'Фото', 'Расмлар', 'Photos');
   String get publish => _s("Nashr qilish", 'Опубликовать', 'Нашр қилиш', 'Publish');
-  String get save => _s('Saqlash', 'Сохранить', 'Сақлаш', 'Save');
   String get saveChanges => _s("O'zgarishlarni saqlash", 'Сохранить изменения', 'Ўзгаришларни сақлаш', 'Save changes');
   String get seller => _s("Sotuvchi", 'Продавец', 'Сотувчи', 'Seller');
   String get contactSeller => _s('Sotuvchi bilan bog\'lanish', 'Связаться с продавцом', 'Сотувчи билан боғланиш', 'Contact seller');
   String get confirmDelete => _s("O'chirishni tasdiqlaysizmi?", 'Подтвердите удаление', 'Ўчиришни тасдиқлайсизми?', 'Confirm delete');
-  String get delete => _s("O'chirish", 'Удалить', 'Ўчириш', 'Delete');
-  String get cancel => _s("Bekor qilish", 'Отмена', 'Бекор қилиш', 'Cancel');
   String get other => _s('Boshqa', 'Другое', 'Бошқа', 'Other');
   String get lightCar => _s('Yengil avto', 'Легковой', 'Енгил авто', 'Light car');
   String get all => _s('Barchasi', 'Все', 'Барчаси', 'All');
