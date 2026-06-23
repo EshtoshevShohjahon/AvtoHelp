@@ -44,4 +44,22 @@ async function workshopDetail(req, res) {
   res.json(workshop);
 }
 
-module.exports = { nearbyPartsStores, storeInventory, nearbyWorkshops, workshopDetail };
+async function allWorkshops(req, res) {
+  const workshops = await Workshop.findAll({
+    where: { is_active: true },
+    attributes: ['id', 'name', 'address', 'lat', 'lng', 'specializations',
+                 'rating_avg', 'rating_count', 'phone', 'website'],
+    order: [['rating_avg', 'DESC']],
+    limit: 500,
+  });
+  res.json({ workshops });
+}
+
+async function syncOsmWorkshops(req, res) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'admin only' });
+  const { syncWorkshopsFromOSM } = require('../services/osmSyncService');
+  const result = await syncWorkshopsFromOSM();
+  res.json({ ok: true, ...result });
+}
+
+module.exports = { nearbyPartsStores, storeInventory, nearbyWorkshops, allWorkshops, workshopDetail, syncOsmWorkshops };

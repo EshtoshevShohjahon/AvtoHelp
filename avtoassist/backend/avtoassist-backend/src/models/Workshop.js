@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Workshop = sequelize.define('Workshop', {
   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  owner_id: { type: DataTypes.UUID, allowNull: false },
+  owner_id: { type: DataTypes.UUID, allowNull: true },
   name: { type: DataTypes.STRING, allowNull: false },
   address: { type: DataTypes.STRING, allowNull: true },
   lat: { type: DataTypes.FLOAT, allowNull: false },
@@ -13,6 +13,9 @@ const Workshop = sequelize.define('Workshop', {
   rating_count: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   working_hours: { type: DataTypes.JSON, allowNull: true },
   is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+  osm_id: { type: DataTypes.STRING, allowNull: true, unique: true },
+  phone: { type: DataTypes.STRING, allowNull: true },
+  website: { type: DataTypes.STRING, allowNull: true },
 }, {
   tableName: 'workshops',
   timestamps: true,
