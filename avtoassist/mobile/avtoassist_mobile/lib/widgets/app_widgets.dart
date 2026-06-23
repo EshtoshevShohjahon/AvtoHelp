@@ -477,6 +477,74 @@ class AppLocalizations {
       default:              return _s('Boshqa', 'Другое', 'Бошқа', 'Other');
     }
   }
+
+  // ─── Marketplace ────────────────────────────────────────────
+  String get marketplace =>
+      _s('Bozor', 'Маркетплейс', 'Бозор', 'Marketplace');
+  String get marketplaceSearch =>
+      _s('Xizmat yoki mahsulot qidirish', 'Поиск услуги или товара',
+          'Хизмат ёки маҳсулот қидириш', 'Search services or products');
+  String get marketplaceServices =>
+      _s('Xizmatlar', 'Услуги', 'Хизматлар', 'Services');
+  String get marketplaceParts =>
+      _s('Ehtiyot qismlar', 'Запчасти', 'Эҳтиёт қисмлар', 'Parts');
+  String get marketplaceOil =>
+      _s('Moylar', 'Масла', 'Мойлар', 'Oils');
+  String get marketplaceTire =>
+      _s('Shinalar', 'Шины', 'Шиналар', 'Tires');
+  String get noListings =>
+      _s("E'lonlar topilmadi", 'Объявлений нет', 'Эълонлар топилмади',
+          'No listings found');
+  String get myListings =>
+      _s("Mening e'lonlarim", 'Мои объявления', 'Менинг эълонларим',
+          'My listings');
+  String get addListing =>
+      _s("E'lon qo'shish", "Добавить объявление", "Эълон қўшиш", 'Add listing');
+  String get editListing =>
+      _s("E'lonni tahrirlash", 'Редактировать', 'Эълонни таҳрирлаш', 'Edit listing');
+  String get listingTitle =>
+      _s('Sarlavha', 'Заголовок', 'Сарлавҳа', 'Title');
+  String get listingTitleHint =>
+      _s("Masalan: Moy almashtirish — 15W-40 bilan",
+          'Например: Замена масла — 15W-40',
+          'Масалан: Мой алмаштириш — 15W-40 билан',
+          'e.g. Oil change — 15W-40');
+  String get listingType =>
+      _s('Tur', 'Тип', 'Тур', 'Type');
+  String get vehicleCategory =>
+      _s('Avtomobil turi', 'Тип авто', 'Автомобил тури', 'Vehicle type');
+  String get category =>
+      _s('Kategoriya', 'Категория', 'Категория', 'Category');
+  String get categoryHint =>
+      _s("Masalan: Dvigatel, Elektr tizim...",
+          'Например: Двигатель, Электрика...',
+          'Масалан: Двигател, Электр тизим...',
+          'e.g. Engine, Electrical...');
+  String get price => _s('Narx', 'Цена', 'Нарх', 'Price');
+  String get priceFixed => _s('Belgilangan', 'Фиксированная', 'Белгиланган', 'Fixed');
+  String get priceFrom => _s('Dan boshlab', 'От', 'Дан бошлаб', 'From');
+  String get fromPrice => _s('dan', 'от', 'дан', 'from');
+  String get negotiable => _s('Kelishuv', 'Договорная', 'Келишув', 'Negotiable');
+  String get description =>
+      _s('Tavsif', 'Описание', 'Тавсиф', 'Description');
+  String get descriptionHint =>
+      _s("Xizmat yoki mahsulot haqida batafsil ma'lumot...",
+          'Подробная информация о товаре или услуге...',
+          'Хизмат ёки маҳсулот ҳақида батафсил маълумот...',
+          'Detailed information about the service or product...');
+  String get photos => _s('Rasmlar', 'Фото', 'Расмлар', 'Photos');
+  String get publish => _s("Nashr qilish", 'Опубликовать', 'Нашр қилиш', 'Publish');
+  String get save => _s('Saqlash', 'Сохранить', 'Сақлаш', 'Save');
+  String get saveChanges => _s("O'zgarishlarni saqlash", 'Сохранить изменения', 'Ўзгаришларни сақлаш', 'Save changes');
+  String get seller => _s("Sotuvchi", 'Продавец', 'Сотувчи', 'Seller');
+  String get contactSeller => _s('Sotuvchi bilan bog\'lanish', 'Связаться с продавцом', 'Сотувчи билан боғланиш', 'Contact seller');
+  String get confirmDelete => _s("O'chirishni tasdiqlaysizmi?", 'Подтвердите удаление', 'Ўчиришни тасдиқлайсизми?', 'Confirm delete');
+  String get delete => _s("O'chirish", 'Удалить', 'Ўчириш', 'Delete');
+  String get cancel => _s("Bekor qilish", 'Отмена', 'Бекор қилиш', 'Cancel');
+  String get other => _s('Boshqa', 'Другое', 'Бошқа', 'Other');
+  String get lightCar => _s('Yengil avto', 'Легковой', 'Енгил авто', 'Light car');
+  String get all => _s('Barchasi', 'Все', 'Барчаси', 'All');
+  String get fillRequired => _s("Sarlavha va narxni to'ldiring", 'Заполните заголовок и цену', 'Сарлавҳа ва нархни тўлдиринг', 'Fill in title and price');
 }
 
 // ─── AppLogo ─────────────────────────────────────────────────

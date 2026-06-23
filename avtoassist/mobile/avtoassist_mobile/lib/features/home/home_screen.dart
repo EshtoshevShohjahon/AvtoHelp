@@ -28,6 +28,8 @@ class HomeScreen extends ConsumerWidget {
           Icons.precision_manufacturing_outlined, AppColors.steelLight),
       _Service('truck',        l.serviceTruckSection, l.serviceTruckSectionDesc,
           Icons.local_shipping_outlined,  const Color(0xFF2BD9A6)),
+      _Service('marketplace',  l.marketplace,         l.marketplaceSearch,
+          Icons.storefront_outlined,      const Color(0xFFFF7A1A)),
     ];
 
     return Scaffold(
@@ -157,6 +159,8 @@ class _ServiceCard extends StatelessWidget {
           context.push('/catalog/workshops');
         } else if (service.key == 'truck') {
           context.push('/truck');
+        } else if (service.key == 'marketplace') {
+          context.push('/marketplace');
         } else {
           context.push('/order/new', extra: service.key);
         }

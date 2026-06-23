@@ -32,6 +32,7 @@ const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 120 });
 app.use('/api', apiLimiter);
 
 app.use('/api', apiRoutes);
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 app.use(notFoundHandler);

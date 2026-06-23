@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
@@ -195,6 +196,46 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
             totalOrders: _totalOrders,
             rating: _rating,
             loaded: _statsLoaded,
+          ),
+          const SizedBox(height: 16),
+
+          // Marketplace — mening e'lonlarim
+          GestureDetector(
+            onTap: () => context.push('/marketplace/my'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.charcoal,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.amber.withOpacity(0.3)),
+              ),
+              child: Row(children: [
+                Container(
+                  width: 38, height: 38,
+                  decoration: BoxDecoration(
+                    color: AppColors.amber.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.storefront_outlined,
+                      color: AppColors.amber, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(AppLocalizations(context).myListings,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.bone,
+                            fontSize: 14)),
+                    Text(AppLocalizations(context).marketplace,
+                        style: const TextStyle(
+                            color: AppColors.steelLight, fontSize: 11)),
+                  ]),
+                ),
+                const Icon(Icons.chevron_right,
+                    color: AppColors.steelLight, size: 18),
+              ]),
+            ),
           ),
           const SizedBox(height: 16),
 

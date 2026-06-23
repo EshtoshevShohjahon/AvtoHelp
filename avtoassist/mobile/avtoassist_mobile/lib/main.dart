@@ -21,6 +21,10 @@ import 'features/orders/tracking_screen.dart';
 import 'features/catalog/catalog_screens.dart';
 import 'features/catalog/workshops_map_screen.dart';
 import 'features/truck/truck_section_screen.dart';
+import 'features/marketplace/marketplace_screen.dart';
+import 'features/marketplace/listing_detail_screen.dart';
+import 'features/marketplace/add_listing_screen.dart';
+import 'features/marketplace/provider_listings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -117,6 +121,33 @@ final _router = GoRouter(
     GoRoute(
       path: '/truck',
       builder: (_, __) => const TruckSectionScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace',
+      builder: (_, __) => const MarketplaceScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace/add',
+      builder: (_, __) => const AddListingScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace/my',
+      builder: (_, __) => const ProviderListingsScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace/edit/:id',
+      builder: (_, state) {
+        final data = state.extra as Map<String, dynamic>?;
+        return AddListingScreen(existing: data);
+      },
+    ),
+    GoRoute(
+      path: '/marketplace/:id',
+      builder: (_, state) {
+        final id = state.pathParameters['id']!;
+        final data = state.extra as Map<String, dynamic>?;
+        return ListingDetailScreen(listingId: id, initialData: data);
+      },
     ),
     ShellRoute(
       builder: (context, state, child) => _ProviderShell(child: child),
