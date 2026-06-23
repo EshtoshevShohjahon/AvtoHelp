@@ -1,4 +1,4 @@
-package com.avtoassist.avtoassist_mobile
+package com.avtohelp.app
 
 import io.flutter.embedding.android.FlutterActivity
 
