@@ -1,0 +1,47 @@
+# Render.com Blueprint — AvtoAssist backendni internetga joylash
+# Hujjat: https://render.com/docs/blueprint-spec
+#
+# Foydalanish:
+#   1. render.com -> New -> Blueprint
+#   2. GitHub repo: EshtoshevShohjahon/avtohelp ni ulang
+#   3. Render shu faylni avtomatik o'qiydi va web servisni yaratadi
+#
+# Eslatma: Render bepul rejada faqat 1 ta bepul Postgres'ga ruxsat beradi.
+# Shu sabab bu yerda yangi baza YARATILMAYDI. DATABASE_URL ni qo'lda kiritasiz:
+#   - mavjud Render bazangizning "Internal Database URL" satrini, YOKI
+#   - bepul Neon (neon.tech) Postgres ulanish satrini (tavsiya etiladi)
+
+services:
+  - type: web
+    name: avtoassist-api
+    runtime: node
+    plan: free
+    rootDir: avtoassist/backend/avtoassist-backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: claude/sweet-ptolemy-xvvz5z
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_DIALECT
+        value: postgres
+      - key: DB_SSL
+        value: "true"
+      # Deploy paytida Render bu qiymatni so'raydi — Postgres ulanish satrini kiriting
+      - key: DATABASE_URL
+        sync: false
+      # JWT kaliti avtomatik xavfsiz yaratiladi
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES
+        value: 30d
+      - key: DEFAULT_LANGUAGE
+        value: uz
+      # Test bosqichida OTP kodni javobda qaytaradi (SMS shart emas).
+      # Haqiqiy ishga tushganda "false" qiling va SMS provayder ulang.
+      - key: OTP_DEBUG_MODE
+        value: "true"

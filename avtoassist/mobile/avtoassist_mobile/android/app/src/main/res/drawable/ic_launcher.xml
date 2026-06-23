@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AvtoHelp launcher ikoni — amber fon + qora avtomobil silueti (vektor) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Amber yumaloq kvadrat fon -->
+    <path
+        android:fillColor="#F5A623"
+        android:pathData="M24,2 H84 A22,22 0 0 1 106,24 V84 A22,22 0 0 1 84,106 H24 A22,22 0 0 1 2,84 V24 A22,22 0 0 1 24,2 Z" />
+
+    <!-- Avtomobil tanasi -->
+    <path
+        android:fillColor="#1A1100"
+        android:pathData="M32,56 H76 a5,5 0 0 1 5,5 V66 a5,5 0 0 1 -5,5 H32 a5,5 0 0 1 -5,-5 V61 a5,5 0 0 1 5,-5 Z" />
+
+    <!-- Kabina -->
+    <path
+        android:fillColor="#1A1100"
+        android:pathData="M42,56 L48,45 H64 L70,56 Z" />
+
+    <!-- Chap g'ildirak -->
+    <path
+        android:fillColor="#1A1100"
+        android:pathData="M35,71 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+
+    <!-- O'ng g'ildirak -->
+    <path
+        android:fillColor="#1A1100"
+        android:pathData="M59,71 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 Z" />
+</vector>

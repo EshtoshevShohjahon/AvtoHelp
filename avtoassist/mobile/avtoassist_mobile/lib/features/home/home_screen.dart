@@ -1,0 +1,204 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/theme/app_theme.dart';
+import '../../widgets/app_widgets.dart';
+import '../auth/auth_provider.dart';
+
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authProvider).user;
+    final l    = AppLocalizations(context);
+
+    final services = [
+      _Service('tech_support', l.serviceTechSupport, l.serviceTechSupportDesc,
+          Icons.build_outlined,           const Color(0xFFFF7A1A)),
+      _Service('tow_truck',    l.serviceTowTruck,    l.serviceTowTruckDesc,
+          Icons.local_shipping_outlined,  const Color(0xFFFF7A1A)),
+      _Service('fuel',         l.serviceFuel,        l.serviceFuelDesc,
+          Icons.local_gas_station_outlined, const Color(0xFFFF7A1A)),
+      _Service('car_wash',     l.serviceCarWash,     l.serviceCarWashDesc,
+          Icons.water_drop_outlined,      const Color(0xFF2BD9A6)),
+      _Service('parts',        l.serviceParts,       l.servicePartsDesc,
+          Icons.store_outlined,           const Color(0xFF2BD9A6)),
+      _Service('workshop',     l.serviceWorkshop,    l.serviceWorkshopDesc,
+          Icons.precision_manufacturing_outlined, AppColors.steelLight),
+      _Service('truck',        l.serviceTruckSection, l.serviceTruckSectionDesc,
+          Icons.local_shipping_outlined,  const Color(0xFF2BD9A6)),
+      _Service('marketplace',  l.marketplace,         l.marketplaceSearch,
+          Icons.storefront_outlined,      const Color(0xFFFF7A1A)),
+    ];
+
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Salomlashuv
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(l.greeting,
+                              style: const TextStyle(
+                                  color: AppColors.steelLight, fontSize: 13)),
+                          const SizedBox(height: 2),
+                          Text(user?.fullName?.split(' ').first ?? user?.phone ?? '',
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.bone)),
+                        ]),
+                        CircleAvatar(
+                          backgroundColor: AppColors.steel,
+                          child: const Icon(Icons.person_outline,
+                              color: AppColors.boneDim),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Avtomobillarim kartochkasi
+                    GestureDetector(
+                      onTap: () => context.push('/vehicles'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: AppColors.charcoal,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.steelLine),
+                        ),
+                        child: Row(children: [
+                          Container(
+                            width: 40, height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.amber.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(Icons.directions_car_rounded,
+                                color: AppColors.amber, size: 20),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(l.myVehicles,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.bone,
+                                      fontSize: 14)),
+                              Text(l.myVehiclesDesc,
+                                  style: const TextStyle(
+                                      color: AppColors.steelLight, fontSize: 11)),
+                            ]),
+                          ),
+                          const Icon(Icons.chevron_right,
+                              color: AppColors.steelLight, size: 18),
+                        ]),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Xizmatlar sarlavhasi
+                    Text(l.services,
+                        style: const TextStyle(
+                            color: AppColors.steelLight,
+                            fontSize: 12,
+                            letterSpacing: 0.5)),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+
+            // Xizmatlar grid
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverGrid.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1.1,
+                children: services.map((s) => _ServiceCard(service: s)).toList(),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Service {
+  final String key, title, subtitle;
+  final IconData icon;
+  final Color color;
+  _Service(this.key, this.title, this.subtitle, this.icon, this.color);
+}
+
+class _ServiceCard extends StatelessWidget {
+  final _Service service;
+  const _ServiceCard({required this.service});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (service.key == 'parts') {
+          context.push('/catalog/parts');
+        } else if (service.key == 'workshop') {
+          context.push('/catalog/workshops');
+        } else if (service.key == 'truck') {
+          context.push('/truck');
+        } else if (service.key == 'marketplace') {
+          context.push('/marketplace');
+        } else {
+          context.push('/order/new', extra: service.key);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.charcoal,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.steelLine),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: service.color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(service.icon, color: service.color, size: 19),
+            ),
+            const Spacer(),
+            Text(service.title,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.5,
+                    color: AppColors.bone)),
+            const SizedBox(height: 3),
+            Text(service.subtitle,
+                style: const TextStyle(
+                    color: AppColors.steelLight, fontSize: 11),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
+          ],
+        ),
+      ),
+    );
+  }
+}
