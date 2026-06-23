@@ -84,19 +84,19 @@ class _AddListingScreenState extends ConsumerState<AddListingScreen> {
     try {
       final api = ref.read(apiClientProvider);
 
+      final imageFiles = await Future.wait(_newImages.map((f) async =>
+          MultipartFile.fromFile(f.path, filename: f.path.split('/').last)));
+
       final formData = FormData.fromMap({
         'title': _titleCtrl.text.trim(),
         'description': _descCtrl.text.trim(),
-        'price': _priceCtrl.text.trim(),
+        'price': _priceCtrl.text.isEmpty ? '0' : _priceCtrl.text.trim(),
         'price_type': _priceType,
         'listing_type': _listingType,
         'category': _categoryCtrl.text.trim(),
         'vehicle_category': _vehicleCat,
-        if (_toRemove.isNotEmpty)
-          'remove_images': _toRemove.join(','),
-        'images': await Future.wait(_newImages.map((f) async =>
-            MultipartFile.fromFile(f.path,
-                filename: f.path.split('/').last))),
+        if (_toRemove.isNotEmpty) 'remove_images': _toRemove.join(','),
+        if (imageFiles.isNotEmpty) 'images': imageFiles,
       });
 
       if (_isEdit) {
