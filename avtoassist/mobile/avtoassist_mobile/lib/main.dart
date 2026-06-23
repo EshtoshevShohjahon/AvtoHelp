@@ -355,6 +355,7 @@ class _ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
     final l = AppLocalizations(context);
+    final isProvider = user?.role == 'provider';
     return Scaffold(
       appBar: AppBar(title: Text(l.profile)),
       body: ListView(
@@ -373,6 +374,25 @@ class _ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: isProvider
+                    ? AppColors.amber.withOpacity(0.15)
+                    : AppColors.steel,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                isProvider ? l.iAmProvider : l.iAmClient,
+                style: TextStyle(
+                    color: isProvider ? AppColors.amber : AppColors.steelLight,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
             child: Text(
               user?.phone ?? '',
               style: const TextStyle(color: AppColors.steelLight),
@@ -383,6 +403,12 @@ class _ProfileScreen extends ConsumerWidget {
             icon: Icons.directions_car_outlined,
             title: l.myVehicles,
             onTap: () => context.push('/vehicles'),
+          ),
+          // Rol almashtirish
+          _ProfileTile(
+            icon: isProvider ? Icons.person_outline : Icons.handyman_outlined,
+            title: isProvider ? l.switchToClient : l.switchToProvider,
+            onTap: () => _showRoleSwitchDialog(context, ref, isProvider),
           ),
           _ProfileTile(
             icon: Icons.language_outlined,
@@ -399,6 +425,149 @@ class _ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showRoleSwitchDialog(BuildContext context, WidgetRef ref, bool isProvider) {
+  final l = AppLocalizations(context);
+  if (isProvider) {
+    // Provider → Client: oddiy dialog
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.charcoal,
+        title: Text(l.switchToClient,
+            style: const TextStyle(color: AppColors.bone)),
+        content: Text(l.switchToClientDesc,
+            style: const TextStyle(color: AppColors.steelLight)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l.cancel,
+                style: const TextStyle(color: AppColors.steelLight)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await ref.read(authProvider.notifier).updateProfile(role: 'client');
+              if (ctx.mounted) context.go('/home');
+            },
+            child: Text(l.switchToClient),
+          ),
+        ],
+      ),
+    );
+  } else {
+    // Client → Provider: sektor tanlash sheet
+    _showProviderSectorSheet(context, ref);
+  }
+}
+
+void _showProviderSectorSheet(BuildContext context, WidgetRef ref) {
+  final l = AppLocalizations(context);
+  String? selectedSector;
+
+  const sectors = [
+    ('workshop',     Icons.handyman_outlined,          'Ustaxona / Mexanik'),
+    ('parts_store',  Icons.settings_outlined,          "Ehtiyot qismlar do'koni"),
+    ('tire_shop',    Icons.trip_origin_outlined,        'Shina va disk'),
+    ('oil_store',    Icons.opacity_outlined,            'Moy va suyuqliklar'),
+    ('car_wash',     Icons.local_car_wash_outlined,     'Avtoyuv'),
+    ('tow_truck',    Icons.rv_hookup_outlined,          'Evakuator'),
+    ('tech_support', Icons.build_circle_outlined,       'Texnik yordam'),
+    ('other',        Icons.more_horiz,                  'Boshqa'),
+  ];
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: AppColors.charcoal,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setState) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36, height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.steelLine,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(l.switchToProvider,
+                  style: const TextStyle(
+                      color: AppColors.bone,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Text(l.selectSectorDesc,
+                  style: const TextStyle(
+                      color: AppColors.steelLight, fontSize: 13)),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: sectors.map((s) {
+                  final (key, icon, label) = s;
+                  final sel = selectedSector == key;
+                  return GestureDetector(
+                    onTap: () => setState(() => selectedSector = key),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 120),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: sel
+                            ? AppColors.amber.withOpacity(0.12)
+                            : AppColors.steel,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: sel ? AppColors.amber : AppColors.steelLine,
+                          width: sel ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(icon, size: 16,
+                            color: sel ? AppColors.amber : AppColors.steelLight),
+                        const SizedBox(width: 6),
+                        Text(label,
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: sel ? AppColors.amber : AppColors.bone,
+                                fontWeight: sel ? FontWeight.w600 : FontWeight.normal)),
+                      ]),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: selectedSector == null
+                      ? null
+                      : () async {
+                          Navigator.pop(ctx);
+                          await ref.read(authProvider.notifier).updateProfile(
+                              role: 'provider', sector: selectedSector);
+                          if (context.mounted) context.go('/provider/home');
+                        },
+                  child: Text(l.switchToProvider),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 void _showLanguagePicker(BuildContext context, WidgetRef ref) {

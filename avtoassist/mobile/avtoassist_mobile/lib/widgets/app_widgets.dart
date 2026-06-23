@@ -322,6 +322,10 @@ class AppLocalizations {
   String get language => _s('Til', 'Язык', 'Тил', 'Language');
   String get selectLanguage => _s('Tilni tanlang', 'Выберите язык', 'Тилни танланг', 'Select language');
   String get logout => _s('Chiqish', 'Выйти', 'Чиқиш', 'Log Out');
+  String get switchToProvider => _s("Xizmat ko'rsatuvchiga o'tish", 'Стать поставщиком', "Хизмат кўрсатувчига ўтиш", 'Switch to Provider');
+  String get switchToClient => _s("Foydalanuvchiga o'tish", 'Стать клиентом', "Фойдаланувчига ўтиш", 'Switch to Client');
+  String get switchToClientDesc => _s("Provider panelingizdan chiqib, oddiy foydalanuvchi sifatida kirmoqchimisiz?", 'Хотите выйти из панели поставщика и войти как обычный пользователь?', "Provider panelingizdan chiqib, oddiy foydalanuvchi sifatida kirmoqchimisiz?", 'Do you want to switch to client mode?');
+  String get selectSectorDesc => _s("Qaysi sohada xizmat ko'rsatasiz?", 'В какой сфере вы оказываете услуги?', "Qaysi sohada xizmat ko'rsatasiz?", 'Which sector do you work in?');
   String get online => _s('Onlayn', 'Онлайн', 'Онлайн', 'Online');
   String get offline => _s('Oflayn', 'Офлайн', 'Офлайн', 'Offline');
   String get myEarnings =>
