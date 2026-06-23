@@ -11,7 +11,7 @@ const Provider = sequelize.define('Provider', {
   sector: {
     type: DataTypes.ENUM(
       'workshop', 'parts_store', 'tire_shop', 'oil_store',
-      'car_wash', 'tow_truck', 'tech_support', 'other'
+      'car_wash', 'tow_truck', 'tech_support'
     ),
     allowNull: true,
   },

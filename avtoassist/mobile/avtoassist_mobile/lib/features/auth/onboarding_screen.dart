@@ -298,7 +298,6 @@ class _SectorStep extends StatelessWidget {
     ('car_wash',    Icons.local_car_wash_outlined,    'Avtoyuv'),
     ('tow_truck',   Icons.rv_hookup_outlined,         'Evakuator'),
     ('tech_support',Icons.build_circle_outlined,      'Texnik yordam (yo\'lda)'),
-    ('other',       Icons.more_horiz,                 'Boshqa'),
   ];
 
   @override

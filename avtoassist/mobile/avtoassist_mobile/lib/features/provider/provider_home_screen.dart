@@ -39,9 +39,9 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   bool get _isShop => ['parts_store', 'tire_shop', 'oil_store'].contains(_sector);
   bool get _isRoadside => ['tow_truck', 'tech_support', 'car_wash', 'fuel'].contains(_sector);
   bool get _isWorkshop => _sector == 'workshop';
-  bool get _showVehicleSearch => _isWorkshop || _sector == null || _sector == 'other';
+  bool get _showVehicleSearch => _isWorkshop || _sector == null;
   bool get _showMarketplace => !_isRoadside;
-  bool get _showOrders => _isRoadside || _sector == null || _sector == 'other';
+  bool get _showOrders => _isRoadside || _sector == null;
 
   @override
   void initState() {

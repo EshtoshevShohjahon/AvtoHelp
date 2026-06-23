@@ -474,7 +474,6 @@ void _showProviderSectorSheet(BuildContext context, WidgetRef ref) {
     ('car_wash',     Icons.local_car_wash_outlined,     'Avtoyuv'),
     ('tow_truck',    Icons.rv_hookup_outlined,          'Evakuator'),
     ('tech_support', Icons.build_circle_outlined,       'Texnik yordam'),
-    ('other',        Icons.more_horiz,                  'Boshqa'),
   ];
 
   showModalBottomSheet(
