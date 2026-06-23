@@ -32,10 +32,31 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   double _rating = 0;
   bool _statsLoaded = false;
 
+  // Sektor
+  String? _sector;
+
+  // Sektor guruhlari
+  bool get _isShop => ['parts_store', 'tire_shop', 'oil_store'].contains(_sector);
+  bool get _isRoadside => ['tow_truck', 'tech_support', 'car_wash', 'fuel'].contains(_sector);
+  bool get _isWorkshop => _sector == 'workshop';
+  bool get _showVehicleSearch => _isWorkshop || _sector == null || _sector == 'other';
+  bool get _showMarketplace => !_isRoadside;
+  bool get _showOrders => _isRoadside || _sector == null || _sector == 'other';
+
   @override
   void initState() {
     super.initState();
     _loadStats();
+    _loadSector();
+  }
+
+  Future<void> _loadSector() async {
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.get('/providers/me');
+      if (!mounted) return;
+      setState(() => _sector = res.data['sector'] as String?);
+    } catch (_) {}
   }
 
   @override
@@ -171,7 +192,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Salomlashuv + ism
+          // Salomlashuv + ism + sektor badge
           Row(children: [
             CircleAvatar(
               radius: 20,
@@ -180,13 +201,18 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
                   color: AppColors.boneDim, size: 20),
             ),
             const SizedBox(width: 10),
-            Text(
-              user?.fullName?.split(' ').first ?? 'Usta',
-              style: const TextStyle(
-                  color: AppColors.bone,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
-            ),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                user?.fullName?.split(' ').first ?? 'Usta',
+                style: const TextStyle(
+                    color: AppColors.bone,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
+              ),
+              if (_sector != null)
+                Text(_sectorLabel(_sector!),
+                    style: const TextStyle(color: AppColors.amber, fontSize: 11)),
+            ])),
           ]),
           const SizedBox(height: 16),
 
@@ -199,48 +225,98 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Marketplace — mening e'lonlarim
-          GestureDetector(
-            onTap: () => context.push('/marketplace/my'),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: AppColors.charcoal,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.amber.withOpacity(0.3)),
-              ),
-              child: Row(children: [
-                Container(
-                  width: 38, height: 38,
-                  decoration: BoxDecoration(
-                    color: AppColors.amber.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.storefront_outlined,
-                      color: AppColors.amber, size: 20),
+          // Shop (parts_store, tire_shop, oil_store): Marketplace birinchi va katta
+          if (_isShop) ...[
+            _SectorBanner(sector: _sector!),
+            const SizedBox(height: 16),
+          ],
+
+          // Marketplace — mening e'lonlarim (roadside uchun ko'rsatilmaydi)
+          if (_showMarketplace) ...[
+            GestureDetector(
+              onTap: () => context.push('/marketplace/my'),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.charcoal,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.amber.withOpacity(0.3)),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(AppLocalizations(context).myListings,
+                child: Row(children: [
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(
+                      color: AppColors.amber.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.storefront_outlined,
+                        color: AppColors.amber, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(AppLocalizations(context).myListings,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.bone,
+                              fontSize: 14)),
+                      Text(AppLocalizations(context).marketplace,
+                          style: const TextStyle(
+                              color: AppColors.steelLight, fontSize: 11)),
+                    ]),
+                  ),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.steelLight, size: 18),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Roadside: Buyurtmalar kartasi
+          if (_isRoadside) ...[
+            _SectorBanner(sector: _sector!),
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () => context.go('/provider/orders'),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.charcoal,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+                ),
+                child: Row(children: [
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(
+                      color: AppColors.teal.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.receipt_long_outlined,
+                        color: AppColors.teal, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(AppLocalizations(context).activeOrders,
                         style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             color: AppColors.bone,
                             fontSize: 14)),
-                    Text(AppLocalizations(context).marketplace,
+                    Text(AppLocalizations(context).setOnlineToReceive,
                         style: const TextStyle(
                             color: AppColors.steelLight, fontSize: 11)),
-                  ]),
-                ),
-                const Icon(Icons.chevron_right,
-                    color: AppColors.steelLight, size: 18),
-              ]),
+                  ])),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.steelLight, size: 18),
+                ]),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
+          ],
 
-          // Qidirish paneli
-          Container(
+          // Vehicle qidirish (faqat workshop va boshqa uchun)
+          if (_showVehicleSearch) Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.charcoal,
@@ -342,7 +418,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
             ),
           ],
 
-          if (_foundVehicle == null && !_searching && _error == null) ...[
+          if (_showVehicleSearch && _foundVehicle == null && !_searching && _error == null) ...[
             const SizedBox(height: 40),
             Center(
               child: Column(children: [
@@ -358,6 +434,77 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           const SizedBox(height: 24),
         ],
       ),
+    );
+  }
+}
+
+// ─── Sektor yordamchi ─────────────────────────────────────────────────────────
+String _sectorLabel(String sector) {
+  switch (sector) {
+    case 'workshop':     return 'Ustaxona / Mexanik';
+    case 'parts_store':  return "Ehtiyot qismlar do'koni";
+    case 'tire_shop':    return 'Shina va disk';
+    case 'oil_store':    return 'Moy va suyuqliklar';
+    case 'car_wash':     return 'Avtoyuv';
+    case 'tow_truck':    return 'Evakuator';
+    case 'tech_support': return 'Texnik yordam';
+    default:             return 'Boshqa';
+  }
+}
+
+IconData _sectorIcon(String sector) {
+  switch (sector) {
+    case 'workshop':     return Icons.handyman_outlined;
+    case 'parts_store':  return Icons.settings_outlined;
+    case 'tire_shop':    return Icons.trip_origin_outlined;
+    case 'oil_store':    return Icons.opacity_outlined;
+    case 'car_wash':     return Icons.local_car_wash_outlined;
+    case 'tow_truck':    return Icons.rv_hookup_outlined;
+    case 'tech_support': return Icons.build_circle_outlined;
+    default:             return Icons.more_horiz;
+  }
+}
+
+class _SectorBanner extends StatelessWidget {
+  final String sector;
+  const _SectorBanner({required this.sector});
+
+  @override
+  Widget build(BuildContext context) {
+    final isShop = ['parts_store', 'tire_shop', 'oil_store'].contains(sector);
+    final color = isShop ? AppColors.amber : AppColors.teal;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(children: [
+        Container(
+          width: 44, height: 44,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(_sectorIcon(sector), color: color, size: 22),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(_sectorLabel(sector),
+              style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14)),
+          const SizedBox(height: 2),
+          Text(
+            isShop
+                ? "E'lonlaringizni boshqaring, narxlarni belgilang"
+                : 'Buyurtmalar qabul qiling, onlayn bo\'ling',
+            style: const TextStyle(color: AppColors.steelLight, fontSize: 11),
+          ),
+        ])),
+      ]),
     );
   }
 }
