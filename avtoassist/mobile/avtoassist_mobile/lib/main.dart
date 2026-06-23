@@ -28,7 +28,14 @@ import 'features/marketplace/provider_listings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppPrefs.init();
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+  };
+  try {
+    await AppPrefs.init();
+  } catch (_) {
+    // SharedPreferences xatosida ham ilova ishga tushsin
+  }
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

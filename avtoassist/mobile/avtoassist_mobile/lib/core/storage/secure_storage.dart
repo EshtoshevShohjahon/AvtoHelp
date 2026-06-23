@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SecureStorage {
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(encryptedSharedPreferences: false),
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
 
   static Future<void> write(String key, String value) => _storage.write(key: key, value: value);

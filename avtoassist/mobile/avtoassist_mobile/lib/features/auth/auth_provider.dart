@@ -42,8 +42,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
   // Ilova ochilganda: agar saqlangan sessiya bo'lsa, qayta login so'ramaymiz.
   // Access token muddati o'tgan bo'lsa, refresh token orqali yangilaymiz.
   Future<void> _init() async {
-    final token = await SecureStorage.read('access_token');
-    final refresh = await SecureStorage.read('refresh_token');
+    String? token;
+    String? refresh;
+    try {
+      token = await SecureStorage.read('access_token');
+      refresh = await SecureStorage.read('refresh_token');
+    } catch (_) {
+      state = state.copyWith(status: AuthStatus.unauthenticated);
+      return;
+    }
     if (token == null && refresh == null) {
       state = state.copyWith(status: AuthStatus.unauthenticated);
       return;
