@@ -117,6 +117,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? fullName,
     String? role,
     String? avatarUrl,
+    String? sector,
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -124,6 +125,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (fullName != null) body['full_name'] = fullName;
       if (role != null) body['role'] = role;
       if (avatarUrl != null) body['avatar_url'] = avatarUrl;
+      if (sector != null) body['sector'] = sector;
       final res = await _api.patch('/users/me', data: body);
       final user = UserModel.fromJson(res.data['user']);
       state = state.copyWith(user: user, isLoading: false);

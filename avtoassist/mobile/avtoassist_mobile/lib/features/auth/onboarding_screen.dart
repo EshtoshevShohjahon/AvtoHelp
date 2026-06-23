@@ -14,10 +14,13 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  int _step = 0; // 0=ism, 1=rol, 2=rasm
+  int _step = 0; // 0=ism, 1=rol, [2=sektor(provider)], 2/3=rasm
   final _nameCtrl = TextEditingController();
   String _role = 'client';
+  String? _sector;
   String? _avatarBase64;
+
+  int get _totalSteps => _role == 'provider' ? 4 : 3;
 
   @override
   void initState() {
@@ -50,6 +53,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           fullName: _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
           role: _role,
           avatarUrl: _avatarBase64,
+          sector: _sector,
         );
     if (!mounted) return;
     if (ok) {
@@ -67,7 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: Column(children: [
           // Progressbar
           LinearProgressIndicator(
-            value: (_step + 1) / 3,
+            value: (_step + 1) / _totalSteps,
             backgroundColor: AppColors.steelLine,
             valueColor: const AlwaysStoppedAnimation(AppColors.amber),
             minHeight: 3,
@@ -77,17 +81,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
-                child: [
-                  _NameStep(ctrl: _nameCtrl, key: const ValueKey(0)),
-                  _RoleStep(
-                      role: _role,
-                      onChanged: (r) => setState(() => _role = r),
-                      key: const ValueKey(1)),
-                  _AvatarStep(
-                      avatarBase64: _avatarBase64,
-                      onPick: _pickImage,
-                      key: const ValueKey(2)),
-                ][_step],
+                child: _buildStep(),
               ),
             ),
           ),
@@ -117,7 +111,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _canNext(auth.isLoading)
                       ? () {
-                          if (_step < 2) {
+                          if (_step < _totalSteps - 1) {
                             setState(() => _step++);
                           } else {
                             _finish();
@@ -130,7 +124,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           height: 20,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: AppColors.asphalt))
-                      : Text(_step < 2 ? l.continueBtn : l.saveProfile),
+                      : Text(_step < _totalSteps - 1 ? l.continueBtn : l.saveProfile),
                 ),
               ),
             ]),
@@ -140,10 +134,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
+  Widget _buildStep() {
+    if (_step == 0) return _NameStep(ctrl: _nameCtrl, key: const ValueKey(0));
+    if (_step == 1) return _RoleStep(role: _role, onChanged: (r) => setState(() { _role = r; _sector = null; }), key: const ValueKey(1));
+    if (_step == 2 && _role == 'provider') return _SectorStep(sector: _sector, onChanged: (s) => setState(() => _sector = s), key: const ValueKey(2));
+    return _AvatarStep(avatarBase64: _avatarBase64, onPick: _pickImage, key: ValueKey(_role == 'provider' ? 3 : 2));
+  }
+
   bool _canNext(bool loading) {
     if (loading) return false;
     if (_step == 0) return _nameCtrl.text.trim().length >= 2;
-    return true; // rol va rasm — har doim o'tish mumkin
+    if (_step == 2 && _role == 'provider') return _sector != null;
+    return true;
   }
 }
 
@@ -279,6 +281,67 @@ class _RoleCard extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+// ─── Qadam 3 (provider): Sektor tanlash ──────────────────────────────────────
+class _SectorStep extends StatelessWidget {
+  final String? sector;
+  final void Function(String) onChanged;
+  const _SectorStep({required this.sector, required this.onChanged, super.key});
+
+  static const _sectors = [
+    ('workshop',    Icons.handyman_outlined,          'Ustaxona / Mexanik'),
+    ('parts_store', Icons.settings_outlined,          'Ehtiyot qismlar do\'koni'),
+    ('tire_shop',   Icons.trip_origin_outlined,       'Shina va disk'),
+    ('oil_store',   Icons.opacity_outlined,           'Moy va suyuqliklar'),
+    ('car_wash',    Icons.local_car_wash_outlined,    'Avtoyuv'),
+    ('tow_truck',   Icons.rv_hookup_outlined,         'Evakuator'),
+    ('tech_support',Icons.build_circle_outlined,      'Texnik yordam (yo\'lda)'),
+    ('other',       Icons.more_horiz,                 'Boshqa'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text('Qaysi sohadaSiz?',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.bone)),
+      const SizedBox(height: 6),
+      const Text('Mijozlar sizni tezroq topsin',
+          style: TextStyle(color: AppColors.steelLight, fontSize: 14)),
+      const SizedBox(height: 24),
+      Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: _sectors.map((s) {
+          final (key, icon, label) = s;
+          final sel = sector == key;
+          return GestureDetector(
+            onTap: () => onChanged(key),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: sel ? AppColors.amber.withOpacity(0.12) : AppColors.charcoal,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: sel ? AppColors.amber : AppColors.steelLine,
+                    width: sel ? 1.5 : 1),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(icon, size: 18, color: sel ? AppColors.amber : AppColors.steelLight),
+                const SizedBox(width: 8),
+                Text(label,
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: sel ? AppColors.amber : AppColors.bone,
+                        fontWeight: sel ? FontWeight.w600 : FontWeight.normal)),
+              ]),
+            ),
+          );
+        }).toList(),
+      ),
+    ]);
   }
 }
 

@@ -1,4 +1,4 @@
-const { Vehicle } = require('../models');
+const { Vehicle, Provider } = require('../models');
 const { asyncHandler } = require('../middleware/errorHandler');
 const { lookupByTechPassport } = require('../services/vehicleRegistryService');
 
@@ -7,12 +7,26 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const updateMe = asyncHandler(async (req, res) => {
-  const { full_name, preferred_language, role, avatar_url } = req.body;
+  const { full_name, preferred_language, role, avatar_url, sector } = req.body;
   if (full_name !== undefined) req.user.full_name = full_name;
   if (preferred_language !== undefined) req.user.preferred_language = preferred_language;
   if (role !== undefined && ['client', 'provider'].includes(role)) req.user.role = role;
   if (avatar_url !== undefined) req.user.avatar_url = avatar_url;
   await req.user.save();
+
+  // Provider ro'yxatdan o'tganda Provider record yarating
+  if (role === 'provider') {
+    const existing = await Provider.findOne({ where: { user_id: req.user.id } });
+    if (!existing) {
+      await Provider.create({
+        user_id: req.user.id,
+        sector: sector || null,
+      });
+    } else if (sector) {
+      await existing.update({ sector });
+    }
+  }
+
   res.json({ user: req.user });
 });
 

@@ -6,7 +6,14 @@ const Provider = sequelize.define('Provider', {
   user_id: { type: DataTypes.UUID, allowNull: false, unique: true },
   service_type: {
     type: DataTypes.ENUM('tech_support', 'fuel', 'car_wash', 'tow_truck'),
-    allowNull: false,
+    allowNull: true,
+  },
+  sector: {
+    type: DataTypes.ENUM(
+      'workshop', 'parts_store', 'tire_shop', 'oil_store',
+      'car_wash', 'tow_truck', 'tech_support', 'other'
+    ),
+    allowNull: true,
   },
   status: {
     type: DataTypes.ENUM('online', 'offline', 'busy'),
