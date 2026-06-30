@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
@@ -83,11 +84,45 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
     }
   }
 
+  // Onlayn bo'lishdan oldin joylashuvni olib yuboramiz — buyurtma yo'naltirish
+  // (matching) ustaning joriy koordinatalariga tayanadi.
+  Future<bool> _sendLocation() async {
+    try {
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        return false;
+      }
+      final pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      await ref.read(apiClientProvider).patch('/providers/me/location',
+          data: {'lat': pos.latitude, 'lng': pos.longitude});
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> _toggleStatus() async {
     setState(() => _togglingStatus = true);
     try {
       final api = ref.read(apiClientProvider);
       final newStatus = !_isOnline;
+      // Onlayn bo'layotganda avval joylashuvni yuboramiz
+      if (newStatus) {
+        final ok = await _sendLocation();
+        if (!ok && mounted) {
+          setState(() => _togglingStatus = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations(context).locationDenied),
+            backgroundColor: AppColors.danger,
+          ));
+          return;
+        }
+      }
       await api.patch('/providers/me/status',
           data: {'is_online': newStatus});
       if (!mounted) return;

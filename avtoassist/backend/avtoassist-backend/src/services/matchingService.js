@@ -9,7 +9,8 @@ async function findNearestProvider({ serviceType, lat, lng }) {
     where: {
       service_type: serviceType,
       status: 'online',
-      is_verified: true,
+      // is_verified hozircha talab qilinmaydi — KYC oqimi ulanmagan; tasdiq
+      // alohida ishonch belgisi sifatida ko'rsatiladi (statistikada)
       current_lat: { [Op.ne]: null },
       current_lng: { [Op.ne]: null },
     },

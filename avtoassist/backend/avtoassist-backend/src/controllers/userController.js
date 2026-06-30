@@ -14,16 +14,25 @@ const updateMe = asyncHandler(async (req, res) => {
   if (avatar_url !== undefined) req.user.avatar_url = avatar_url;
   await req.user.save();
 
-  // Provider ro'yxatdan o'tganda Provider record yarating
+  // Provider ro'yxatdan o'tganda Provider record yarating.
+  // Yo'l xizmatlari (buyurtma orqali ishlaydigan) sektorlarni service_type'ga
+  // moslaymiz — matching service_type bo'yicha qidiradi.
   if (role === 'provider') {
+    const sectorToServiceType = {
+      car_wash: 'car_wash',
+      tow_truck: 'tow_truck',
+      tech_support: 'tech_support',
+    };
+    const serviceType = sector ? (sectorToServiceType[sector] || null) : null;
     const existing = await Provider.findOne({ where: { user_id: req.user.id } });
     if (!existing) {
       await Provider.create({
         user_id: req.user.id,
         sector: sector || null,
+        service_type: serviceType,
       });
     } else if (sector) {
-      await existing.update({ sector });
+      await existing.update({ sector, service_type: serviceType });
     }
   }
 
