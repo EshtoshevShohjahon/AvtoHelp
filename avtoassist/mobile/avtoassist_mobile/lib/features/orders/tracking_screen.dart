@@ -171,7 +171,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
                           points: _routePoints,
                           color: AppColors.teal,
                           strokeWidth: 5,
-                          borderColor: AppColors.asphalt.withOpacity(0.5),
+                          borderColor: AppColors.asphalt.withValues(alpha: 0.5),
                           borderStrokeWidth: 2,
                         ),
                       ]),
@@ -200,7 +200,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
                                   color: Colors.white, width: 2.5),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.teal.withOpacity(0.4),
+                                  color: AppColors.teal.withValues(alpha: 0.4),
                                   blurRadius: 10,
                                   spreadRadius: 2,
                                 ),
@@ -268,7 +268,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen>
                     color: AppColors.teal,
                     shape: BoxShape.circle,
                     boxShadow: [BoxShadow(
-                        color: AppColors.teal.withOpacity(0.4),
+                        color: AppColors.teal.withValues(alpha: 0.4),
                         blurRadius: 24, spreadRadius: 4)],
                   ),
                   child: const Icon(Icons.check,
@@ -350,7 +350,7 @@ class _RadarWidget extends StatelessWidget {
             color: AppColors.amber,
             shape: BoxShape.circle,
             boxShadow: [BoxShadow(
-                color: AppColors.amber.withOpacity(0.4),
+                color: AppColors.amber.withValues(alpha: 0.4),
                 blurRadius: 20)],
           ),
           child: const Icon(Icons.directions_car,

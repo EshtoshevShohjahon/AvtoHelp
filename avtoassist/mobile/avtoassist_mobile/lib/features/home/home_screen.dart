@@ -93,7 +93,7 @@ class HomeScreen extends ConsumerWidget {
                             colors: [Color(0xFF272D35), Color(0xFF1A1E24)],
                           ),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.amber.withOpacity(0.25)),
+                          border: Border.all(color: AppColors.amber.withValues(alpha: 0.25)),
                           boxShadow: AppColors.cardShadow,
                         ),
                         child: Row(children: [
@@ -260,9 +260,9 @@ class _ServiceCard extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: service.color.withOpacity(0.16),
+                color: service.color.withValues(alpha: 0.16),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: service.color.withOpacity(0.25)),
+                border: Border.all(color: service.color.withValues(alpha: 0.25)),
               ),
               child: Icon(service.icon, color: service.color, size: 21),
             ),

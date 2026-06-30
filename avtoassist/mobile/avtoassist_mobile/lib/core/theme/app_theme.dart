@@ -40,14 +40,14 @@ class AppColors {
   // Soyalar
   static List<BoxShadow> get cardShadow => [
         BoxShadow(
-          color: Colors.black.withOpacity(0.35),
+          color: Colors.black.withValues(alpha: 0.35),
           blurRadius: 18,
           offset: const Offset(0, 8),
         ),
       ];
   static List<BoxShadow> glow(Color c) => [
         BoxShadow(
-          color: c.withOpacity(0.35),
+          color: c.withValues(alpha: 0.35),
           blurRadius: 20,
           offset: const Offset(0, 6),
         ),

@@ -223,9 +223,9 @@ class _ProviderProfileScreenState
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: AppColors.amber.withOpacity(0.12),
+                  color: AppColors.amber.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(9),
-                  border: Border.all(color: AppColors.amber.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.amber.withValues(alpha: 0.3)),
                 ),
                 child: Text('${l.serviceTypeLabel(e.key)} · ${e.value}',
                     style: const TextStyle(
@@ -392,7 +392,7 @@ class _StatBox extends StatelessWidget {
         Container(
           width: 32, height: 32,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(9),
           ),
           child: Icon(icon, color: color, size: 17),

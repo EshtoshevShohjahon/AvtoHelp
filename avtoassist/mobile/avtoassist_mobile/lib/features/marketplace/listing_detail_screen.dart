@@ -277,13 +277,13 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: priceType == 'negotiable'
-                        ? [AppColors.teal.withOpacity(0.18), AppColors.teal.withOpacity(0.05)]
-                        : [AppColors.amber.withOpacity(0.18), AppColors.amber.withOpacity(0.05)],
+                        ? [AppColors.teal.withValues(alpha: 0.18), AppColors.teal.withValues(alpha: 0.05)]
+                        : [AppColors.amber.withValues(alpha: 0.18), AppColors.amber.withValues(alpha: 0.05)],
                   ),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                       color: (priceType == 'negotiable' ? AppColors.teal : AppColors.amber)
-                          .withOpacity(0.35)),
+                          .withValues(alpha: 0.35)),
                 ),
                 child: Row(children: [
                   Icon(
@@ -389,7 +389,7 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.amber,
                             side: BorderSide(
-                                color: AppColors.amber.withOpacity(0.5)),
+                                color: AppColors.amber.withValues(alpha: 0.5)),
                           ),
                         ),
                       ),
@@ -655,9 +655,9 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.15),
+      color: color.withValues(alpha: 0.15),
       borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: color.withOpacity(0.4)),
+      border: Border.all(color: color.withValues(alpha: 0.4)),
     ),
     child: Text(label,
         style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),

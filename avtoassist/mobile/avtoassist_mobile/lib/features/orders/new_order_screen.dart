@@ -140,7 +140,7 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
           Container(height: 2,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [AppColors.amber, AppColors.amber.withOpacity(0)]),
+                    colors: [AppColors.amber, AppColors.amber.withValues(alpha: 0)]),
               )),
           Expanded(
             child: SingleChildScrollView(
@@ -265,12 +265,12 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          AppColors.teal.withOpacity(0.14),
-                          AppColors.teal.withOpacity(0.04),
+                          AppColors.teal.withValues(alpha: 0.14),
+                          AppColors.teal.withValues(alpha: 0.04),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.teal.withOpacity(0.3)),
+                      border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

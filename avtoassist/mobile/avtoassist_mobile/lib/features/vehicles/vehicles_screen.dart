@@ -136,9 +136,9 @@ class _VehicleCard extends StatelessWidget {
         Container(
           width: 48, height: 48,
           decoration: BoxDecoration(
-            color: AppColors.amber.withOpacity(0.15),
+            color: AppColors.amber.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: AppColors.amber.withOpacity(0.25)),
+            border: Border.all(color: AppColors.amber.withValues(alpha: 0.25)),
           ),
           child: const Icon(Icons.directions_car_rounded,
               color: AppColors.amber, size: 24),
@@ -280,9 +280,9 @@ class _AddVehicleScreenState extends ConsumerState<AddVehicleScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.teal.withOpacity(0.08),
+                    color: AppColors.teal.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
                   ),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Row(children: [

@@ -290,9 +290,9 @@ class _OilAlertCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(children: [
         Icon(isUrgent ? Icons.warning_amber_rounded : Icons.oil_barrel_outlined,
@@ -359,18 +359,18 @@ class _OdometerCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.teal.withOpacity(0.12),
-              AppColors.teal.withOpacity(0.03),
+              AppColors.teal.withValues(alpha: 0.12),
+              AppColors.teal.withValues(alpha: 0.03),
             ],
           ),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.teal.withOpacity(0.3)),
+          border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
         ),
         child: Row(children: [
           Container(
             width: 42, height: 42,
             decoration: BoxDecoration(
-              color: AppColors.teal.withOpacity(0.15),
+              color: AppColors.teal.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.speed, color: AppColors.teal, size: 22),
@@ -429,7 +429,7 @@ class _ServiceRecordCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _typeColor(record.serviceType).withOpacity(0.15),
+              color: _typeColor(record.serviceType).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -679,7 +679,7 @@ class _AddServiceRecordScreenState
                         horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: selected
-                          ? AppColors.amber.withOpacity(0.15)
+                          ? AppColors.amber.withValues(alpha: 0.15)
                           : AppColors.charcoal,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(

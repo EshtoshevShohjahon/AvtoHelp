@@ -68,7 +68,7 @@ class TruckSectionScreen extends ConsumerWidget {
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.teal.withOpacity(0.3)),
+              border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
             ),
             child: Row(children: [
               const Text('🚛', style: TextStyle(fontSize: 42)),
@@ -95,9 +95,9 @@ class TruckSectionScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: AppColors.amber.withOpacity(0.08),
+              color: AppColors.amber.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.amber.withOpacity(0.25)),
+              border: Border.all(color: AppColors.amber.withValues(alpha: 0.25)),
             ),
             child: Row(children: [
               const Icon(Icons.oil_barrel_outlined,
@@ -173,9 +173,9 @@ class _TruckServiceCard extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: service.color.withOpacity(0.14),
+              color: service.color.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: service.color.withOpacity(0.25)),
+              border: Border.all(color: service.color.withValues(alpha: 0.25)),
             ),
             child: Center(
               child: Text(service.icon,

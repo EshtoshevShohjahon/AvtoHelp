@@ -240,7 +240,7 @@ class _RoleCard extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: selected ? AppColors.amber.withOpacity(0.12) : AppColors.charcoal,
+          color: selected ? AppColors.amber.withValues(alpha: 0.12) : AppColors.charcoal,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
               color: selected ? AppColors.amber : AppColors.steelLine,
@@ -252,7 +252,7 @@ class _RoleCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: selected
-                  ? AppColors.amber.withOpacity(0.2)
+                  ? AppColors.amber.withValues(alpha: 0.2)
                   : AppColors.steel,
               borderRadius: BorderRadius.circular(12),
             ),
@@ -321,7 +321,7 @@ class _SectorStep extends StatelessWidget {
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: sel ? AppColors.amber.withOpacity(0.12) : AppColors.charcoal,
+                color: sel ? AppColors.amber.withValues(alpha: 0.12) : AppColors.charcoal,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                     color: sel ? AppColors.amber : AppColors.steelLine,

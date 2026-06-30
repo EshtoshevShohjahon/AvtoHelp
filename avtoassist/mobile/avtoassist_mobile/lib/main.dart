@@ -413,7 +413,7 @@ class _ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: isProvider
-                    ? AppColors.amber.withOpacity(0.15)
+                    ? AppColors.amber.withValues(alpha: 0.15)
                     : AppColors.steel,
                 borderRadius: BorderRadius.circular(999),
               ),
@@ -559,7 +559,7 @@ void _showProviderSectorSheet(BuildContext context, WidgetRef ref) {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                       decoration: BoxDecoration(
                         color: sel
-                            ? AppColors.amber.withOpacity(0.12)
+                            ? AppColors.amber.withValues(alpha: 0.12)
                             : AppColors.steel,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
@@ -690,7 +690,7 @@ class _ProfileTile extends StatelessWidget {
           Container(
             width: 38, height: 38,
             decoration: BoxDecoration(
-              color: (isDanger ? AppColors.danger : AppColors.amber).withOpacity(0.14),
+              color: (isDanger ? AppColors.danger : AppColors.amber).withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(icon, color: isDanger ? AppColors.danger : AppColors.amber, size: 19),

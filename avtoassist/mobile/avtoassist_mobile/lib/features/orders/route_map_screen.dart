@@ -177,7 +177,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                             points: _routePoints,
                             color: AppColors.teal,
                             strokeWidth: 5,
-                            borderColor: AppColors.asphalt.withOpacity(0.6),
+                            borderColor: AppColors.asphalt.withValues(alpha: 0.6),
                             borderStrokeWidth: 2,
                           ),
                         ]),
@@ -228,7 +228,7 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                                     Border.all(color: Colors.white, width: 2.5),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.teal.withOpacity(0.4),
+                                    color: AppColors.teal.withValues(alpha: 0.4),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),
@@ -285,10 +285,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: AppColors.teal.withOpacity(0.15),
+                              color: AppColors.teal.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  color: AppColors.teal.withOpacity(0.4)),
+                                  color: AppColors.teal.withValues(alpha: 0.4)),
                             ),
                             child: Row(mainAxisSize: MainAxisSize.min, children: [
                               const Icon(Icons.navigation_outlined,
@@ -316,10 +316,10 @@ class _RouteMapScreenState extends State<RouteMapScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppColors.charcoal.withOpacity(0.9),
+                          color: AppColors.charcoal.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: AppColors.amber.withOpacity(0.4)),
+                              color: AppColors.amber.withValues(alpha: 0.4)),
                         ),
                         child: Text(
                           l.routeFetchFailed,

@@ -218,7 +218,7 @@ class _WorkshopsMapScreenState extends ConsumerState<WorkshopsMapScreen> {
                     border: Border.all(color: Colors.white, width: 2),
                     boxShadow: [
                       BoxShadow(
-                          color: AppColors.teal.withOpacity(0.4),
+                          color: AppColors.teal.withValues(alpha: 0.4),
                           blurRadius: 8)
                     ],
                   ),
@@ -312,7 +312,7 @@ class _WorkshopsMapScreenState extends ConsumerState<WorkshopsMapScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: AppColors.charcoal.withOpacity(0.9),
+            color: AppColors.charcoal.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.steelLine),
           ),
@@ -398,7 +398,7 @@ class _WorkshopCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.amber.withOpacity(0.15),
+              color: AppColors.amber.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Center(
@@ -436,9 +436,9 @@ class _WorkshopCard extends StatelessWidget {
           Wrap(spacing: 6, children: specs.map((s) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: AppColors.teal.withOpacity(0.1),
+              color: AppColors.teal.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: AppColors.teal.withOpacity(0.3)),
+              border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
             ),
             child: Text(s.toString(),
                 style: const TextStyle(

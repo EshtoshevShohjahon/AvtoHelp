@@ -284,7 +284,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: _isOnline
-                            ? AppColors.teal.withOpacity(0.15)
+                            ? AppColors.teal.withValues(alpha: 0.15)
                             : AppColors.charcoal,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
@@ -369,9 +369,9 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.teal.withOpacity(0.08),
+                  color: AppColors.teal.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+                  border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
                 ),
                 child: Row(children: [
                   const Icon(Icons.verified_user_outlined,
@@ -491,9 +491,9 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.1),
+                color: AppColors.danger.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+                border: Border.all(color: AppColors.danger.withValues(alpha: 0.4)),
               ),
               child: Row(children: [
                 const Icon(Icons.error_outline,
@@ -652,13 +652,13 @@ class _QuickActionTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.charcoal,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: accent.withOpacity(0.3)),
+          border: Border.all(color: accent.withValues(alpha: 0.3)),
         ),
         child: Row(children: [
           Container(
             width: 38, height: 38,
             decoration: BoxDecoration(
-              color: accent.withOpacity(0.15),
+              color: accent.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(action.icon, color: accent, size: 20),
@@ -754,9 +754,9 @@ class _ServiceStatsCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.12),
+                  color: accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: accent.withOpacity(0.3)),
+                  border: Border.all(color: accent.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   '${l.serviceTypeLabel(e.key)} · ${e.value}',
@@ -835,7 +835,7 @@ class _MiniStat extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       decoration: BoxDecoration(
-        color: AppColors.asphalt.withOpacity(0.4),
+        color: AppColors.asphalt.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -863,16 +863,16 @@ class _SectorBanner extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [color.withOpacity(0.16), color.withOpacity(0.04)],
+          colors: [color.withValues(alpha: 0.16), color.withValues(alpha: 0.04)],
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.35)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(children: [
         Container(
           width: 46, height: 46,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.18),
+            color: color.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(_sectorIcon(sector), color: color, size: 24),
@@ -962,7 +962,7 @@ class _StatCard extends StatelessWidget {
         Container(
           width: 32, height: 32,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.15),
+            color: iconColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(9),
           ),
           child: Icon(icon, color: iconColor, size: 17),
@@ -1160,7 +1160,7 @@ class _OrderCard extends StatelessWidget {
         color: AppColors.charcoal,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-            color: isNew ? AppColors.amber.withOpacity(0.6) : AppColors.steelLine,
+            color: isNew ? AppColors.amber.withValues(alpha: 0.6) : AppColors.steelLine,
             width: isNew ? 1.5 : 1),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1169,7 +1169,7 @@ class _OrderCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: (isNew ? AppColors.amber : AppColors.teal).withOpacity(0.15),
+              color: (isNew ? AppColors.amber : AppColors.teal).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -1330,15 +1330,15 @@ class _VehicleInfoCard extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.teal.withOpacity(0.1),
+          color: AppColors.teal.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+          border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
         ),
         child: Row(children: [
           Container(
             width: 48, height: 48,
             decoration: BoxDecoration(
-              color: AppColors.teal.withOpacity(0.2),
+              color: AppColors.teal.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.directions_car_rounded,
@@ -1438,9 +1438,9 @@ class _OilAlertBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(children: [
         Icon(isUrgent ? Icons.warning_amber_rounded : Icons.oil_barrel_outlined,
@@ -1623,7 +1623,7 @@ class _ProviderAddRecordScreenState
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(l.addServiceRecord,
                 style: TextStyle(
-                    color: AppColors.amber.withOpacity(0.8),
+                    color: AppColors.amber.withValues(alpha: 0.8),
                     fontSize: 12)),
           ),
         ),
@@ -1647,7 +1647,7 @@ class _ProviderAddRecordScreenState
                         horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: sel
-                          ? AppColors.amber.withOpacity(0.15)
+                          ? AppColors.amber.withValues(alpha: 0.15)
                           : AppColors.charcoal,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(

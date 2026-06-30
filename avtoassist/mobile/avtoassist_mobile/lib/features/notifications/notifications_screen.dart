@@ -99,14 +99,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                               color: unread
-                                  ? AppColors.amber.withOpacity(0.4)
+                                  ? AppColors.amber.withValues(alpha: 0.4)
                                   : AppColors.steelLine),
                         ),
                         child: Row(children: [
                           Container(
                             width: 42, height: 42,
                             decoration: BoxDecoration(
-                              color: AppColors.amber.withOpacity(0.14),
+                              color: AppColors.amber.withValues(alpha: 0.14),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(_iconFor(n['type'] as String? ?? ''),
