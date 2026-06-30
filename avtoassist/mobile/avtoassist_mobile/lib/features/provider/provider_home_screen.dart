@@ -1033,6 +1033,19 @@ class _ProviderOrdersScreenState
     }
   }
 
+  // Taklif qilingan buyurtmani rad etish — keyingi ustaga o'tadi
+  Future<void> _declineOrder(String orderId) async {
+    try {
+      await ref.read(apiClientProvider).post('/orders/$orderId/decline');
+      _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+      );
+    }
+  }
+
   Future<void> _showRoute(Map<String, dynamic> order) async {
     final pickupLat = (order['pickup_lat'] as num?)?.toDouble();
     final pickupLng = (order['pickup_lng'] as num?)?.toDouble();
@@ -1105,8 +1118,8 @@ class _ProviderOrdersScreenState
                             order: _orders[i],
                             onAccept: () => _updateOrderStatus(
                                 _orders[i]['id'], 'accepted'),
-                            onDecline: () => _updateOrderStatus(
-                                _orders[i]['id'], 'cancelled'),
+                            onDecline: () =>
+                                _declineOrder(_orders[i]['id']),
                             onUpdateStatus: (s) =>
                                 _updateOrderStatus(_orders[i]['id'], s),
                             onShowRoute: () => _showRoute(_orders[i]),

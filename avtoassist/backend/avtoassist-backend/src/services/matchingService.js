@@ -4,17 +4,20 @@ const { Op } = require('sequelize');
 
 const RADIUS_STEPS_KM = [5, 10, 15];
 
-async function findNearestProvider({ serviceType, lat, lng }) {
-  const candidates = await Provider.findAll({
-    where: {
-      service_type: serviceType,
-      status: 'online',
-      // is_verified hozircha talab qilinmaydi — KYC oqimi ulanmagan; tasdiq
-      // alohida ishonch belgisi sifatida ko'rsatiladi (statistikada)
-      current_lat: { [Op.ne]: null },
-      current_lng: { [Op.ne]: null },
-    },
-  });
+async function findNearestProvider({ serviceType, lat, lng, excludeUserIds = [] }) {
+  const where = {
+    service_type: serviceType,
+    status: 'online',
+    // is_verified hozircha talab qilinmaydi — KYC oqimi ulanmagan; tasdiq
+    // alohida ishonch belgisi sifatida ko'rsatiladi (statistikada)
+    current_lat: { [Op.ne]: null },
+    current_lng: { [Op.ne]: null },
+  };
+  // Rad etgan ustalarni qayta taklif qilmaymiz
+  if (excludeUserIds.length) {
+    where.user_id = { [Op.notIn]: excludeUserIds };
+  }
+  const candidates = await Provider.findAll({ where });
 
   for (const radiusKm of RADIUS_STEPS_KM) {
     let nearest = null;

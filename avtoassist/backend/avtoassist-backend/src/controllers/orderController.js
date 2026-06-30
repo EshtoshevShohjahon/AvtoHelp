@@ -68,13 +68,11 @@ async function createOrder(req, res) {
       lng: parseFloat(pickup_lng),
     });
     if (provider) {
+      // Buyurtma ustaga TAKLIF qilinadi (avtomatik qabul qilinmaydi).
       // provider_id sifatida ustaning user.id'sini saqlaymiz — auth tekshiruvi
-      // va bildirishnoma xonalari (user_<id>) shunga tayanadi
-      await order.update({
-        provider_id: provider.user_id,
-        status: 'accepted',
-        accepted_at: new Date(),
-      });
+      // va bildirishnoma xonalari (user_<id>) shunga tayanadi. Status 'searching'
+      // qoladi: usta qabul qilsa 'accepted' bo'ladi, rad etsa keyingisiga o'tadi.
+      await order.update({ provider_id: provider.user_id });
       if (io) io.to(`user_${provider.user_id}`).emit('new_order', { orderId: order.id });
       notify(io, provider.user_id, {
         type: 'new_order',
@@ -130,6 +128,48 @@ async function listProviderOrders(req, res) {
       return obj;
     }),
   });
+}
+
+// POST /api/orders/:id/decline — usta taklif qilingan buyurtmani rad etadi;
+// buyurtma keyingi eng yaqin ustaga taklif qilinadi (rad etganni chiqarib).
+async function declineOrder(req, res) {
+  const order = await Order.findByPk(req.params.id);
+  if (!order) return res.status(404).json({ error: 'not found' });
+  if (order.provider_id !== req.user.id) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
+  if (order.status !== 'searching') {
+    return res.status(422).json({ error: 'order_already_taken' });
+  }
+
+  const io = req.app.get('io');
+  // Keyingi ustani topamiz (rad etganni chiqarib)
+  let nextProvider = null;
+  try {
+    const result = await matchingService.findNearestProvider({
+      serviceType: order.service_type,
+      lat: order.pickup_lat,
+      lng: order.pickup_lng,
+      excludeUserIds: [req.user.id],
+    });
+    nextProvider = result.provider;
+  } catch (_) { /* non-fatal */ }
+
+  if (nextProvider) {
+    await order.update({ provider_id: nextProvider.user_id });
+    if (io) io.to(`user_${nextProvider.user_id}`).emit('new_order', { orderId: order.id });
+    notify(io, nextProvider.user_id, {
+      type: 'new_order',
+      title: 'Yangi buyurtma',
+      body: order.pickup_address || `Xizmat: ${order.service_type}`,
+      data: { order_id: order.id },
+    });
+  } else {
+    // Boshqa usta yo'q — buyurtma bo'sh holatda qoladi (mijoz kutadi/bekor qiladi)
+    await order.update({ provider_id: null });
+  }
+
+  res.json({ ok: true, reassigned: Boolean(nextProvider) });
 }
 
 async function updateOrderStatus(req, res) {
@@ -204,4 +244,4 @@ async function _refundIfPaid(orderId) {
   } catch (_) {}
 }
 
-module.exports = { createOrder, getOrder, listMyOrders, listProviderOrders, updateOrderStatus, _refundIfPaid };
+module.exports = { createOrder, getOrder, listMyOrders, listProviderOrders, declineOrder, updateOrderStatus, _refundIfPaid };
