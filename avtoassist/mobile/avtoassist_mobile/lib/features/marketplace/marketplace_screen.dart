@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
   String _listingType = 'all';
   final _searchCtrl = TextEditingController();
   String _q = '';
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -27,8 +29,15 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchCtrl.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String v) {
+    setState(() => _q = v);
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 450), _load);
   }
 
   Future<void> _load() async {
@@ -86,10 +95,7 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
                       })
                   : null,
             ),
-            onChanged: (v) {
-              setState(() => _q = v);
-              Future.delayed(const Duration(milliseconds: 500), _load);
-            },
+            onChanged: _onSearchChanged,
           ),
         ),
         // Filter chips

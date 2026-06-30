@@ -39,6 +39,22 @@ class _ProviderListingsScreenState
     }
   }
 
+  Future<void> _toggleActive(Map<String, dynamic> listing) async {
+    final newVal = !(listing['is_active'] as bool? ?? true);
+    try {
+      final api = ref.read(apiClientProvider);
+      await api.dio.put('/marketplace/${listing['id']}',
+          data: {'is_active': newVal.toString()});
+      setState(() => listing['is_active'] = newVal);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+        );
+      }
+    }
+  }
+
   Future<void> _delete(Map<String, dynamic> listing) async {
     final l = AppLocalizations(context);
     final confirmed = await showDialog<bool>(
@@ -221,6 +237,20 @@ class _ProviderListingsScreenState
                                               color: AppColors.steelLight,
                                               fontSize: 11)),
                                       const Spacer(),
+                                      IconButton(
+                                        icon: Icon(
+                                            isActive
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                            color: isActive
+                                                ? AppColors.teal
+                                                : AppColors.steelLight,
+                                            size: 18),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(
+                                            minWidth: 28, minHeight: 28),
+                                        onPressed: () => _toggleActive(item),
+                                      ),
                                       IconButton(
                                         icon: const Icon(
                                             Icons.edit_outlined,
