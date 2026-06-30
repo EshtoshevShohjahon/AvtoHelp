@@ -42,8 +42,12 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   String? _sector;
   bool _isVerified = false;
 
-  // Mijoz bilan ishlaydigan sektorlarga KYC majburiy
+  // KYC hozircha o'chirilgan. Keyin yoqish uchun _kycEnabled = true qiling.
+  static const bool _kycEnabled = false;
+
+  // Mijoz bilan ishlaydigan sektorlarga KYC majburiy (faqat _kycEnabled bo'lsa)
   bool get _requiresKyc =>
+      _kycEnabled &&
       ['workshop', 'car_wash', 'tow_truck', 'tech_support'].contains(_sector);
 
   @override
@@ -374,8 +378,8 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           _SectorBanner(sector: _sector ?? 'workshop'),
           const SizedBox(height: 16),
 
-          // Tasdiqlanish holati / chaqiruv
-          if (!_isVerified) ...[
+          // Tasdiqlanish holati / chaqiruv (KYC yoqilgan bo'lsa)
+          if (_kycEnabled && !_isVerified) ...[
             Builder(builder: (context) {
               // Majburiy sektorlar uchun ogohlantiruvchi (amber) ko'rinish
               final color = _requiresKyc ? AppColors.amber : AppColors.teal;
@@ -424,7 +428,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
               );
             }),
             const SizedBox(height: 16),
-          ] else ...[
+          ] else if (_kycEnabled && _isVerified) ...[
             Row(children: [
               const Icon(Icons.verified, color: AppColors.teal, size: 16),
               const SizedBox(width: 6),
