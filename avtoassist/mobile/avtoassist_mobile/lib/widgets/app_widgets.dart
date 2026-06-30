@@ -544,6 +544,11 @@ class AppLocalizations {
   String get callNow => _s('Qo\'ng\'iroq qilish', 'Позвонить', 'Қўнғироқ қилиш', 'Call now');
   String get favorites => _s('Sevimlilar', 'Избранное', 'Севимлилар', 'Favorites');
   String get noFavorites => _s('Sevimlilar yo\'q', 'Нет избранного', 'Севимлилар йўқ', 'No favorites yet');
+  String get reviews => _s('Sharhlar', 'Отзывы', 'Шарҳлар', 'Reviews');
+  String get noReviews => _s('Hali sharhlar yo\'q', 'Пока нет отзывов', 'Ҳали шарҳлар йўқ', 'No reviews yet');
+  String get rateProvider => _s('Baho berish', 'Оценить', 'Баҳо бериш', 'Rate');
+  String get reviewThanks => _s('Sharh uchun rahmat!', 'Спасибо за отзыв!', 'Шарҳ учун раҳмат!', 'Thanks for your review!');
+  String get send => _s('Yuborish', 'Отправить', 'Юбориш', 'Send');
   String get copyNumber => _s('Raqamni nusxalash', 'Скопировать номер', 'Рақамни нусхалаш', 'Copy number');
   String get phoneCopied => _s('Raqam nusxalandi', 'Номер скопирован', 'Рақам нусхаланди', 'Number copied');
   String get phoneUnavailable => _s('Telefon raqami mavjud emas', 'Номер телефона недоступен', 'Телефон рақами мавжуд эмас', 'Phone number unavailable');

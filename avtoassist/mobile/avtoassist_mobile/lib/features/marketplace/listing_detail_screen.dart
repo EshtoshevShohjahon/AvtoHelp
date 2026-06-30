@@ -23,6 +23,94 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
   bool _loading = true;
   int _imageIndex = 0;
   bool _favorited = false;
+  List<Map<String, dynamic>> _reviews = [];
+
+  String? get _providerId =>
+      (_listing?['provider'] as Map<String, dynamic>?)?['id'] as String?;
+
+  Future<void> _loadReviews() async {
+    final pid = _providerId;
+    if (pid == null) return;
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.get('/marketplace/provider/$pid/reviews');
+      if (!mounted) return;
+      setState(() => _reviews =
+          List<Map<String, dynamic>>.from(res.data['reviews'] ?? []));
+    } catch (_) {}
+  }
+
+  Future<void> _showRateDialog() async {
+    final pid = _providerId;
+    if (pid == null) return;
+    int stars = 5;
+    final commentCtrl = TextEditingController();
+    final l = AppLocalizations(context);
+
+    final submitted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) => AlertDialog(
+          backgroundColor: AppColors.charcoal,
+          title: Text(l.rateProvider,
+              style: const TextStyle(color: AppColors.bone, fontSize: 18)),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (i) => IconButton(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                constraints: const BoxConstraints(),
+                icon: Icon(
+                  i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                  color: AppColors.amber, size: 34,
+                ),
+                onPressed: () => setS(() => stars = i + 1),
+              )),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: commentCtrl,
+              style: const TextStyle(color: AppColors.bone),
+              maxLines: 3,
+              decoration: InputDecoration(hintText: l.reviewHint),
+            ),
+          ]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l.cancel,
+                  style: const TextStyle(color: AppColors.steelLight)),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l.send),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (submitted == true) {
+      try {
+        final api = ref.read(apiClientProvider);
+        await api.dio.post('/marketplace/provider/$pid/review',
+            data: {'rating': stars, 'comment': commentCtrl.text.trim()});
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.reviewThanks), backgroundColor: AppColors.teal),
+        );
+        _loadReviews();
+        _load();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: AppColors.danger),
+          );
+        }
+      }
+    }
+    commentCtrl.dispose();
+  }
 
   Future<void> _toggleFavorite() async {
     final prev = _favorited;
@@ -58,6 +146,7 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
         _favorited = _listing?['is_favorited'] == true;
         _loading = false;
       });
+      _loadReviews();
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -325,6 +414,32 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
                   const SizedBox(height: 20),
                 ],
               ],
+              // Sharhlar bo'limi
+              Row(children: [
+                Text(l.reviews,
+                    style: const TextStyle(
+                        color: AppColors.bone,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3)),
+                const Spacer(),
+                TextButton.icon(
+                  onPressed: _showRateDialog,
+                  icon: const Icon(Icons.star_outline_rounded, size: 18),
+                  label: Text(l.rateProvider),
+                ),
+              ]),
+              const SizedBox(height: 8),
+              if (_reviews.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(l.noReviews,
+                      style: const TextStyle(
+                          color: AppColors.steelLight, fontSize: 13)),
+                )
+              else
+                ..._reviews.map((r) => _ReviewTile(review: r)),
+              const SizedBox(height: 20),
               // Views
               Row(children: [
                 const Icon(Icons.remove_red_eye_outlined,
@@ -467,6 +582,48 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
       buf.write(s[i]);
     }
     return buf.toString();
+  }
+}
+
+class _ReviewTile extends StatelessWidget {
+  final Map<String, dynamic> review;
+  const _ReviewTile({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    final rating = (review['rating'] as num?)?.toInt() ?? 0;
+    final author = review['author'] as String? ?? 'Mijoz';
+    final comment = review['comment'] as String? ?? '';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.steelLine),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(
+            child: Text(author,
+                style: const TextStyle(
+                    color: AppColors.bone,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13)),
+          ),
+          Row(children: List.generate(5, (i) => Icon(
+            i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+            color: AppColors.amber, size: 14,
+          ))),
+        ]),
+        if (comment.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(comment,
+              style: const TextStyle(
+                  color: AppColors.boneDim, fontSize: 13, height: 1.4)),
+        ],
+      ]),
+    );
   }
 }
 

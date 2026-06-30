@@ -5,6 +5,7 @@ const upload = require('../middleware/upload');
 const {
   browse, detail, create, update, remove, myListings, toggleFavorite, favorites,
 } = require('../controllers/listingController');
+const { addReview, listReviews } = require('../controllers/providerReviewController');
 
 const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
@@ -12,6 +13,11 @@ const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next
 router.get('/',           optionalAuth, asyncHandler(browse));
 router.get('/my',         requireAuth, asyncHandler(myListings));
 router.get('/favorites',  requireAuth, asyncHandler(favorites));
+
+// Provayder sharhlari
+router.get('/provider/:providerId/reviews', asyncHandler(listReviews));
+router.post('/provider/:providerId/review', requireAuth, asyncHandler(addReview));
+
 router.get('/:id',        optionalAuth, asyncHandler(detail));
 
 // Sevimli toggle
