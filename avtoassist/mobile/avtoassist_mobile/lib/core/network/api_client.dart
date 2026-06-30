@@ -21,8 +21,11 @@ class ApiClient {
   ApiClient() {
     _dio = Dio(BaseOptions(
       baseUrl: _kBaseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 20),
+      // Render bepul tarifi serveri uxlab qolsa uyg'onishi ~50s oladi,
+      // shuning uchun timeout'lar saxiy qilingan
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+      sendTimeout: const Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     ));
 
