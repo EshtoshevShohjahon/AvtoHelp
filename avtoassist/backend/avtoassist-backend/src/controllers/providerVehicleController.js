@@ -1,7 +1,8 @@
 'use strict';
 const { v4: uuidv4 } = require('uuid');
-const { Vehicle, ServiceRecord, User } = require('../models');
+const { Vehicle, ServiceRecord, User, Provider } = require('../models');
 const { asyncHandler } = require('../middleware/errorHandler');
+const { requiresKyc } = require('../utils/kyc');
 
 // GET /api/providers/vehicle-lookup?tech_passport=AAF1234567
 // Provider tex passport bo'yicha ixtiyoriy avtomobilni topadi va tarixini ko'radi
@@ -41,6 +42,13 @@ const vehicleLookup = asyncHandler(async (req, res) => {
 // POST /api/providers/vehicle-lookup/:vehicleId/service-records
 // Provider o'zi xizmat ko'rsatgan avtomobilga yozuv qo'shadi
 const addRecordByProvider = asyncHandler(async (req, res) => {
+  // Mijoz avtomobiliga xizmat qaydi qo'shish — mijoz bilan ishlaydigan
+  // sektorlar uchun KYC majburiy (workshop va h.k.)
+  const provider = await Provider.findOne({ where: { user_id: req.user.id } });
+  if (provider && requiresKyc(provider.sector) && !provider.is_verified) {
+    return res.status(403).json({ error: 'verification_required' });
+  }
+
   const vehicle = await Vehicle.findByPk(req.params.vehicleId);
   if (!vehicle) {
     return res.status(404).json({ error: 'Avtomobil topilmadi' });

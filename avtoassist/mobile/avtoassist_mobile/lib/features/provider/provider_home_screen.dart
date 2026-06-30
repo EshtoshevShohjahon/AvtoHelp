@@ -42,6 +42,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   String? _sector;
   bool _isVerified = false;
 
+  // Mijoz bilan ishlaydigan sektorlarga KYC majburiy
+  bool get _requiresKyc =>
+      ['workshop', 'car_wash', 'tow_truck', 'tech_support'].contains(_sector);
+
   @override
   void initState() {
     super.initState();
@@ -112,6 +116,17 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   }
 
   Future<void> _toggleStatus() async {
+    // Majburiy KYC sektorlari: tasdiqlanmasdan onlayn bo'lib bo'lmaydi
+    if (!_isOnline && _requiresKyc && !_isVerified) {
+      final l = AppLocalizations(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l.verificationRequired),
+        backgroundColor: AppColors.danger,
+      ));
+      final ok = await context.push<bool>('/provider/verify');
+      if (ok == true) _loadSector();
+      return;
+    }
     setState(() => _togglingStatus = true);
     try {
       final api = ref.read(apiClientProvider);
@@ -361,39 +376,53 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
 
           // Tasdiqlanish holati / chaqiruv
           if (!_isVerified) ...[
-            GestureDetector(
-              onTap: () async {
-                final ok = await context.push<bool>('/provider/verify');
-                if (ok == true) _loadSector();
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.teal.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.teal.withValues(alpha: 0.4)),
+            Builder(builder: (context) {
+              // Majburiy sektorlar uchun ogohlantiruvchi (amber) ko'rinish
+              final color = _requiresKyc ? AppColors.amber : AppColors.teal;
+              return GestureDetector(
+                onTap: () async {
+                  final ok = await context.push<bool>('/provider/verify');
+                  if (ok == true) _loadSector();
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: color.withValues(alpha: 0.4)),
+                  ),
+                  child: Row(children: [
+                    Icon(
+                        _requiresKyc
+                            ? Icons.gpp_maybe_outlined
+                            : Icons.verified_user_outlined,
+                        color: color,
+                        size: 22),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l.getVerified,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.bone,
+                                  fontSize: 14)),
+                          Text(
+                              _requiresKyc
+                                  ? l.verificationRequiredDesc
+                                  : l.verificationDesc,
+                              style: TextStyle(
+                                  color: _requiresKyc
+                                      ? color
+                                      : AppColors.steelLight,
+                                  fontSize: 11)),
+                        ])),
+                    Icon(Icons.chevron_right, color: color, size: 18),
+                  ]),
                 ),
-                child: Row(children: [
-                  const Icon(Icons.verified_user_outlined,
-                      color: AppColors.teal, size: 22),
-                  const SizedBox(width: 12),
-                  Expanded(child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l.getVerified,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.bone,
-                                fontSize: 14)),
-                        Text(l.verificationDesc,
-                            style: const TextStyle(
-                                color: AppColors.steelLight, fontSize: 11)),
-                      ])),
-                  const Icon(Icons.chevron_right,
-                      color: AppColors.steelLight, size: 18),
-                ]),
-              ),
-            ),
+              );
+            }),
             const SizedBox(height: 16),
           ] else ...[
             Row(children: [

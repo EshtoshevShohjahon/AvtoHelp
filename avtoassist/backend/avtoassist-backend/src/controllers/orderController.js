@@ -4,6 +4,7 @@ const { Order, Provider, User } = require('../models');
 const { Payment } = require('../models/Payment');
 const matchingService = require('../services/matchingService');
 const { notify } = require('../services/notificationService');
+const { requiresKyc } = require('../utils/kyc');
 const { v4: uuidv4 } = require('uuid');
 
 // Status uchun mijozga ko'rinadigan matnlar
@@ -183,6 +184,14 @@ async function updateOrderStatus(req, res) {
 
   if (!isClient && !isProvider && !isAdmin) {
     return res.status(403).json({ error: 'forbidden' });
+  }
+
+  // Buyurtmani qabul qilish — mijoz bilan ishlaydigan sektorlar uchun KYC majburiy
+  if (status === 'accepted' && isProvider && !isAdmin) {
+    const provider = await Provider.findOne({ where: { user_id: req.user.id } });
+    if (provider && requiresKyc(provider.sector) && !provider.is_verified) {
+      return res.status(403).json({ error: 'verification_required' });
+    }
   }
 
   // Provider qabul qilgandan keyin bekor eta olmaydi

@@ -1,6 +1,7 @@
 'use strict';
 const { Provider } = require('../models');
 const kycService = require('../services/kycService');
+const { requiresKyc } = require('../utils/kyc');
 const { v4: uuidv4 } = require('uuid');
 
 // POST /api/providers/register — usta KYC (tasdiqlash) hujjatlarini yuboradi
@@ -49,6 +50,10 @@ async function setStatus(req, res) {
   const { is_online } = req.body;
   const provider = await Provider.findOne({ where: { user_id: req.user.id } });
   if (!provider) return res.status(404).json({ error: 'provider profile not found' });
+  // Mijoz bilan ishlaydigan sektorlar uchun onlayn bo'lishdan oldin KYC majburiy
+  if (is_online && requiresKyc(provider.sector) && !provider.is_verified) {
+    return res.status(403).json({ error: 'verification_required' });
+  }
   // Provider modeli `status` enum ishlatadi ('online' | 'offline' | 'busy')
   await provider.update({ status: is_online ? 'online' : 'offline' });
   res.json({ is_online: provider.status === 'online' });

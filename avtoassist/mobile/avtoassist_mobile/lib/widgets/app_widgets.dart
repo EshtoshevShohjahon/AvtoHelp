@@ -604,6 +604,16 @@ class AppLocalizations {
       _s('Selfi', 'Селфи', 'Селфи', 'Selfie');
   String get submitVerification =>
       _s('Yuborish', 'Отправить', 'Юбориш', 'Submit');
+  String get verificationRequired =>
+      _s('Avval tasdiqdan o\'tishingiz kerak',
+          'Сначала пройдите верификацию',
+          'Аввал тасдиқдан ўтишингиз керак',
+          'You must get verified first');
+  String get verificationRequiredDesc =>
+      _s('Bu sohada ishlash uchun tasdiqlanish majburiy',
+          'Для работы в этой сфере верификация обязательна',
+          'Бу соҳада ишлаш учун тасдиқланиш мажбурий',
+          'Verification is required to work in this sector');
   String get verificationApproved =>
       _s('Tabriklaymiz! Siz tasdiqlandingiz', 'Поздравляем! Вы подтверждены',
           'Табриклаймиз! Сиз тасдиқландингиз', 'Congratulations! You are verified');
