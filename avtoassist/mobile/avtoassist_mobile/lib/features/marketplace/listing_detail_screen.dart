@@ -143,18 +143,50 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
               Text(listing['title'] ?? '',
                   style: const TextStyle(
                       color: AppColors.bone,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              // Price
-              Text(priceStr,
-                  style: TextStyle(
-                      color: priceType == 'negotiable'
-                          ? AppColors.teal
-                          : AppColors.amber,
                       fontSize: 22,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      height: 1.2)),
+              const SizedBox(height: 14),
+              // Price — prominent card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: priceType == 'negotiable'
+                        ? [AppColors.teal.withOpacity(0.18), AppColors.teal.withOpacity(0.05)]
+                        : [AppColors.amber.withOpacity(0.18), AppColors.amber.withOpacity(0.05)],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: (priceType == 'negotiable' ? AppColors.teal : AppColors.amber)
+                          .withOpacity(0.35)),
+                ),
+                child: Row(children: [
+                  Icon(
+                    priceType == 'negotiable'
+                        ? Icons.handshake_outlined
+                        : Icons.sell_outlined,
+                    color: priceType == 'negotiable' ? AppColors.teal : AppColors.amber,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(priceStr,
+                        style: TextStyle(
+                            color: priceType == 'negotiable'
+                                ? AppColors.teal
+                                : AppColors.amber,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5)),
+                  ),
+                ]),
+              ),
+              const SizedBox(height: 20),
               if ((listing['description'] as String? ?? '').isNotEmpty) ...[
                 Text(l.description,
                     style: const TextStyle(
@@ -170,28 +202,31 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
               // Provider info
               if (bizName.isNotEmpty) ...[
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.charcoal,
-                    borderRadius: BorderRadius.circular(14),
+                    gradient: AppColors.cardGradient,
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.steelLine),
+                    boxShadow: AppColors.cardShadow,
                   ),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(l.seller,
+                    Text(l.seller.toUpperCase(),
                         style: const TextStyle(
                             color: AppColors.steelLight,
-                            fontSize: 11,
-                            letterSpacing: 0.5)),
-                    const SizedBox(height: 8),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1)),
+                    const SizedBox(height: 10),
                     Row(children: [
                       Container(
-                        width: 40, height: 40,
+                        width: 44, height: 44,
                         decoration: BoxDecoration(
-                          color: AppColors.amber.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(10),
+                          gradient: AppColors.amberGradient,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: AppColors.glow(AppColors.amber),
                         ),
-                        child: const Icon(Icons.store_outlined,
-                            color: AppColors.amber, size: 20),
+                        child: const Icon(Icons.storefront,
+                            color: Color(0xFF1A1100), size: 22),
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Column(

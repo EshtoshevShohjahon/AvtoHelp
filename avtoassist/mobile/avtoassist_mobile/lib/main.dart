@@ -640,20 +640,30 @@ class _ProfileTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = color ?? AppColors.bone;
+    final isDanger = color == AppColors.danger;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
         decoration: BoxDecoration(
-          color: AppColors.charcoal,
-          borderRadius: BorderRadius.circular(14),
+          gradient: AppColors.cardGradient,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.steelLine),
         ),
         child: Row(children: [
-          Icon(icon, color: c, size: 20),
+          Container(
+            width: 38, height: 38,
+            decoration: BoxDecoration(
+              color: (isDanger ? AppColors.danger : AppColors.amber).withOpacity(0.14),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: isDanger ? AppColors.danger : AppColors.amber, size: 19),
+          ),
           const SizedBox(width: 12),
-          Text(title, style: TextStyle(color: c, fontSize: 14)),
+          Text(title,
+              style: TextStyle(
+                  color: c, fontSize: 14.5, fontWeight: FontWeight.w600)),
           const Spacer(),
           Icon(Icons.chevron_right,
               color: AppColors.steelLight, size: 18),
@@ -686,25 +696,35 @@ class _ProfileAvatar extends StatelessWidget {
       return '?';
     }();
     return Stack(alignment: Alignment.bottomRight, children: [
-      CircleAvatar(
-        radius: 38,
-        backgroundColor: AppColors.steel,
-        backgroundImage: img,
-        child: img == null
-            ? Text(initials,
-                style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.bone))
-            : null,
+      Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          gradient: AppColors.amberGradient,
+          shape: BoxShape.circle,
+          boxShadow: AppColors.glow(AppColors.amber),
+        ),
+        child: CircleAvatar(
+          radius: 40,
+          backgroundColor: AppColors.charcoal,
+          backgroundImage: img,
+          child: img == null
+              ? Text(initials,
+                  style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.bone))
+              : null,
+        ),
       ),
       GestureDetector(
         onTap: onEdit,
         child: Container(
-          width: 26,
-          height: 26,
-          decoration: const BoxDecoration(
-              color: AppColors.amber, shape: BoxShape.circle),
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+              color: AppColors.amber,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.asphalt, width: 2)),
           child: const Icon(Icons.edit, color: Color(0xFF1A1100), size: 14),
         ),
       ),

@@ -559,33 +559,33 @@ class AppLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 72,
-          height: 72,
+          width: 80,
+          height: 80,
           decoration: BoxDecoration(
-            color: AppColors.amber,
-            borderRadius: BorderRadius.circular(20),
+            gradient: AppColors.amberGradient,
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: AppColors.amber.withOpacity(0.35),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                color: AppColors.amber.withOpacity(0.45),
+                blurRadius: 32,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: const Icon(
             Icons.directions_car_rounded,
             color: Color(0xFF1A1100),
-            size: 36,
+            size: 40,
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         const Text(
           'AvtoHelp',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
             color: AppColors.bone,
-            letterSpacing: 0.5,
+            letterSpacing: -0.5,
           ),
         ),
         const SizedBox(height: 4),

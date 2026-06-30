@@ -147,9 +147,10 @@ class _ProviderListingsScreenState
                       final isActive = item['is_active'] as bool? ?? true;
                       return Container(
                         decoration: BoxDecoration(
-                          color: AppColors.charcoal,
-                          borderRadius: BorderRadius.circular(14),
+                          gradient: AppColors.cardGradient,
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: AppColors.steelLine),
+                          boxShadow: AppColors.cardShadow,
                         ),
                         child: Row(children: [
                           // Thumbnail

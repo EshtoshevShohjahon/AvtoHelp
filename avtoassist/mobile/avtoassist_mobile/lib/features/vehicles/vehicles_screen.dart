@@ -108,28 +108,31 @@ class _VehicleCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Row(children: [
         Container(
-          width: 44, height: 44,
+          width: 48, height: 48,
           decoration: BoxDecoration(
-            color: AppColors.steel,
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.amber.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: AppColors.amber.withOpacity(0.25)),
           ),
           child: const Icon(Icons.directions_car_rounded,
-              color: AppColors.amber, size: 22),
+              color: AppColors.amber, size: 24),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(vehicle.title,
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.bone,
-                    fontSize: 15)),
+                    fontSize: 15,
+                    letterSpacing: -0.2)),
             const SizedBox(height: 3),
             Text(
               [
