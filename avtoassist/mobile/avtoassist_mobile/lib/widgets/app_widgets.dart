@@ -541,6 +541,7 @@ class AppLocalizations {
   String get saveChanges => _s("O'zgarishlarni saqlash", 'Сохранить изменения', 'Ўзгаришларни сақлаш', 'Save changes');
   String get seller => _s("Sotuvchi", 'Продавец', 'Сотувчи', 'Seller');
   String get contactSeller => _s('Sotuvchi bilan bog\'lanish', 'Связаться с продавцом', 'Сотувчи билан боғланиш', 'Contact seller');
+  String get callNow => _s('Qo\'ng\'iroq qilish', 'Позвонить', 'Қўнғироқ қилиш', 'Call now');
   String get copyNumber => _s('Raqamni nusxalash', 'Скопировать номер', 'Рақамни нусхалаш', 'Copy number');
   String get phoneCopied => _s('Raqam nusxalandi', 'Номер скопирован', 'Рақам нусхаланди', 'Number copied');
   String get phoneUnavailable => _s('Telefon raqami mavjud emas', 'Номер телефона недоступен', 'Телефон рақами мавжуд эмас', 'Phone number unavailable');

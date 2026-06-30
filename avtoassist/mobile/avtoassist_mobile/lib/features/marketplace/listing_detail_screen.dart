@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../widgets/app_widgets.dart';
@@ -340,6 +341,21 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final uri = Uri(scheme: 'tel', path: phone);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  }
+                },
+                icon: const Icon(Icons.phone, size: 18),
+                label: Text(l.callNow),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: phone));
                   Navigator.pop(ctx);
