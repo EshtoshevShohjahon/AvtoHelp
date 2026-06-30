@@ -33,11 +33,27 @@ class ApiClient {
       _AuthInterceptor(),
       _LangInterceptor(),
       _RefreshInterceptor(_dio),
+      _RetryInterceptor(_dio), // Render bepul serveri uyg'onayotganda qayta urinadi
       LogInterceptor(requestBody: true, responseBody: true),
     ]);
+
+    // Ilova ishga tushganda serverni "uyg'otamiz" (cold start oldini olish)
+    warmUp();
   }
 
   Dio get dio => _dio;
+
+  /// Render bepul serveri uxlab qolgan bo'lsa, fon rejimida uyg'otadi.
+  /// Xatosi e'tiborga olinmaydi — bu shunchaki oldindan tayyorlash.
+  void warmUp() {
+    // baseUrl oxiridagi "/api" ni olib tashlab, root'dagi /health ga ping yuboramiz
+    final healthUrl =
+        '${_kBaseUrl.replaceFirst(RegExp(r'/api/?$'), '')}/health';
+    _dio
+        .get(healthUrl,
+            options: Options(receiveTimeout: const Duration(seconds: 60)))
+        .catchError((_) => Response(requestOptions: RequestOptions(path: '')));
+  }
 
   Future<Response> get(String path, {Map<String, dynamic>? query}) =>
       _dio.get(path, queryParameters: query);
@@ -76,6 +92,45 @@ class _LangInterceptor extends Interceptor {
     final lang = await SecureStorage.read('app_lang') ?? 'uz';
     options.queryParameters['lang'] = lang;
     handler.next(options);
+  }
+}
+
+/// Render bepul serveri uxlab qolgan bo'lsa, birinchi so'rov timeout/ulanish
+/// xatosi berishi mumkin. Bunday holatda so'rovni 2 marta qayta yuboramiz —
+/// shu vaqtda server uyg'onib ulguradi.
+class _RetryInterceptor extends Interceptor {
+  final Dio _dio;
+  _RetryInterceptor(this._dio);
+
+  static const _maxRetries = 2;
+
+  bool _isTransient(DioException err) =>
+      err.type == DioExceptionType.connectionTimeout ||
+      err.type == DioExceptionType.receiveTimeout ||
+      err.type == DioExceptionType.connectionError;
+
+  @override
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    final opts = err.requestOptions;
+    final attempt = (opts.extra['retry_attempt'] as int?) ?? 0;
+
+    // Faqat GET so'rovlarini xavfsiz qayta yuboramiz (POST/PUT takrorlanmasligi uchun)
+    final isGet = opts.method.toUpperCase() == 'GET';
+
+    if (_isTransient(err) && isGet && attempt < _maxRetries) {
+      opts.extra['retry_attempt'] = attempt + 1;
+      await Future.delayed(Duration(seconds: 2 * (attempt + 1)));
+      try {
+        final res = await _dio.fetch(opts);
+        return handler.resolve(res);
+      } catch (_) {
+        return handler.next(err);
+      }
+    }
+    return handler.next(err);
   }
 }
 
