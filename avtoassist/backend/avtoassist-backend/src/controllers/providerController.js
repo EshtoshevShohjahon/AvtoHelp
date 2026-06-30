@@ -3,10 +3,11 @@ const { Provider } = require('../models');
 const kycService = require('../services/kycService');
 const { v4: uuidv4 } = require('uuid');
 
+// POST /api/providers/register — usta KYC (tasdiqlash) hujjatlarini yuboradi
 async function registerProvider(req, res) {
-  const { service_type, company_name, document_number, document_photo_url, selfie_url } = req.body;
-  if (!service_type || !document_number) {
-    return res.status(400).json({ error: 'service_type and document_number required' });
+  const { document_number, document_photo_url, selfie_url, sector, service_type } = req.body;
+  if (!document_number) {
+    return res.status(400).json({ error: 'document_number required' });
   }
 
   let provider = await Provider.findOne({ where: { user_id: req.user.id } });
@@ -14,20 +15,27 @@ async function registerProvider(req, res) {
     provider = await Provider.create({
       id: uuidv4(),
       user_id: req.user.id,
-      service_type,
-      company_name: company_name || null,
-      document_number,
-      document_photo_url: document_photo_url || null,
-      selfie_url: selfie_url || null,
-      kyc_status: 'pending',
-      is_online: false,
-      lat: null,
-      lon: null,
+      sector: sector || null,
+      service_type: service_type || null,
     });
   }
 
-  const kyc = await kycService.runAutomatedKyc({ document_number, document_photo_url, selfie_url });
-  await provider.update({ kyc_status: kyc.status, kyc_score: kyc.score });
+  // Avtomatik KYC (hujjat raqami + ism + foto/selfie mavjudligi bo'yicha)
+  const kyc = kycService.runAutomatedKyc({
+    documentNumber: document_number,
+    fullName: req.user.full_name,
+    hasDocumentPhoto: Boolean(document_photo_url),
+    hasSelfie: Boolean(selfie_url),
+  });
+
+  await provider.update({
+    document_number_hash: kycService.hashDocumentNumber(document_number),
+    kyc_status: kyc.approved ? 'auto_approved' : 'auto_rejected',
+    kyc_reject_reason: kyc.reason || null,
+    kyc_checked_at: new Date(),
+    is_verified: kyc.approved,
+  });
+
   res.status(201).json({ provider, kyc });
 }
 

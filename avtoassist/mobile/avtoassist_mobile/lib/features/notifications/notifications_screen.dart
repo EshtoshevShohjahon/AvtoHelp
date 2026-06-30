@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../widgets/app_widgets.dart';
+import 'notifications_controller.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -42,6 +43,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Future<void> _markAllRead() async {
     try {
       await ref.read(apiClientProvider).post('/notifications/read-all');
+      ref.read(unreadCountProvider.notifier).clear();
     } catch (_) {}
   }
 

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/network/api_client.dart';
 import '../../widgets/app_widgets.dart';
 import '../auth/auth_provider.dart';
+import '../notifications/notifications_controller.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -168,37 +168,17 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-// ─── Bildirishnoma qo'ng'irog'i (unread badge bilan) ─────────────────────────
-class _NotificationBell extends ConsumerStatefulWidget {
+// ─── Bildirishnoma qo'ng'irog'i (unread badge bilan, jonli) ──────────────────
+class _NotificationBell extends ConsumerWidget {
   const _NotificationBell();
-  @override
-  ConsumerState<_NotificationBell> createState() => _NotificationBellState();
-}
-
-class _NotificationBellState extends ConsumerState<_NotificationBell> {
-  int _unread = 0;
 
   @override
-  void initState() {
-    super.initState();
-    _loadCount();
-  }
-
-  Future<void> _loadCount() async {
-    try {
-      final api = ref.read(apiClientProvider);
-      final res = await api.get('/notifications/unread-count');
-      if (!mounted) return;
-      setState(() => _unread = (res.data['count'] as num?)?.toInt() ?? 0);
-    } catch (_) {}
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unread = ref.watch(unreadCountProvider);
     return GestureDetector(
       onTap: () async {
         await context.push('/notifications');
-        _loadCount(); // qaytganda yangilash
+        ref.read(unreadCountProvider.notifier).refresh(); // qaytganda yangilash
       },
       child: Container(
         width: 44, height: 44,
@@ -210,7 +190,7 @@ class _NotificationBellState extends ConsumerState<_NotificationBell> {
         child: Stack(alignment: Alignment.center, children: [
           const Icon(Icons.notifications_none_rounded,
               color: AppColors.bone, size: 22),
-          if (_unread > 0)
+          if (unread > 0)
             Positioned(
               top: 9,
               right: 10,
@@ -223,7 +203,7 @@ class _NotificationBellState extends ConsumerState<_NotificationBell> {
                   border: Border.all(color: AppColors.asphalt, width: 1.5),
                 ),
                 child: Text(
-                  _unread > 9 ? '9+' : '$_unread',
+                  unread > 9 ? '9+' : '$unread',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: Colors.white,

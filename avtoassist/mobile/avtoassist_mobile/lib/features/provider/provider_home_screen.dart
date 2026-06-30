@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../features/auth/auth_provider.dart';
+import '../../features/notifications/notifications_controller.dart';
 import '../../features/vehicles/vehicle_detail_screen.dart';
 import '../../features/orders/route_map_screen.dart';
 import '../../widgets/app_widgets.dart';
@@ -231,6 +232,38 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       appBar: AppBar(
         title: Text(_sector != null ? _sectorLabel(_sector!) : l.providerPanel),
         actions: [
+          // Bildirishnoma qo'ng'irog'i (jonli badge bilan)
+          Builder(builder: (context) {
+            final unread = ref.watch(unreadCountProvider);
+            return IconButton(
+              onPressed: () async {
+                await context.push('/notifications');
+                ref.read(unreadCountProvider.notifier).refresh();
+              },
+              icon: Stack(clipBehavior: Clip.none, children: [
+                const Icon(Icons.notifications_none_rounded),
+                if (unread > 0)
+                  Positioned(
+                    right: -2, top: -2,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      constraints:
+                          const BoxConstraints(minWidth: 14, minHeight: 14),
+                      decoration: BoxDecoration(
+                        color: AppColors.danger,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Text(unread > 9 ? '9+' : '$unread',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+              ]),
+            );
+          }),
           // Online/Offline toggle
           Padding(
             padding: const EdgeInsets.only(right: 12),
