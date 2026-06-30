@@ -136,7 +136,7 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
                           crossAxisCount: 2,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
-                          childAspectRatio: 0.72,
+                          childAspectRatio: 0.78,
                         ),
                         itemCount: _listings.length,
                         itemBuilder: (_, i) => _ListingCard(
@@ -207,62 +207,86 @@ class _ListingCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.charcoal,
-          borderRadius: BorderRadius.circular(16),
+          gradient: AppColors.cardGradient,
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: AppColors.steelLine),
+          boxShadow: AppColors.cardShadow,
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Image
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: AspectRatio(
-              aspectRatio: 1.1,
-              child: images.isNotEmpty
-                  ? Image.network(
-                      images.first,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _placeholder(),
-                    )
-                  : _placeholder(),
+          // Image + narx badge
+          Stack(children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
+              child: AspectRatio(
+                aspectRatio: 1.1,
+                child: images.isNotEmpty
+                    ? Image.network(
+                        images.first,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _placeholder(),
+                      )
+                    : _placeholder(),
+              ),
             ),
-          ),
+            // Narx badge — rasmning ustida
+            Positioned(
+              left: 8,
+              bottom: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: priceType == 'negotiable'
+                      ? AppColors.teal
+                      : AppColors.amber,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2)),
+                  ],
+                ),
+                child: Text(priceStr,
+                    style: const TextStyle(
+                        color: Color(0xFF1A1100),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11.5)),
+              ),
+            ),
+          ]),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(11),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(listing['title'] ?? '',
                   style: const TextStyle(
                       color: AppColors.bone,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.5),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      height: 1.25),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis),
-              const SizedBox(height: 4),
-              Text(priceStr,
-                  style: TextStyle(
-                      color: priceType == 'negotiable'
-                          ? AppColors.teal
-                          : AppColors.amber,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13)),
               if (bizName.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(children: [
-                  const Icon(Icons.store_outlined,
-                      color: AppColors.steelLight, size: 11),
-                  const SizedBox(width: 3),
+                  const Icon(Icons.storefront_outlined,
+                      color: AppColors.steelLight, size: 12),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: Text(bizName,
                         style: const TextStyle(
-                            color: AppColors.steelLight, fontSize: 10),
+                            color: AppColors.steelLight, fontSize: 10.5),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ),
                   if (rating.isNotEmpty) ...[
                     const Icon(Icons.star_rounded,
-                        color: AppColors.amber, size: 11),
+                        color: AppColors.amber, size: 12),
+                    const SizedBox(width: 1),
                     Text(rating,
                         style: const TextStyle(
-                            color: AppColors.amber, fontSize: 10)),
+                            color: AppColors.amber,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600)),
                   ]
                 ]),
               ],
