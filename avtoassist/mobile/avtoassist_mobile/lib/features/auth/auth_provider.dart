@@ -58,6 +58,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final res = await _api.get('/users/me');
       final user = UserModel.fromJson(res.data['user']);
+      await SecureStorage.write('user_role', user.role);
       state = state.copyWith(status: AuthStatus.authenticated, user: user);
     } catch (_) {
       // Faqat refresh ham ishlamasagina chiqaramiz (ApiClient 401'da
@@ -67,6 +68,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         try {
           final res = await _api.get('/users/me');
           final user = UserModel.fromJson(res.data['user']);
+          await SecureStorage.write('user_role', user.role);
           state = state.copyWith(status: AuthStatus.authenticated, user: user);
           return;
         } catch (_) {}
@@ -104,6 +106,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await SecureStorage.write('access_token', res.data['accessToken']);
       await SecureStorage.write('refresh_token', res.data['refreshToken']);
       final user = UserModel.fromJson(res.data['user']);
+      await SecureStorage.write('user_role', user.role);
       state = state.copyWith(
           status: AuthStatus.authenticated, user: user, isLoading: false);
       return true;
@@ -128,6 +131,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (sector != null) body['sector'] = sector;
       final res = await _api.patch('/users/me', data: body);
       final user = UserModel.fromJson(res.data['user']);
+      await SecureStorage.write('user_role', user.role);
       state = state.copyWith(user: user, isLoading: false);
       return true;
     } catch (e) {

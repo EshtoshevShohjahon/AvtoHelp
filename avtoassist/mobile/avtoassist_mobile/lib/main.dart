@@ -58,7 +58,20 @@ final _router = GoRouter(
     }
     final onLoginFlow = loc.startsWith('/auth');
     if (!hasSession && !onLoginFlow) return '/auth/phone';
-    if (hasSession && onLoginFlow) return '/home';
+
+    // Rolga qarab to'g'ri "uy" ekranini aniqlaymiz
+    final role = await SecureStorage.read('user_role') ?? 'client';
+    final home = role == 'provider' ? '/provider/home' : '/home';
+
+    if (hasSession && onLoginFlow) return home;
+
+    // Shell mosligini ta'minlaymiz: client provider shellida yoki aksincha qolib
+    // ketmasligi uchun. (Rol almashtirilganda ham ekran avtomatik to'g'rilanadi.)
+    const clientShell = {'/home', '/my-orders', '/profile'};
+    const providerShell = {'/provider/home', '/provider/orders', '/provider/profile'};
+    if (role == 'provider' && clientShell.contains(loc)) return '/provider/home';
+    if (role == 'client' && providerShell.contains(loc)) return '/home';
+
     return null;
   },
   routes: [
@@ -458,7 +471,7 @@ void _showRoleSwitchDialog(BuildContext context, WidgetRef ref, bool isProvider)
             onPressed: () async {
               Navigator.pop(ctx);
               await ref.read(authProvider.notifier).updateProfile(role: 'client');
-              if (ctx.mounted) context.go('/home');
+              if (context.mounted) context.go('/home');
             },
             child: Text(l.switchToClient),
           ),
