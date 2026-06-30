@@ -81,18 +81,20 @@ class _StoreCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Row(children: [
         Container(
-          width: 52, height: 52,
+          width: 54, height: 54,
           decoration: BoxDecoration(
-            color: AppColors.amber.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.amber.withOpacity(0.14),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.amber.withOpacity(0.22)),
           ),
-          child: const Icon(Icons.store_outlined, color: AppColors.amber),
+          child: const Icon(Icons.storefront_outlined, color: AppColors.amber),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -195,16 +197,18 @@ class _WorkshopCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(16),
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Row(children: [
         Container(
-          width: 52, height: 52,
+          width: 54, height: 54,
           decoration: BoxDecoration(
-            color: AppColors.teal.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.teal.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.teal.withOpacity(0.22)),
           ),
           child: const Icon(Icons.precision_manufacturing_outlined,
               color: AppColors.teal),

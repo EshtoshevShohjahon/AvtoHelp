@@ -261,9 +261,16 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.charcoal,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.teal.withOpacity(0.14),
+                          AppColors.teal.withOpacity(0.04),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.steelLine),
+                      border: Border.all(color: AppColors.teal.withOpacity(0.3)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -278,7 +285,8 @@ class _NewOrderScreenState extends ConsumerState<NewOrderScreen> {
                           Text('$price ${l.soum}',
                               style: const TextStyle(
                                   color: AppColors.teal,
-                                  fontFamily: 'monospace', fontSize: 14)),
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16)),
                         ]),
                         Column(crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
