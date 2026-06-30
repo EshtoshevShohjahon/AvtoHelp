@@ -41,18 +41,23 @@ async function setStatus(req, res) {
   const { is_online } = req.body;
   const provider = await Provider.findOne({ where: { user_id: req.user.id } });
   if (!provider) return res.status(404).json({ error: 'provider profile not found' });
-  await provider.update({ is_online: Boolean(is_online) });
-  res.json({ is_online: provider.is_online });
+  // Provider modeli `status` enum ishlatadi ('online' | 'offline' | 'busy')
+  await provider.update({ status: is_online ? 'online' : 'offline' });
+  res.json({ is_online: provider.status === 'online' });
 }
 
 async function updateLocation(req, res) {
-  const { lat, lon } = req.body;
-  if (lat == null || lon == null) return res.status(400).json({ error: 'lat and lon required' });
+  // lat/lng (yoki eski lon) qabul qilamiz
+  const lat = req.body.lat;
+  const lng = req.body.lng != null ? req.body.lng : req.body.lon;
+  if (lat == null || lng == null) return res.status(400).json({ error: 'lat and lng required' });
   const provider = await Provider.findOne({ where: { user_id: req.user.id } });
   if (!provider) return res.status(404).json({ error: 'provider profile not found' });
-  await provider.update({ lat: parseFloat(lat), lon: parseFloat(lon) });
+  await provider.update({ current_lat: parseFloat(lat), current_lng: parseFloat(lng) });
   const io = req.app.get('io');
-  if (io) io.emit('provider_location', { providerId: provider.id, lat: provider.lat, lon: provider.lon });
+  if (io) io.emit('provider_location', {
+    providerId: provider.id, lat: provider.current_lat, lng: provider.current_lng,
+  });
   res.json({ ok: true });
 }
 

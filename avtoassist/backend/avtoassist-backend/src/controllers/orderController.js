@@ -1,5 +1,6 @@
 'use strict';
-const { Order } = require('../models');
+const { Op } = require('sequelize');
+const { Order, Provider, User } = require('../models');
 const { Payment } = require('../models/Payment');
 const matchingService = require('../services/matchingService');
 const { notify } = require('../services/notificationService');
@@ -60,15 +61,27 @@ async function createOrder(req, res) {
 
   const io = req.app.get('io');
   try {
-    const provider = await matchingService.findNearestProvider(
-      service_type, parseFloat(pickup_lat), parseFloat(pickup_lng));
+    // matchingService obyekt argument kutadi va { provider } qaytaradi
+    const { provider } = await matchingService.findNearestProvider({
+      serviceType: service_type,
+      lat: parseFloat(pickup_lat),
+      lng: parseFloat(pickup_lng),
+    });
     if (provider) {
+      // provider_id sifatida ustaning user.id'sini saqlaymiz — auth tekshiruvi
+      // va bildirishnoma xonalari (user_<id>) shunga tayanadi
       await order.update({
-        provider_id: provider.id,
+        provider_id: provider.user_id,
         status: 'accepted',
         accepted_at: new Date(),
       });
-      if (io) io.to(`provider_${provider.id}`).emit('new_order', { orderId: order.id });
+      if (io) io.to(`user_${provider.user_id}`).emit('new_order', { orderId: order.id });
+      notify(io, provider.user_id, {
+        type: 'new_order',
+        title: 'Yangi buyurtma',
+        body: pickup_address || `Xizmat: ${service_type}`,
+        data: { order_id: order.id },
+      });
     }
   } catch (_) { /* matching failure is non-fatal */ }
 
@@ -96,6 +109,27 @@ async function listMyOrders(req, res) {
     limit: 50,
   });
   res.json({ orders });
+}
+
+// GET /api/providers/orders — ustaga biriktirilgan buyurtmalar
+async function listProviderOrders(req, res) {
+  const provider = await Provider.findOne({ where: { user_id: req.user.id } });
+  const ids = provider ? [req.user.id, provider.id] : [req.user.id];
+  const orders = await Order.findAll({
+    where: { provider_id: { [Op.in]: ids } },
+    include: [{ model: User, as: 'client', attributes: ['full_name', 'phone'] }],
+    order: [['created_at', 'DESC']],
+    limit: 50,
+  });
+  res.json({
+    orders: orders.map((o) => {
+      const obj = o.toJSON();
+      obj.client_name = obj.client ? obj.client.full_name : '';
+      obj.client_phone = obj.client ? obj.client.phone : '';
+      delete obj.client;
+      return obj;
+    }),
+  });
 }
 
 async function updateOrderStatus(req, res) {
@@ -170,4 +204,4 @@ async function _refundIfPaid(orderId) {
   } catch (_) {}
 }
 
-module.exports = { createOrder, getOrder, listMyOrders, updateOrderStatus, _refundIfPaid };
+module.exports = { createOrder, getOrder, listMyOrders, listProviderOrders, updateOrderStatus, _refundIfPaid };
