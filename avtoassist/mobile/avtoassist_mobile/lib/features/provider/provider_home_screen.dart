@@ -567,19 +567,26 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(14),
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Icon(icon, color: iconColor, size: 18),
-        const SizedBox(height: 8),
+        Container(
+          width: 32, height: 32,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Icon(icon, color: iconColor, size: 17),
+        ),
+        const SizedBox(height: 10),
         Text(value,
             style: const TextStyle(
                 color: AppColors.bone,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                fontFamily: 'monospace')),
+                fontWeight: FontWeight.w800,
+                fontSize: 16)),
         const SizedBox(height: 2),
         Text(label,
             style: const TextStyle(

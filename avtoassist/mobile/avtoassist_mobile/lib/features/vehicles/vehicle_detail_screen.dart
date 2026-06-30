@@ -353,14 +353,28 @@ class _OdometerCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.charcoal,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.steelLine),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.teal.withOpacity(0.12),
+              AppColors.teal.withOpacity(0.03),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.teal.withOpacity(0.3)),
         ),
         child: Row(children: [
-          const Icon(Icons.speed, color: AppColors.teal, size: 22),
+          Container(
+            width: 42, height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.teal.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.speed, color: AppColors.teal, size: 22),
+          ),
           const SizedBox(width: 12),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(AppLocalizations(context).currentOdometer,
@@ -405,9 +419,10 @@ class _ServiceRecordCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.charcoal,
-        borderRadius: BorderRadius.circular(14),
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [

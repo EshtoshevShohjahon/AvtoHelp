@@ -161,23 +161,25 @@ class _TruckServiceCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/order/new', extra: service.key),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.charcoal,
-          borderRadius: BorderRadius.circular(18),
+          gradient: AppColors.cardGradient,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.steelLine),
+          boxShadow: AppColors.cardShadow,
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
-              color: service.color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
+              color: service.color.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: service.color.withOpacity(0.25)),
             ),
             child: Center(
               child: Text(service.icon,
-                  style: const TextStyle(fontSize: 20)),
+                  style: const TextStyle(fontSize: 21)),
             ),
           ),
           const Spacer(),
@@ -356,9 +358,10 @@ class _TruckWorkshopsPreviewState
                 width: 180,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.charcoal,
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: AppColors.cardGradient,
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.steelLine),
+                  boxShadow: AppColors.cardShadow,
                 ),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start, children: [
