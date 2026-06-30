@@ -1,6 +1,6 @@
 'use strict';
 const { Op } = require('sequelize');
-const { Listing, Provider, User } = require('../models');
+const { Listing, Provider, User, Favorite } = require('../models');
 const path = require('path');
 const fs = require('fs');
 
@@ -45,8 +45,18 @@ async function browse(req, res) {
     where: { id: rows.map(r => r.id) },
   }).catch(() => {});
 
+  // Foydalanuvchi sevimlilarini belgilash
+  let favIds = new Set();
+  if (req.user) {
+    const favs = await Favorite.findAll({
+      where: { user_id: req.user.id, listing_id: rows.map(r => r.id) },
+      attributes: ['listing_id'],
+    });
+    favIds = new Set(favs.map(f => f.listing_id));
+  }
+
   res.json({
-    listings: rows.map(_format),
+    listings: rows.map(r => ({ ..._format(r), is_favorited: favIds.has(r.id) })),
     count: rows.length,
   });
 }
@@ -63,7 +73,15 @@ async function detail(req, res) {
   });
   if (!listing) return res.status(404).json({ error: 'not_found' });
   await listing.increment('views');
-  res.json({ listing: _format(listing) });
+
+  let isFav = false;
+  if (req.user) {
+    isFav = !!(await Favorite.findOne({
+      where: { user_id: req.user.id, listing_id: listing.id },
+    }));
+  }
+
+  res.json({ listing: { ..._format(listing), is_favorited: isFav } });
 }
 
 // POST /marketplace  — provider creates listing (with images)
@@ -167,6 +185,46 @@ async function myListings(req, res) {
   res.json({ listings: rows.map(_format) });
 }
 
+// POST /marketplace/:id/favorite  — toggle favorite
+async function toggleFavorite(req, res) {
+  const listing = await Listing.findByPk(req.params.id);
+  if (!listing) return res.status(404).json({ error: 'not_found' });
+
+  const existing = await Favorite.findOne({
+    where: { user_id: req.user.id, listing_id: listing.id },
+  });
+
+  if (existing) {
+    await existing.destroy();
+    return res.json({ favorited: false });
+  }
+  await Favorite.create({ user_id: req.user.id, listing_id: listing.id });
+  res.json({ favorited: true });
+}
+
+// GET /marketplace/favorites  — user's favorited listings
+async function favorites(req, res) {
+  const favs = await Favorite.findAll({
+    where: { user_id: req.user.id },
+    include: [{
+      model: Listing,
+      as: 'listing',
+      include: [{
+        model: Provider,
+        as: 'provider',
+        attributes: ['id', 'rating_avg', 'rating_count', 'sector', 'is_verified'],
+        include: [{ model: User, attributes: ['full_name', 'phone'] }],
+      }],
+    }],
+    order: [['created_at', 'DESC']],
+  });
+  const listings = favs
+    .map(f => f.listing)
+    .filter(Boolean)
+    .map(l => ({ ..._format(l), is_favorited: true }));
+  res.json({ listings });
+}
+
 function _format(l) {
   const obj = l.toJSON ? l.toJSON() : l;
 
@@ -195,4 +253,4 @@ function _format(l) {
   };
 }
 
-module.exports = { browse, detail, create, update, remove, myListings };
+module.exports = { browse, detail, create, update, remove, myListings, toggleFavorite, favorites };

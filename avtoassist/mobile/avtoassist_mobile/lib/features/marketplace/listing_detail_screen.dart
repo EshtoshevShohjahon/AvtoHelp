@@ -20,6 +20,21 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
   Map<String, dynamic>? _listing;
   bool _loading = true;
   int _imageIndex = 0;
+  bool _favorited = false;
+
+  Future<void> _toggleFavorite() async {
+    final prev = _favorited;
+    setState(() => _favorited = !prev); // optimistik
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.dio.post('/marketplace/${widget.listingId}/favorite');
+      if (mounted) {
+        setState(() => _favorited = res.data['favorited'] == true);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _favorited = prev); // qaytarish
+    }
+  }
 
   @override
   void initState() {
@@ -38,6 +53,7 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
       if (!mounted) return;
       setState(() {
         _listing = Map<String, dynamic>.from(res.data['listing'] ?? {});
+        _favorited = _listing?['is_favorited'] == true;
         _loading = false;
       });
     } catch (_) {
@@ -79,6 +95,15 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
           icon: const Icon(Icons.chevron_left),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _favorited ? Icons.favorite : Icons.favorite_border,
+              color: _favorited ? AppColors.danger : AppColors.bone,
+            ),
+            onPressed: _toggleFavorite,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

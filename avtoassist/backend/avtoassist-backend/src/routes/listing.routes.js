@@ -1,17 +1,21 @@
 'use strict';
 const router = require('express').Router();
-const { requireAuth } = require('../middleware/auth.middleware');
+const { requireAuth, optionalAuth } = require('../middleware/auth.middleware');
 const upload = require('../middleware/upload');
 const {
-  browse, detail, create, update, remove, myListings,
+  browse, detail, create, update, remove, myListings, toggleFavorite, favorites,
 } = require('../controllers/listingController');
 
 const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-// Public
-router.get('/',        asyncHandler(browse));
-router.get('/my',      requireAuth, asyncHandler(myListings));
-router.get('/:id',     asyncHandler(detail));
+// Public (optionalAuth — sevimlilarni belgilash uchun)
+router.get('/',           optionalAuth, asyncHandler(browse));
+router.get('/my',         requireAuth, asyncHandler(myListings));
+router.get('/favorites',  requireAuth, asyncHandler(favorites));
+router.get('/:id',        optionalAuth, asyncHandler(detail));
+
+// Sevimli toggle
+router.post('/:id/favorite', requireAuth, asyncHandler(toggleFavorite));
 
 // Provider only (controller checks Provider record)
 router.post('/',

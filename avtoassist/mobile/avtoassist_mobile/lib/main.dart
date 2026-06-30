@@ -142,6 +142,10 @@ final _router = GoRouter(
       builder: (_, __) => const ProviderListingsScreen(),
     ),
     GoRoute(
+      path: '/marketplace/favorites',
+      builder: (_, __) => const FavoritesScreen(),
+    ),
+    GoRoute(
       path: '/marketplace/edit/:id',
       builder: (_, state) {
         final data = state.extra as Map<String, dynamic>?;

@@ -27,4 +27,20 @@ function requireRole(...roles) {
   };
 }
 
-module.exports = { requireAuth, requireRole };
+// Token bo'lsa req.user ni o'rnatadi, bo'lmasa ham davom etadi (xato bermaydi)
+async function optionalAuth(req, res, next) {
+  try {
+    const header = req.headers.authorization || '';
+    const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+    if (token) {
+      const payload = verifyAccessToken(token);
+      const user = await User.findByPk(payload.sub);
+      if (user) req.user = user;
+    }
+  } catch (_) {
+    // token noto'g'ri bo'lsa — mehmon sifatida davom etamiz
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireRole, optionalAuth };

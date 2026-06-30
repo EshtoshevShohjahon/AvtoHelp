@@ -8,6 +8,7 @@ const { Workshop, WorkshopService } = require('./Workshop');
 const { Payment, Review, OtpCode, RefreshToken } = require('./Payment');
 const ServiceRecord = require('./ServiceRecord');
 const Listing = require('./Listing');
+const Favorite = require('./Favorite');
 
 User.hasMany(Vehicle, { foreignKey: 'user_id' });
 Vehicle.belongsTo(User, { foreignKey: 'user_id' });
@@ -43,8 +44,14 @@ Review.belongsTo(Order, { foreignKey: 'order_id' });
 Provider.hasMany(Listing, { foreignKey: 'provider_id', as: 'listings' });
 Listing.belongsTo(Provider, { foreignKey: 'provider_id', as: 'provider' });
 
+// Favorites — mijoz e'lonni saqlaydi
+User.hasMany(Favorite, { foreignKey: 'user_id' });
+Favorite.belongsTo(User, { foreignKey: 'user_id' });
+Listing.hasMany(Favorite, { foreignKey: 'listing_id', as: 'favorites' });
+Favorite.belongsTo(Listing, { foreignKey: 'listing_id', as: 'listing' });
+
 module.exports = {
   sequelize, User, Vehicle, Provider, Order,
   PartsStore, PartsInventory, Workshop, WorkshopService,
-  Payment, Review, OtpCode, RefreshToken, ServiceRecord, Listing,
+  Payment, Review, OtpCode, RefreshToken, ServiceRecord, Listing, Favorite,
 };

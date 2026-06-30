@@ -69,6 +69,12 @@ class _MarketplaceScreenState extends ConsumerState<MarketplaceScreen> {
           icon: const Icon(Icons.chevron_left),
           onPressed: () => context.pop(),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border, color: AppColors.danger),
+            onPressed: () => context.push('/marketplace/favorites'),
+          ),
+        ],
       ),
       body: Column(children: [
         Container(height: 2,
@@ -185,6 +191,94 @@ class _FilterChip extends StatelessWidget {
               fontWeight: selected ? FontWeight.w600 : FontWeight.normal)),
     ),
   );
+}
+
+// ─── Sevimlilar ekrani ────────────────────────────────────────────
+class FavoritesScreen extends ConsumerStatefulWidget {
+  const FavoritesScreen({super.key});
+  @override
+  ConsumerState<FavoritesScreen> createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
+  List<Map<String, dynamic>> _listings = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() => _loading = true);
+    try {
+      final api = ref.read(apiClientProvider);
+      final res = await api.get('/marketplace/favorites');
+      if (!mounted) return;
+      setState(() {
+        _listings = List<Map<String, dynamic>>.from(res.data['listings'] ?? []);
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l.favorites),
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.amber))
+          : _listings.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.favorite_border,
+                          color: AppColors.steelLight, size: 48),
+                      const SizedBox(height: 12),
+                      Text(l.noFavorites,
+                          style: const TextStyle(color: AppColors.steelLight)),
+                    ],
+                  ),
+                )
+              : RefreshIndicator(
+                  color: AppColors.amber,
+                  backgroundColor: AppColors.charcoal,
+                  onRefresh: _load,
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.78,
+                    ),
+                    itemCount: _listings.length,
+                    itemBuilder: (_, i) => _ListingCard(
+                      listing: _listings[i],
+                      onTap: () async {
+                        await context.push(
+                          '/marketplace/${_listings[i]['id']}',
+                          extra: _listings[i],
+                        );
+                        _load(); // qaytganda yangilash (sevimli o'zgargan bo'lishi mumkin)
+                      },
+                    ),
+                  ),
+                ),
+    );
+  }
 }
 
 class _ListingCard extends StatelessWidget {
