@@ -41,8 +41,7 @@ dependencies:
   image_picker: ^1.1.2
 
   # Utils
-  # flutter_localizations (Flutter 3.24) intl 0.19.0 ni talab qiladi
-  intl: ^0.19.0
+  intl: ^0.20.2
   equatable: ^2.0.5
   url_launcher: ^6.3.0
 
