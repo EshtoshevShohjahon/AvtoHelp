@@ -61,7 +61,12 @@ class _AddListingScreenState extends ConsumerState<AddListingScreen> {
   }
 
   Future<void> _pickImages() async {
-    final picked = await _picker.pickMultiImage(imageQuality: 80);
+    // Rasmlarni yuklashdan oldin kichraytiramiz — sekin internetda ham tez ketadi
+    final picked = await _picker.pickMultiImage(
+      imageQuality: 60,
+      maxWidth: 1280,
+      maxHeight: 1280,
+    );
     if (picked.isEmpty) return;
     final total = _newImages.length + _existingImages.length - _toRemove.length;
     final canAdd = 5 - total;
@@ -99,18 +104,19 @@ class _AddListingScreenState extends ConsumerState<AddListingScreen> {
         if (imageFiles.isNotEmpty) 'images': imageFiles,
       });
 
+      // Rasm yuklashda sekin internet uchun uzaytirilgan timeout
+      final uploadOptions = Options(
+        headers: {'Content-Type': 'multipart/form-data'},
+        sendTimeout: const Duration(seconds: 90),
+        receiveTimeout: const Duration(seconds: 90),
+      );
+
       if (_isEdit) {
         await api.dio.put('/marketplace/${widget.existing!['id']}',
-            data: formData,
-            options: Options(headers: {
-              'Content-Type': 'multipart/form-data',
-            }));
+            data: formData, options: uploadOptions);
       } else {
         await api.dio.post('/marketplace',
-            data: formData,
-            options: Options(headers: {
-              'Content-Type': 'multipart/form-data',
-            }));
+            data: formData, options: uploadOptions);
       }
 
       if (!mounted) return;
