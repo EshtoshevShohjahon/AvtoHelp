@@ -544,6 +544,8 @@ class AppLocalizations {
   String get callNow => _s('Qo\'ng\'iroq qilish', 'Позвонить', 'Қўнғироқ қилиш', 'Call now');
   String get favorites => _s('Sevimlilar', 'Избранное', 'Севимлилар', 'Favorites');
   String get noFavorites => _s('Sevimlilar yo\'q', 'Нет избранного', 'Севимлилар йўқ', 'No favorites yet');
+  String get notifications => _s('Bildirishnomalar', 'Уведомления', 'Билдиришномалар', 'Notifications');
+  String get noNotifications => _s('Bildirishnomalar yo\'q', 'Нет уведомлений', 'Билдиришномалар йўқ', 'No notifications');
   String get reviews => _s('Sharhlar', 'Отзывы', 'Шарҳлар', 'Reviews');
   String get noReviews => _s('Hali sharhlar yo\'q', 'Пока нет отзывов', 'Ҳали шарҳлар йўқ', 'No reviews yet');
   String get rateProvider => _s('Baho berish', 'Оценить', 'Баҳо бериш', 'Rate');

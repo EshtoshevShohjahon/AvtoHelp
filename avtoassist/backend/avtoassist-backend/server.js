@@ -45,6 +45,10 @@ io.on('connection', (socket) => {
   socket.on('join_provider', (providerId) => {
     socket.join(`provider_${providerId}`);
   });
+  // Bildirishnomalar uchun foydalanuvchi xonasiga qo'shilish
+  socket.on('join_user', (userId) => {
+    if (userId) socket.join(`user_${userId}`);
+  });
   // Provider joylashuvini mijozga real-time uzatish
   socket.on('update_location', ({ orderId, lat, lng } = {}) => {
     if (orderId && lat != null && lng != null) {

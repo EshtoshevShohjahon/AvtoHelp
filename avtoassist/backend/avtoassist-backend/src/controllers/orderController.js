@@ -2,7 +2,17 @@
 const { Order } = require('../models');
 const { Payment } = require('../models/Payment');
 const matchingService = require('../services/matchingService');
+const { notify } = require('../services/notificationService');
 const { v4: uuidv4 } = require('uuid');
+
+// Status uchun mijozga ko'rinadigan matnlar
+const STATUS_MESSAGES = {
+  accepted:    'Buyurtmangiz qabul qilindi',
+  en_route:    'Usta yo\'lda',
+  in_progress: 'Ish boshlandi',
+  completed:   'Buyurtma yakunlandi',
+  cancelled:   'Buyurtma bekor qilindi',
+};
 
 // Qaysi statusdan qaysi statusga o'tish mumkin (umumiy)
 const VALID_TRANSITIONS = {
@@ -134,6 +144,17 @@ async function updateOrderStatus(req, res) {
 
   const io = req.app.get('io');
   if (io) io.to(`order_${order.id}`).emit('order_update', { status });
+
+  // Mijozga bildirishnoma (status o'zgarganda)
+  if (STATUS_MESSAGES[status] && order.client_id) {
+    notify(io, order.client_id, {
+      type: 'order_status',
+      title: STATUS_MESSAGES[status],
+      body: order.service_type ? `Xizmat: ${order.service_type}` : null,
+      data: { order_id: order.id, status },
+    });
+  }
+
   res.json({ order });
 }
 

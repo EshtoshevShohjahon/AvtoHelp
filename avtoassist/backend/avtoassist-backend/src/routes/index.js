@@ -11,5 +11,6 @@ router.use('/payments', require('./payment.routes'));
 router.use('/reviews', require('./review.routes'));
 router.use('/content', require('./content.routes'));
 router.use('/marketplace', require('./listing.routes'));
+router.use('/notifications', require('./notification.routes'));
 
 module.exports = router;

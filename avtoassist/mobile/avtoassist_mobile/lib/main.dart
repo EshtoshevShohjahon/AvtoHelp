@@ -25,6 +25,7 @@ import 'features/marketplace/marketplace_screen.dart';
 import 'features/marketplace/listing_detail_screen.dart';
 import 'features/marketplace/add_listing_screen.dart';
 import 'features/marketplace/provider_listings_screen.dart';
+import 'features/notifications/notifications_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,6 +145,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/marketplace/favorites',
       builder: (_, __) => const FavoritesScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (_, __) => const NotificationsScreen(),
     ),
     GoRoute(
       path: '/marketplace/edit/:id',
