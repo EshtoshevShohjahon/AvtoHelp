@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/network/api_client.dart';
 import '../../widgets/app_widgets.dart';
@@ -81,6 +83,8 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
     final provider = listing['provider'] as Map<String, dynamic>?;
     final bizName = provider?['business_name'] as String? ?? '';
     final address = provider?['address'] as String? ?? '';
+    final sellerLat = (provider?['lat'] as num?)?.toDouble();
+    final sellerLng = (provider?['lng'] as num?)?.toDouble();
     final rating = (provider?['rating'] as num?)?.toStringAsFixed(1) ?? '';
     final priceType = listing['price_type'] ?? 'fixed';
     final price = listing['price'];
@@ -284,7 +288,42 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
                     ]),
                   ]),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+                // Sotuvchi joylashuvi xaritada
+                if (sellerLat != null && sellerLng != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      height: 160,
+                      child: FlutterMap(
+                        options: MapOptions(
+                          initialCenter: LatLng(sellerLat, sellerLng),
+                          initialZoom: 14,
+                          interactionOptions: const InteractionOptions(
+                            flags: InteractiveFlag.pinchZoom |
+                                InteractiveFlag.drag,
+                          ),
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName: 'uz.avtohelp.app',
+                          ),
+                          MarkerLayer(markers: [
+                            Marker(
+                              point: LatLng(sellerLat, sellerLng),
+                              width: 44, height: 44,
+                              child: const Icon(Icons.location_on,
+                                  color: AppColors.amber, size: 44),
+                            ),
+                          ]),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ],
               // Views
               Row(children: [
