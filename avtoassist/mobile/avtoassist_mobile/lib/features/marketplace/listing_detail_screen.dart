@@ -375,6 +375,25 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
                                   fontWeight: FontWeight.bold)),
                         ]),
                     ]),
+                    if (_providerId != null) ...[
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => context.push(
+                            '/provider/${_providerId!}/stats',
+                            extra: bizName,
+                          ),
+                          icon: const Icon(Icons.insights_outlined, size: 18),
+                          label: Text(l.viewStatistics),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.amber,
+                            side: BorderSide(
+                                color: AppColors.amber.withOpacity(0.5)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ]),
                 ),
                 const SizedBox(height: 12),

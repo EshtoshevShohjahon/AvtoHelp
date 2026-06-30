@@ -14,6 +14,7 @@ import 'features/auth/otp_screen.dart';
 import 'features/auth/onboarding_screen.dart';
 import 'features/provider/provider_home_screen.dart'
     show ProviderHomeScreen, ProviderOrdersScreen;
+import 'features/provider/provider_profile_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/vehicles/vehicles_screen.dart';
 import 'features/orders/new_order_screen.dart';
@@ -162,6 +163,13 @@ final _router = GoRouter(
     GoRoute(
       path: '/notifications',
       builder: (_, __) => const NotificationsScreen(),
+    ),
+    GoRoute(
+      path: '/provider/:id/stats',
+      builder: (_, state) => ProviderProfileScreen(
+        providerId: state.pathParameters['id']!,
+        name: state.extra as String?,
+      ),
     ),
     GoRoute(
       path: '/marketplace/edit/:id',

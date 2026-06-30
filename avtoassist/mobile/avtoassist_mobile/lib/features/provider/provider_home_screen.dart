@@ -31,6 +31,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   int _totalOrders = 0;
   double _rating = 0;
   bool _statsLoaded = false;
+  int _servicedVehicles = 0;
+  int _totalServices = 0;
+  Map<String, dynamic> _breakdown = {};
+  List<dynamic> _recentServices = [];
 
   // Sektor
   String? _sector;
@@ -67,6 +71,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
         _totalOrders = (res.data['total_orders'] as num?)?.toInt() ?? 0;
         _rating = (res.data['rating'] as num?)?.toDouble() ?? 0;
         _isOnline = res.data['is_online'] == true;
+        _servicedVehicles = (res.data['serviced_vehicles_count'] as num?)?.toInt() ?? 0;
+        _totalServices = (res.data['total_services'] as num?)?.toInt() ?? 0;
+        _breakdown = Map<String, dynamic>.from(res.data['service_breakdown'] ?? {});
+        _recentServices = res.data['recent_services'] as List<dynamic>? ?? [];
         _statsLoaded = true;
       });
     } catch (_) {
@@ -285,6 +293,18 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
                 child: _QuickActionTile(action: a, accent: cfg.accent),
               )),
           if (cfg.actions.isNotEmpty) const SizedBox(height: 6),
+
+          // Ko'rsatilgan xizmatlar statistikasi
+          if (_totalServices > 0) ...[
+            _ServiceStatsCard(
+              accent: cfg.accent,
+              totalServices: _totalServices,
+              servicedVehicles: _servicedVehicles,
+              breakdown: _breakdown,
+              recentServices: _recentServices,
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // Vehicle qidirish (faqat ustaxona / texnik yordam uchun)
           if (showSearch) Container(
@@ -538,6 +558,173 @@ class _QuickActionTile extends StatelessWidget {
           const Icon(Icons.chevron_right, color: AppColors.steelLight, size: 18),
         ]),
       ),
+    );
+  }
+}
+
+// ─── Ko'rsatilgan xizmatlar statistikasi (usta paneli) ───────────────────────
+class _ServiceStatsCard extends StatelessWidget {
+  final Color accent;
+  final int totalServices;
+  final int servicedVehicles;
+  final Map<String, dynamic> breakdown;
+  final List<dynamic> recentServices;
+  const _ServiceStatsCard({
+    required this.accent,
+    required this.totalServices,
+    required this.servicedVehicles,
+    required this.breakdown,
+    required this.recentServices,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations(context);
+    final entries = breakdown.entries.toList()
+      ..sort((a, b) => (b.value as num).compareTo(a.value as num));
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.steelLine),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(Icons.insights_outlined, color: accent, size: 18),
+          const SizedBox(width: 8),
+          Text(l.servicesRendered,
+              style: const TextStyle(
+                  color: AppColors.bone,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15)),
+        ]),
+        const SizedBox(height: 14),
+
+        // Ikki mini-stat
+        Row(children: [
+          Expanded(
+            child: _MiniStat(
+              accent: accent,
+              value: '$totalServices',
+              label: l.servicesCount,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _MiniStat(
+              accent: accent,
+              value: '$servicedVehicles',
+              label: l.servicedVehicles,
+            ),
+          ),
+        ]),
+
+        // Xizmat turlari taqsimoti
+        if (entries.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: entries.map((e) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: accent.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: accent.withOpacity(0.3)),
+                ),
+                child: Text(
+                  '${l.serviceTypeLabel(e.key)} · ${e.value}',
+                  style: TextStyle(
+                      color: accent,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+
+        // So'nggi xizmatlar
+        if (recentServices.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(l.recentServices,
+              style: const TextStyle(
+                  color: AppColors.steelLight,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          ...recentServices.take(8).map((s) {
+            final m = s as Map<String, dynamic>;
+            final plate = m['plate'] as String?;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(children: [
+                Container(
+                  width: 34, height: 34,
+                  decoration: BoxDecoration(
+                    color: AppColors.steel,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: const Icon(Icons.directions_car_outlined,
+                      color: AppColors.boneDim, size: 17),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${m['vehicle'] ?? '—'}'
+                          '${plate != null ? ' · $plate' : ''}',
+                          style: const TextStyle(
+                              color: AppColors.bone,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          '${l.serviceTypeLabel(m['service_type'] as String? ?? 'other')} · ${m['service_date'] ?? ''}',
+                          style: const TextStyle(
+                              color: AppColors.steelLight, fontSize: 11),
+                        ),
+                      ]),
+                ),
+              ]),
+            );
+          }),
+        ],
+      ]),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final Color accent;
+  final String value;
+  final String label;
+  const _MiniStat(
+      {required this.accent, required this.value, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      decoration: BoxDecoration(
+        color: AppColors.asphalt.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(value,
+            style: TextStyle(
+                color: accent, fontWeight: FontWeight.w800, fontSize: 20)),
+        const SizedBox(height: 2),
+        Text(label,
+            style: const TextStyle(color: AppColors.steelLight, fontSize: 11)),
+      ]),
     );
   }
 }

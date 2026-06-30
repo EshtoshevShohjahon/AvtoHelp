@@ -561,6 +561,28 @@ class AppLocalizations {
   String get phoneUnavailable => _s('Telefon raqami mavjud emas', 'Номер телефона недоступен', 'Телефон рақами мавжуд эмас', 'Phone number unavailable');
   String get confirmDelete => _s("O'chirishni tasdiqlaysizmi?", 'Подтвердите удаление', 'Ўчиришни тасдиқлайсизми?', 'Confirm delete');
   String get other => _s('Boshqa', 'Другое', 'Бошқа', 'Other');
+  String get servicesRendered =>
+      _s("Ko'rsatilgan xizmatlar", 'Оказанные услуги', 'Кўрсатилган хизматлар',
+          'Services rendered');
+  String get servicesCount =>
+      _s('Xizmatlar', 'Услуг', 'Хизматлар', 'Services');
+  String get servicedVehicles =>
+      _s('Avtomobillar', 'Автомобилей', 'Автомобиллар', 'Vehicles');
+  String get recentServices =>
+      _s("So'nggi xizmatlar", 'Последние услуги', 'Сўнгги хизматлар',
+          'Recent services');
+  String get viewStatistics =>
+      _s("Statistikani ko'rish", 'Посмотреть статистику', 'Статистикани кўриш',
+          'View statistics');
+  String get providerStatistics =>
+      _s('Usta statistikasi', 'Статистика мастера', 'Уста статистикаси',
+          'Provider statistics');
+  String get noStatistics =>
+      _s("Hozircha statistika yo'q", 'Пока нет статистики', 'Ҳозирча статистика йўқ',
+          'No statistics yet');
+  String get completedOrders =>
+      _s('Bajarilgan buyurtmalar', 'Выполненные заказы', 'Бажарилган буюртмалар',
+          'Completed orders');
   String get lightCar => _s('Yengil avto', 'Легковой', 'Енгил авто', 'Light car');
   String get all => _s('Barchasi', 'Все', 'Барчаси', 'All');
   String get fillRequired => _s("Sarlavha va narxni to'ldiring", 'Заполните заголовок и цену', 'Сарлавҳа ва нархни тўлдиринг', 'Fill in title and price');
