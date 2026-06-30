@@ -35,13 +35,6 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   // Sektor
   String? _sector;
 
-  // Sektor guruhlari
-  bool get _isShop => ['parts_store', 'tire_shop', 'oil_store'].contains(_sector);
-  bool get _isRoadside => ['tow_truck', 'tech_support', 'car_wash', 'fuel'].contains(_sector);
-  bool get _isWorkshop => _sector == 'workshop';
-  bool get _showVehicleSearch => _isWorkshop || _sector == null;
-  bool get _showMarketplace => !_isRoadside;
-
   @override
   void initState() {
     super.initState();
@@ -129,13 +122,71 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
     }
   }
 
+  // Har bir sektor uchun o'ziga xos panel: rang, tezkor amallar, qidiruv.
+  _SectorPanel _panelFor(BuildContext context, String? sector) {
+    final l = AppLocalizations(context);
+    final accent = _sectorAccent(sector ?? 'workshop');
+
+    final manageListings = _QuickAction(
+      icon: Icons.storefront_outlined,
+      title: l.myListings,
+      subtitle: l.marketplace,
+      onTap: () => context.push('/marketplace/my'),
+    );
+    final addListing = _QuickAction(
+      icon: Icons.add_business_outlined,
+      title: l.addListing,
+      subtitle: l.setPriceHint,
+      onTap: () => context.push('/marketplace/add'),
+    );
+    final orders = _QuickAction(
+      icon: Icons.receipt_long_outlined,
+      title: l.activeOrders,
+      subtitle: l.setOnlineToReceive,
+      onTap: () => context.go('/provider/orders'),
+    );
+
+    switch (sector) {
+      case 'parts_store':
+      case 'tire_shop':
+      case 'oil_store':
+        return _SectorPanel(
+          accent: accent,
+          showVehicleSearch: false,
+          actions: [manageListings, addListing, orders],
+        );
+      case 'car_wash':
+      case 'tow_truck':
+        return _SectorPanel(
+          accent: accent,
+          showVehicleSearch: false,
+          actions: [orders],
+        );
+      case 'tech_support':
+        return _SectorPanel(
+          accent: accent,
+          showVehicleSearch: true,
+          actions: [orders],
+        );
+      case 'workshop':
+      default:
+        return _SectorPanel(
+          accent: accent,
+          showVehicleSearch: true,
+          actions: [manageListings],
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
     final l = AppLocalizations(context);
+    final cfg = _panelFor(context, _sector);
+    final showSearch = cfg.showVehicleSearch;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.providerPanel),
+        title: Text(_sector != null ? _sectorLabel(_sector!) : l.providerPanel),
         actions: [
           // Online/Offline toggle
           Padding(
@@ -224,98 +275,19 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Shop (parts_store, tire_shop, oil_store): Marketplace birinchi va katta
-          if (_isShop) ...[
-            _SectorBanner(sector: _sector!),
-            const SizedBox(height: 16),
-          ],
+          // Sektorga xos banner
+          _SectorBanner(sector: _sector ?? 'workshop'),
+          const SizedBox(height: 16),
 
-          // Marketplace — mening e'lonlarim (roadside uchun ko'rsatilmaydi)
-          if (_showMarketplace) ...[
-            GestureDetector(
-              onTap: () => context.push('/marketplace/my'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.charcoal,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.amber.withOpacity(0.3)),
-                ),
-                child: Row(children: [
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(
-                      color: AppColors.amber.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.storefront_outlined,
-                        color: AppColors.amber, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(AppLocalizations(context).myListings,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.bone,
-                              fontSize: 14)),
-                      Text(AppLocalizations(context).marketplace,
-                          style: const TextStyle(
-                              color: AppColors.steelLight, fontSize: 11)),
-                    ]),
-                  ),
-                  const Icon(Icons.chevron_right,
-                      color: AppColors.steelLight, size: 18),
-                ]),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
+          // Sektorga xos tezkor amallar
+          ...cfg.actions.map((a) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _QuickActionTile(action: a, accent: cfg.accent),
+              )),
+          if (cfg.actions.isNotEmpty) const SizedBox(height: 6),
 
-          // Roadside: Buyurtmalar kartasi
-          if (_isRoadside) ...[
-            _SectorBanner(sector: _sector!),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () => context.go('/provider/orders'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.charcoal,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.teal.withOpacity(0.4)),
-                ),
-                child: Row(children: [
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(
-                      color: AppColors.teal.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.receipt_long_outlined,
-                        color: AppColors.teal, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(AppLocalizations(context).activeOrders,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.bone,
-                            fontSize: 14)),
-                    Text(AppLocalizations(context).setOnlineToReceive,
-                        style: const TextStyle(
-                            color: AppColors.steelLight, fontSize: 11)),
-                  ])),
-                  const Icon(Icons.chevron_right,
-                      color: AppColors.steelLight, size: 18),
-                ]),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Vehicle qidirish (faqat workshop va boshqa uchun)
-          if (_showVehicleSearch) Container(
+          // Vehicle qidirish (faqat ustaxona / texnik yordam uchun)
+          if (showSearch) Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppColors.charcoal,
@@ -417,7 +389,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
             ),
           ],
 
-          if (_showVehicleSearch && _foundVehicle == null && !_searching && _error == null) ...[
+          if (showSearch && _foundVehicle == null && !_searching && _error == null) ...[
             const SizedBox(height: 40),
             Center(
               child: Column(children: [
@@ -464,29 +436,138 @@ IconData _sectorIcon(String sector) {
   }
 }
 
+// Har bir sektorga o'ziga xos urg'u rangi (panelni vizual ajratish uchun)
+Color _sectorAccent(String sector) {
+  switch (sector) {
+    case 'workshop':     return const Color(0xFFFF7A1A); // to'q sariq
+    case 'parts_store':  return const Color(0xFF2BD9A6); // yashil
+    case 'tire_shop':    return const Color(0xFFB388FF); // binafsha
+    case 'oil_store':    return const Color(0xFFFFB020); // oltin
+    case 'car_wash':     return const Color(0xFF3DA5FF); // ko'k
+    case 'tow_truck':    return const Color(0xFFE5484D); // qizil
+    case 'tech_support': return const Color(0xFF26C6DA); // moviy
+    default:             return AppColors.amber;
+  }
+}
+
+// Sektorga mos qisqa izoh
+String _sectorTagline(String sector) {
+  switch (sector) {
+    case 'workshop':
+      return "Mijoz avtomobilini qidiring, xizmat qaydini qo'shing";
+    case 'parts_store':
+      return "Ehtiyot qismlar e'lonlarini joylang, narx belgilang";
+    case 'tire_shop':
+      return "Shina va disk e'lonlarini boshqaring";
+    case 'oil_store':
+      return "Moy va suyuqliklar e'lonlarini joylang";
+    case 'car_wash':
+      return "Onlayn bo'ling, yuvish buyurtmalarini qabul qiling";
+    case 'tow_truck':
+      return "Chaqiruvlarni qabul qiling, yo'nalishni ko'ring";
+    case 'tech_support':
+      return "Yo'l yordami chaqiruvlarini qabul qiling";
+    default:
+      return "Buyurtmalar qabul qiling, onlayn bo'ling";
+  }
+}
+
+// ─── Sektorga xos panel konfiguratsiyasi ─────────────────────────────────────
+class _SectorPanel {
+  final Color accent;
+  final bool showVehicleSearch;
+  final List<_QuickAction> actions;
+  _SectorPanel({
+    required this.accent,
+    required this.showVehicleSearch,
+    required this.actions,
+  });
+}
+
+class _QuickAction {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  _QuickAction({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+}
+
+class _QuickActionTile extends StatelessWidget {
+  final _QuickAction action;
+  final Color accent;
+  const _QuickActionTile({required this.action, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: action.onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.charcoal,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: accent.withOpacity(0.3)),
+        ),
+        child: Row(children: [
+          Container(
+            width: 38, height: 38,
+            decoration: BoxDecoration(
+              color: accent.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(action.icon, color: accent, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(action.title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.bone,
+                      fontSize: 14)),
+              Text(action.subtitle,
+                  style: const TextStyle(
+                      color: AppColors.steelLight, fontSize: 11)),
+            ]),
+          ),
+          const Icon(Icons.chevron_right, color: AppColors.steelLight, size: 18),
+        ]),
+      ),
+    );
+  }
+}
+
 class _SectorBanner extends StatelessWidget {
   final String sector;
   const _SectorBanner({required this.sector});
 
   @override
   Widget build(BuildContext context) {
-    final isShop = ['parts_store', 'tire_shop', 'oil_store'].contains(sector);
-    final color = isShop ? AppColors.amber : AppColors.teal;
+    final color = _sectorAccent(sector);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [color.withOpacity(0.16), color.withOpacity(0.04)],
+        ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withOpacity(0.35)),
       ),
       child: Row(children: [
         Container(
-          width: 44, height: 44,
+          width: 46, height: 46,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(12),
+            color: color.withOpacity(0.18),
+            borderRadius: BorderRadius.circular(13),
           ),
-          child: Icon(_sectorIcon(sector), color: color, size: 22),
+          child: Icon(_sectorIcon(sector), color: color, size: 24),
         ),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -494,12 +575,10 @@ class _SectorBanner extends StatelessWidget {
               style: TextStyle(
                   color: color,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14)),
+                  fontSize: 15)),
           const SizedBox(height: 2),
           Text(
-            isShop
-                ? "E'lonlaringizni boshqaring, narxlarni belgilang"
-                : 'Buyurtmalar qabul qiling, onlayn bo\'ling',
+            _sectorTagline(sector),
             style: const TextStyle(color: AppColors.steelLight, fontSize: 11),
           ),
         ])),

@@ -504,6 +504,11 @@ class AppLocalizations {
           'My listings');
   String get addListing =>
       _s("E'lon qo'shish", "Добавить объявление", "Эълон қўшиш", 'Add listing');
+  String get setPriceHint =>
+      _s("Yangi mahsulot joylang, narx belgilang",
+          'Добавьте товар и укажите цену',
+          'Янги маҳсулот жойланг, нарх белгиланг',
+          'Add a product and set the price');
   String get editListing =>
       _s("E'lonni tahrirlash", 'Редактировать', 'Эълонни таҳрирлаш', 'Edit listing');
   String get listingTitle =>
