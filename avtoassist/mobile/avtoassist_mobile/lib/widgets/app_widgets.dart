@@ -583,6 +583,35 @@ class AppLocalizations {
   String get completedOrders =>
       _s('Bajarilgan buyurtmalar', 'Выполненные заказы', 'Бажарилган буюртмалар',
           'Completed orders');
+  String get getVerified =>
+      _s('Tasdiqdan o\'tish', 'Пройти верификацию', 'Тасдиқдан ўтиш',
+          'Get verified');
+  String get verifiedBadge =>
+      _s('Tasdiqlangan', 'Подтверждён', 'Тасдиқланган', 'Verified');
+  String get notVerified =>
+      _s('Tasdiqlanmagan', 'Не подтверждён', 'Тасдиқланмаган', 'Not verified');
+  String get verificationDesc =>
+      _s('Ishonchni oshirish uchun hujjatlaringizni yuboring',
+          'Отправьте документы для повышения доверия',
+          'Ишончни ошириш учун ҳужжатларингизни юборинг',
+          'Submit your documents to build trust');
+  String get documentNumber =>
+      _s('Hujjat raqami (passport/ID)', 'Номер документа', 'Ҳужжат рақами',
+          'Document number');
+  String get uploadDocument =>
+      _s('Hujjat fotosi', 'Фото документа', 'Ҳужжат фотоси', 'Document photo');
+  String get uploadSelfie =>
+      _s('Selfi', 'Селфи', 'Селфи', 'Selfie');
+  String get submitVerification =>
+      _s('Yuborish', 'Отправить', 'Юбориш', 'Submit');
+  String get verificationApproved =>
+      _s('Tabriklaymiz! Siz tasdiqlandingiz', 'Поздравляем! Вы подтверждены',
+          'Табриклаймиз! Сиз тасдиқландингиз', 'Congratulations! You are verified');
+  String get verificationRejected =>
+      _s('Tasdiqlanmadi. Iltimos, fotolarni tekshiring',
+          'Не подтверждено. Проверьте фото',
+          'Тасдиқланмади. Илтимос, фотоларни текширинг',
+          'Not approved. Please check your photos');
   String get lightCar => _s('Yengil avto', 'Легковой', 'Енгил авто', 'Light car');
   String get all => _s('Barchasi', 'Все', 'Барчаси', 'All');
   String get fillRequired => _s("Sarlavha va narxni to'ldiring", 'Заполните заголовок и цену', 'Сарлавҳа ва нархни тўлдиринг', 'Fill in title and price');

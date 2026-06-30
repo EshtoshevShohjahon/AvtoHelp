@@ -40,6 +40,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
 
   // Sektor
   String? _sector;
+  bool _isVerified = false;
 
   @override
   void initState() {
@@ -53,7 +54,10 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       final api = ref.read(apiClientProvider);
       final res = await api.get('/providers/me');
       if (!mounted) return;
-      setState(() => _sector = res.data['sector'] as String?);
+      setState(() {
+        _sector = res.data['sector'] as String?;
+        _isVerified = res.data['is_verified'] == true;
+      });
     } catch (_) {}
   }
 
@@ -354,6 +358,55 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
           // Sektorga xos banner
           _SectorBanner(sector: _sector ?? 'workshop'),
           const SizedBox(height: 16),
+
+          // Tasdiqlanish holati / chaqiruv
+          if (!_isVerified) ...[
+            GestureDetector(
+              onTap: () async {
+                final ok = await context.push<bool>('/provider/verify');
+                if (ok == true) _loadSector();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.teal.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.teal.withOpacity(0.4)),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.verified_user_outlined,
+                      color: AppColors.teal, size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l.getVerified,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.bone,
+                                fontSize: 14)),
+                        Text(l.verificationDesc,
+                            style: const TextStyle(
+                                color: AppColors.steelLight, fontSize: 11)),
+                      ])),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.steelLight, size: 18),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ] else ...[
+            Row(children: [
+              const Icon(Icons.verified, color: AppColors.teal, size: 16),
+              const SizedBox(width: 6),
+              Text(l.verifiedBadge,
+                  style: const TextStyle(
+                      color: AppColors.teal,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600)),
+            ]),
+            const SizedBox(height: 16),
+          ],
 
           // Sektorga xos tezkor amallar
           ...cfg.actions.map((a) => Padding(
