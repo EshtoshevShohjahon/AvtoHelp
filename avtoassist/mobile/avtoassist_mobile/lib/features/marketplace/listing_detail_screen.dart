@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_theme.dart';
@@ -276,10 +277,83 @@ class _ListingDetailScreenState extends ConsumerState<ListingDetailScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
           child: ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () => _showContact(context, provider, l),
             icon: const Icon(Icons.phone_outlined),
             label: Text(l.contactSeller),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showContact(BuildContext context, Map<String, dynamic>? provider,
+      AppLocalizations l) {
+    final phone = provider?['phone'] as String? ?? '';
+    final name = provider?['business_name'] as String? ?? '';
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(l.phoneUnavailable),
+            backgroundColor: AppColors.danger),
+      );
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: 36, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.steelLine,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 56, height: 56,
+              decoration: BoxDecoration(
+                gradient: AppColors.amberGradient,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: AppColors.glow(AppColors.amber),
+              ),
+              child: const Icon(Icons.storefront,
+                  color: Color(0xFF1A1100), size: 28),
+            ),
+            const SizedBox(height: 12),
+            if (name.isNotEmpty)
+              Text(name,
+                  style: const TextStyle(
+                      color: AppColors.bone,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text(phone,
+                style: const TextStyle(
+                    color: AppColors.amber,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5)),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: phone));
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(l.phoneCopied),
+                        backgroundColor: AppColors.teal),
+                  );
+                },
+                icon: const Icon(Icons.copy, size: 18),
+                label: Text(l.copyNumber),
+              ),
+            ),
+          ]),
         ),
       ),
     );

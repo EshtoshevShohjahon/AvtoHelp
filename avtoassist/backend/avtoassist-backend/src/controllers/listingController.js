@@ -32,8 +32,8 @@ async function browse(req, res) {
     include: [{
       model: Provider,
       as: 'provider',
-      attributes: ['id', 'business_name', 'rating', 'address'],
-      include: [{ model: User, as: undefined, attributes: ['full_name', 'phone'] }],
+      attributes: ['id', 'rating_avg', 'rating_count', 'sector', 'is_verified'],
+      include: [{ model: User, attributes: ['full_name', 'phone'] }],
     }],
     order: [['created_at', 'DESC']],
     limit: Math.min(Number(limit), 100),
@@ -57,8 +57,8 @@ async function detail(req, res) {
     include: [{
       model: Provider,
       as: 'provider',
-      attributes: ['id', 'business_name', 'rating', 'address', 'lat', 'lng'],
-      include: [{ model: User, as: undefined, attributes: ['full_name', 'phone'] }],
+      attributes: ['id', 'rating_avg', 'rating_count', 'sector', 'is_verified', 'current_lat', 'current_lng'],
+      include: [{ model: User, attributes: ['full_name', 'phone'] }],
     }],
   });
   if (!listing) return res.status(404).json({ error: 'not_found' });
@@ -169,6 +169,24 @@ async function myListings(req, res) {
 
 function _format(l) {
   const obj = l.toJSON ? l.toJSON() : l;
+
+  // Provider'ni Flutter kutgan shaklga keltiramiz
+  if (obj.provider) {
+    const p = obj.provider;
+    const u = p.User || p.user || {};
+    obj.provider = {
+      id: p.id,
+      business_name: u.full_name || '',
+      phone: u.phone || '',
+      rating: p.rating_avg ?? 0,
+      rating_count: p.rating_count ?? 0,
+      sector: p.sector || null,
+      is_verified: p.is_verified ?? false,
+      lat: p.current_lat ?? null,
+      lng: p.current_lng ?? null,
+    };
+  }
+
   return {
     ...obj,
     images: (obj.images || []).map(fn =>
