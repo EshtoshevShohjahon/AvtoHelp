@@ -70,7 +70,26 @@ class _VehiclesScreenState extends ConsumerState<VehiclesScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.amber))
-          : _vehicles.isEmpty
+          : _error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.wifi_off_outlined,
+                            color: AppColors.steelLight, size: 48),
+                        const SizedBox(height: 16),
+                        Text(_error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: AppColors.steelLight)),
+                        const SizedBox(height: 20),
+                        ElevatedButton(onPressed: _load, child: Text(l.retry)),
+                      ],
+                    ),
+                  ),
+                )
+              : _vehicles.isEmpty
               ? _EmptyState(message: l.noVehicles)
               : RefreshIndicator(
                   onRefresh: _load,

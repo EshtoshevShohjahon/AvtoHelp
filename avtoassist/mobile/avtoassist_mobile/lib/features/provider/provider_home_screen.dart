@@ -41,7 +41,6 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   bool get _isWorkshop => _sector == 'workshop';
   bool get _showVehicleSearch => _isWorkshop || _sector == null;
   bool get _showMarketplace => !_isRoadside;
-  bool get _showOrders => _isRoadside || _sector == null;
 
   @override
   void initState() {
