@@ -15,106 +15,61 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
           cache: 'gradle'
-      
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.44.2'
           channel: 'stable'
           cache: true
-      
+
       - name: Flutter doctor
         run: flutter doctor -v
-      
+
+      - name: Write local.properties
+        working-directory: ./avtoassist/mobile/avtoassist_mobile/android
+        run: echo "flutter.sdk=$FLUTTER_ROOT" > local.properties
+
       - name: Install dependencies
-        working-directory: ./mobile
-        run: |
-          flutter pub get
-          flutter pub upgrade
-      
-      - name: Verify Android setup
-        working-directory: ./mobile
-        run: |
-          echo "Checking Android files..."
-          ls -la android/
-          ls -la android/app/
-          cat android/app/build.gradle
-      
+        working-directory: ./avtoassist/mobile/avtoassist_mobile
+        run: flutter pub get
+
       - name: Clean previous builds
-        working-directory: ./mobile
+        working-directory: ./avtoassist/mobile/avtoassist_mobile
         run: flutter clean
-      
+
       - name: Run Flutter analyze (non-blocking)
-        working-directory: ./mobile
+        working-directory: ./avtoassist/mobile/avtoassist_mobile
         run: flutter analyze || true
-      
-      - name: Build APK with detailed logs
-        working-directory: ./mobile
-        run: |
-          echo "Starting APK build..."
-          flutter build apk --release --verbose --no-shrink
-        continue-on-error: false
-      
-      - name: Verify APK was created
-        working-directory: ./mobile
-        run: |
-          APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
-          if [ -f "$APK_PATH" ]; then
-            echo "✅ APK successfully built!"
-            ls -lh "$APK_PATH"
-            file "$APK_PATH"
-          else
-            echo "❌ APK file not found at: $APK_PATH"
-            echo "Contents of build directory:"
-            find build -type f -name "*.apk" || true
-            exit 1
-          fi
-      
-      - name: Get APK info
-        id: apk_info
-        working-directory: ./mobile
-        run: |
-          APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
-          APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
-          echo "apk_size=$APK_SIZE" >> $GITHUB_OUTPUT
-          echo "APK Size: $APK_SIZE"
-      
+
+      - name: Build APK
+        working-directory: ./avtoassist/mobile/avtoassist_mobile
+        run: flutter build apk --release
+
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: avtohelp-release-${{ github.run_number }}
-          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          path: avtoassist/mobile/avtoassist_mobile/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
           if-no-files-found: error
-      
+
       - name: Create Release on tag
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: mobile/build/app/outputs/flutter-apk/app-release.apk
+          files: avtoassist/mobile/avtoassist_mobile/build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '✅ APK built successfully!\n\n📦 Size: ${{ steps.apk_info.outputs.apk_size }}\n📥 Download from **Artifacts** tab above'
-            })

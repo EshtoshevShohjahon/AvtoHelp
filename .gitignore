@@ -41,3 +41,6 @@ mobile/ios/Runner/GeneratedPluginRegistrant.*
 .vscode/
 .idea/
 *.log
+
+# Claude Code ichki worktree va vaqtinchalik fayllar
+.claude/worktrees/
