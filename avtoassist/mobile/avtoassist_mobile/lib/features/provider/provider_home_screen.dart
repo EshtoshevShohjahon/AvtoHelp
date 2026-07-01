@@ -15,6 +15,7 @@ import '../../widgets/app_widgets.dart';
 // darhol to'g'ri ko'rinishi uchun (aks holda eski/standart panel bir zum ko'rinadi)
 final providerSectorCache = StateProvider<String?>((ref) => null);
 final providerVerifiedCache = StateProvider<bool>((ref) => false);
+final providerOnlineCache = StateProvider<bool>((ref) => false);
 
 // ─── Provider bosh ekrani ────────────────────────────────────────────────────
 class ProviderHomeScreen extends ConsumerStatefulWidget {
@@ -61,6 +62,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
     // Keshdan darhol tiklaymiz — panel to'g'ri ko'rinishda ochiladi
     _sector = ref.read(providerSectorCache);
     _isVerified = ref.read(providerVerifiedCache);
+    _isOnline = ref.read(providerOnlineCache);
     _loadStats();
     _loadSector();
   }
@@ -98,6 +100,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
         _totalOrders = (res.data['total_orders'] as num?)?.toInt() ?? 0;
         _rating = (res.data['rating'] as num?)?.toDouble() ?? 0;
         _isOnline = res.data['is_online'] == true;
+        ref.read(providerOnlineCache.notifier).state = _isOnline;
         _servicedVehicles = (res.data['serviced_vehicles_count'] as num?)?.toInt() ?? 0;
         _totalServices = (res.data['total_services'] as num?)?.toInt() ?? 0;
         _breakdown = Map<String, dynamic>.from(res.data['service_breakdown'] ?? {});
@@ -163,6 +166,7 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       await api.patch('/providers/me/status',
           data: {'is_online': newStatus});
       if (!mounted) return;
+      ref.read(providerOnlineCache.notifier).state = newStatus;
       setState(() {
         _isOnline = newStatus;
         _togglingStatus = false;
