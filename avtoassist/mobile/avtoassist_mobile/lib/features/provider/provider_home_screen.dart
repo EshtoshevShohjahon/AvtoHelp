@@ -11,6 +11,11 @@ import '../../features/vehicles/vehicle_detail_screen.dart';
 import '../../features/orders/route_map_screen.dart';
 import '../../widgets/app_widgets.dart';
 
+// Sektor va tasdiq holatini sessiya davomida keshlaymiz — panelga qaytganda
+// darhol to'g'ri ko'rinishi uchun (aks holda eski/standart panel bir zum ko'rinadi)
+final providerSectorCache = StateProvider<String?>((ref) => null);
+final providerVerifiedCache = StateProvider<bool>((ref) => false);
+
 // ─── Provider bosh ekrani ────────────────────────────────────────────────────
 class ProviderHomeScreen extends ConsumerStatefulWidget {
   const ProviderHomeScreen({super.key});
@@ -53,6 +58,9 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Keshdan darhol tiklaymiz — panel to'g'ri ko'rinishda ochiladi
+    _sector = ref.read(providerSectorCache);
+    _isVerified = ref.read(providerVerifiedCache);
     _loadStats();
     _loadSector();
   }
@@ -62,9 +70,14 @@ class _ProviderHomeScreenState extends ConsumerState<ProviderHomeScreen> {
       final api = ref.read(apiClientProvider);
       final res = await api.get('/providers/me');
       if (!mounted) return;
+      final sector = res.data['sector'] as String?;
+      final verified = res.data['is_verified'] == true;
+      // Keshni yangilaymiz
+      ref.read(providerSectorCache.notifier).state = sector;
+      ref.read(providerVerifiedCache.notifier).state = verified;
       setState(() {
-        _sector = res.data['sector'] as String?;
-        _isVerified = res.data['is_verified'] == true;
+        _sector = sector;
+        _isVerified = verified;
       });
     } catch (_) {}
   }
